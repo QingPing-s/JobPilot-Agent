@@ -1,0 +1,43 @@
+[
+  {
+    "case_id": "case_001",
+    "target_role": "AI Agent Intern",
+    "query": "我想找 AI Agent 开发实习，熟悉 LangGraph、RAG、DeepSeek API",
+    "relevant_job_ids": [
+      "job_agent_intern_01"
+    ]
+  },
+  {
+    "case_id": "case_002",
+    "target_role": "RAG Intern",
+    "query": "我想做 RAG 检索增强生成实习，关注 embedding、向量数据库、ChromaDB 和评测",
+    "relevant_job_ids": [
+      "job_rag_intern_02"
+    ]
+  },
+  {
+    "case_id": "case_003",
+    "target_role": "LLM Application Intern",
+    "query": "我想找 LLM 应用开发实习，熟悉 prompt engineering、结构化输出、Pydantic 和 API 调用",
+    "relevant_job_ids": [
+      "job_llm_app_intern_03"
+    ]
+  },
+  {
+    "case_id": "case_004",
+    "target_role": "AI Agent Intern",
+    "query": "希望申请 Python + LLM API + tool calling 方向的实习，能写测试和执行日志",
+    "relevant_job_ids": [
+      "job_agent_intern_01",
+      "job_llm_app_intern_03"
+    ]
+  },
+  {
+    "case_id": "case_005",
+    "target_role": "RAG Intern",
+    "query": "我做过本地文档问答，想找 document QA、chunking、embedding、retrieval evaluation 相关岗位",
+    "relevant_job_ids": [
+      "job_rag_intern_02"
+    ]
+  }
+]

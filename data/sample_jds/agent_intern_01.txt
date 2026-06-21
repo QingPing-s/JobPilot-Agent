@@ -1,0 +1,15 @@
+Title: AI Agent Intern
+
+Responsibilities:
+- Build lightweight AI Agent workflows for internal productivity tools.
+- Connect LLM calls with external tools and structured outputs.
+- Write tests and logs for agent execution.
+
+Requirements:
+- Python programming experience.
+- Basic understanding of LLM applications.
+- Familiarity with API integration.
+
+Preferred:
+- Experience with LangGraph or similar agent frameworks.
+- Interest in RAG and evaluation.

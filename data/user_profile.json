@@ -1,0 +1,39 @@
+{
+  "name": "Alex Chen",
+  "education": [
+    "Computer Science undergraduate candidate"
+  ],
+  "skills": [
+    "Python",
+    "RAG",
+    "LLM",
+    "Prompt Engineering",
+    "API integration",
+    "Pytest"
+  ],
+  "projects": [
+    {
+      "name": "Mini RAG Assistant",
+      "description": "Built a small local document QA prototype with retrieval and prompt templates.",
+      "tech_stack": [
+        "Python",
+        "RAG",
+        "Vector Search"
+      ],
+      "highlights": [
+        "Implemented a local document QA flow.",
+        "Designed prompt templates for answer generation."
+      ]
+    }
+  ],
+  "internships": [],
+  "target_roles": [
+    "AI Agent Intern",
+    "RAG Intern",
+    "LLM Application Intern"
+  ],
+  "preferences": {
+    "role_type": "internship",
+    "focus": "AI Agent / RAG / LLM applications"
+  }
+}

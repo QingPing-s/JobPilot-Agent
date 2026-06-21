@@ -1,0 +1,38 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="如何把 LLM Demo 做成可写进简历的 Agent 项目 | JY Portfolio"
+  description="JobPilot-Agent engineering notes."
+>
+  <article class="article-page prose">
+    <header class="article-header">
+      <p class="eyebrow">Engineering Notes</p>
+      <h1>如何把 LLM Demo 做成可写进简历的 Agent 项目</h1>
+      <p>
+        关键不是多调用一次大模型，而是把输入、结构化输出、检索、评分、日志和评测做成闭环。
+      </p>
+    </header>
+
+    <h2>1. 从任务链路开始设计</h2>
+    <p>
+      JobPilot-Agent 将求职场景拆成候选人画像、JD 解析、岗位召回、重排序、匹配评分、差距分析和简历建议。每个节点都有明确输入输出，便于定位问题。
+    </p>
+
+    <h2>2. 让结构化输出可校验</h2>
+    <p>
+      使用 Pydantic 约束 CandidateProfile、JobPosting、MatchResult 等结构，避免模型输出随意变形，也方便前端直接消费。
+    </p>
+
+    <h2>3. 用检索和规则降低成本</h2>
+    <p>
+      岗位数量变多时，先通过 Hybrid Retrieval 召回候选岗位，再用规则重排序和规则评分做稳定 fallback，减少不必要的 LLM 调用。
+    </p>
+
+    <h2>4. 展示工程能力</h2>
+    <p>
+      Trace Logger、离线评测、SQLite 岗位库和 React 工作台让项目不只是命令行脚本，而是一个可演示、可解释、可迭代的产品原型。
+    </p>
+  </article>
+</BaseLayout>

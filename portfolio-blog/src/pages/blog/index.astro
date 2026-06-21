@@ -1,0 +1,23 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout title="技术博客 | JY Portfolio">
+  <section class="article-page">
+    <header class="article-header">
+      <p class="eyebrow">Blog</p>
+      <h1>技术博客</h1>
+      <p>记录 AI Agent、RAG、LLM 应用工程化和求职项目复盘。</p>
+    </header>
+
+    <div class="post-list">
+      <a class="post-card" href={`${base}blog/jobpilot-agent-engineering-notes/`}>
+        <span>AI Agent Engineering</span>
+        <h2>如何把 LLM Demo 做成可写进简历的 Agent 项目</h2>
+        <p>从单次 Prompt 调用升级到可运行、可评测、可展示的工程系统。</p>
+      </a>
+    </div>
+  </section>
+</BaseLayout>

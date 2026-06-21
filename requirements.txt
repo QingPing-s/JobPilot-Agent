@@ -1,0 +1,10 @@
+openai
+python-dotenv
+pydantic
+fastapi
+uvicorn
+langgraph
+chromadb
+scikit-learn
+pytest
+httpx
