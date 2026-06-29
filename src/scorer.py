@@ -6,7 +6,6 @@ from typing import Any
 from .schemas import CandidateProfile, JobPosting, MatchResult
 from .tools import normalize_skill
 
-
 STOPWORDS = {
     "and",
     "for",
@@ -22,6 +21,16 @@ STOPWORDS = {
     "experience",
     "responsibilities",
     "requirements",
+}
+
+SOFT_SKILL_ALIASES: dict[str, tuple[str, ...]] = {
+    "学习速度快": ("学习速度快", "学习能力强", "快速学习", "快速上手", "学习能力", "能快速掌握新技术"),
+    "主动查阅资料": ("主动查阅资料", "主动检索资料", "主动查资料", "查阅文档", "阅读文档", "能查资料"),
+    "问题拆解能力": ("问题拆解能力", "拆解问题", "问题拆解", "任务拆解", "需求拆解", "分析问题", "问题分析"),
+    "自驱力强": ("自驱力强", "自驱力", "自我驱动", "主动性强", "主动学习", "积极主动", "主动推进"),
+    "沟通协作能力": ("沟通协作能力", "沟通能力", "团队协作", "团队合作", "协作能力", "跨团队协作"),
+    "责任心强": ("责任心强", "责任心", "认真负责", "责任感", "抗压能力", "执行力"),
+    "能独立解决问题": ("能独立解决问题", "独立解决问题", "独立定位问题", "独立完成", "解决问题能力", "排查问题"),
 }
 
 
@@ -61,6 +70,7 @@ def _ordered_missing(source_items: list[str], candidate_set: set[str]) -> list[s
 
 def _candidate_skill_list(profile: dict) -> list[str]:
     skills = [skill for skill in _as_list(profile.get("skills")) if isinstance(skill, str)]
+    skills.extend(skill for skill in _as_list(profile.get("soft_skills")) if isinstance(skill, str))
     for project in _as_list(profile.get("projects")):
         if isinstance(project, dict):
             skills.extend(skill for skill in _as_list(project.get("tech_stack")) if isinstance(skill, str))
@@ -74,7 +84,9 @@ def _tokenize(text: str) -> set[str]:
 
 def _profile_text(profile: dict) -> str:
     parts = []
+    parts.extend(str(item) for item in _as_list(profile.get("education")))
     parts.extend(str(item) for item in _as_list(profile.get("skills")))
+    parts.extend(str(item) for item in _as_list(profile.get("soft_skills")))
     parts.extend(str(item) for item in _as_list(profile.get("target_roles")))
     parts.extend(str(item) for item in _as_list(profile.get("internships")))
     for project in _as_list(profile.get("projects")):
@@ -126,6 +138,102 @@ def _normalized_contains(haystack: str, needle: str) -> bool:
     )
 
 
+def _profile_education_text(profile: dict) -> str:
+    parts = [str(item) for item in _as_list(profile.get("education"))]
+    preferences = profile.get("preferences")
+    if isinstance(preferences, dict):
+        parts.extend(str(preferences.get(key) or "") for key in ("degree", "major", "education"))
+    return " ".join(parts).lower()
+
+
+def _profile_preference_text(profile: dict) -> str:
+    preferences = profile.get("preferences")
+    if not isinstance(preferences, dict):
+        return ""
+    return " ".join(str(value) for value in preferences.values() if value).lower()
+
+
+def _degree_requirement_satisfied(item_text: str, profile: dict) -> bool:
+    education_text = _profile_education_text(profile)
+    if not education_text:
+        return False
+
+    bachelor_terms = ("本科", "bachelor", "undergraduate")
+    master_terms = ("研究生", "硕士", "master", "graduate")
+    phd_terms = ("博士", "phd", "doctor")
+    high_school_terms = ("高中",)
+
+    has_bachelor_or_above = any(term in education_text for term in bachelor_terms + master_terms + phd_terms)
+    has_master_or_above = any(term in education_text for term in master_terms + phd_terms)
+
+    if "本科及以上" in item_text or "本科以上" in item_text:
+        return has_bachelor_or_above
+    if any(term in item_text for term in master_terms):
+        return has_master_or_above
+    if any(term in item_text for term in bachelor_terms):
+        return has_bachelor_or_above
+    if any(term in item_text for term in high_school_terms):
+        return True
+    return False
+
+
+def _major_requirement_satisfied(item_text: str, profile: dict) -> bool:
+    education_text = _profile_education_text(profile)
+    if not education_text:
+        return False
+    major_terms = (
+        "人工智能",
+        "计算机",
+        "软件工程",
+        "自动化",
+        "数据科学",
+        "数学",
+        "电子信息",
+    )
+    profile_majors = [term for term in major_terms if term in education_text]
+    if not profile_majors:
+        return False
+    if "专业" not in item_text and not any(term in item_text for term in major_terms):
+        return False
+    return any(term in item_text for term in profile_majors)
+
+
+def _availability_requirement_satisfied(item_text: str, profile: dict) -> bool:
+    preferences = profile.get("preferences") if isinstance(profile.get("preferences"), dict) else {}
+    profile_days = _number_from_value(preferences.get("days_per_week"))
+    profile_months = _number_from_value(preferences.get("duration_months"))
+    preference_text = _profile_preference_text(profile)
+
+    day_numbers = [float(item) for item in re.findall(r"(\d+(?:\.\d+)?)\s*(?:天/周|天|日)", item_text)]
+    month_numbers = [float(item) for item in re.findall(r"(\d+(?:\.\d+)?)\s*(?:个月|月)", item_text)]
+
+    days_ok = True
+    if day_numbers:
+        days_ok = profile_days is not None and profile_days >= max(day_numbers)
+
+    months_ok = True
+    if month_numbers:
+        months_ok = profile_months is not None and profile_months >= max(month_numbers)
+
+    work_mode_ok = True
+    if "线下" in item_text or "到岗" in item_text:
+        work_mode_ok = "线下" in preference_text
+
+    has_availability_requirement = bool(day_numbers or month_numbers or "线下" in item_text or "到岗" in item_text)
+    return has_availability_requirement and days_ok and months_ok and work_mode_ok
+
+
+def _structured_requirement_satisfied(item_text: str, profile: dict) -> bool:
+    checks = []
+    if any(term in item_text for term in ("学历", "本科", "研究生", "硕士", "博士", "高中")):
+        checks.append(_degree_requirement_satisfied(item_text, profile))
+    if "专业" in item_text or any(term in item_text for term in ("人工智能", "计算机", "软件工程", "自动化", "数据科学")):
+        checks.append(_major_requirement_satisfied(item_text, profile))
+    if any(term in item_text for term in ("每周", "天/周", "实习周期", "个月", "线下", "到岗")):
+        checks.append(_availability_requirement_satisfied(item_text, profile))
+    return bool(checks) and all(checks)
+
+
 def _item_matches_profile(item: str, profile: dict) -> bool:
     """Match one JD requirement/add-on/responsibility against candidate evidence."""
     if not isinstance(item, str) or not item.strip():
@@ -135,6 +243,9 @@ def _item_matches_profile(item: str, profile: dict) -> bool:
     profile_text = _profile_evidence_text(profile)
     item_text = item.lower()
 
+    if _structured_requirement_satisfied(item_text, profile):
+        return True
+
     if any(_normalized_contains(skill, item) for skill in profile_skills):
         return True
 
@@ -142,6 +253,16 @@ def _item_matches_profile(item: str, profile: dict) -> bool:
     profile_tokens = _tokenize(profile_text)
     if item_tokens and item_tokens & profile_tokens:
         return True
+
+    candidate_soft_skills = [
+        str(skill).strip()
+        for skill in _as_list(profile.get("soft_skills"))
+        if isinstance(skill, str) and str(skill).strip()
+    ]
+    for soft_skill in candidate_soft_skills:
+        aliases = SOFT_SKILL_ALIASES.get(soft_skill, (soft_skill,))
+        if any(alias.lower() in item_text for alias in aliases):
+            return True
 
     chinese_signals = [
         "工具调用",
@@ -161,6 +282,17 @@ def _item_matches_profile(item: str, profile: dict) -> bool:
         "开源",
         "论文",
         "竞赛",
+        "学习能力",
+        "快速学习",
+        "主动性",
+        "自驱",
+        "问题拆解",
+        "拆解问题",
+        "沟通协作",
+        "团队协作",
+        "责任心",
+        "独立解决问题",
+        "查阅资料",
     ]
     return any(signal in item_text and signal in profile_text for signal in chinese_signals)
 
@@ -333,6 +465,115 @@ def _matched_projects_for_job(projects: list[dict], job_items: list[str]) -> lis
         if any(_item_matches_profile(item, project_profile) for item in job_items):
             matched_projects.append(project.get("name") or "未命名项目")
     return matched_projects
+
+
+def _number_from_value(value: Any) -> float | None:
+    if isinstance(value, (int, float)):
+        return float(value)
+    if isinstance(value, str):
+        match = re.search(r"\d+(?:\.\d+)?", value)
+        if match:
+            return float(match.group(0))
+    return None
+
+
+def _education_score(profile: dict, job: dict) -> float:
+    requirement = str(job.get("education_requirement") or job.get("raw_text") or "").lower()
+    education_text = " ".join(str(item) for item in _as_list(profile.get("education"))).lower()
+    preferences = profile.get("preferences")
+    if isinstance(preferences, dict):
+        education_text += " " + " ".join(
+            str(preferences.get(key) or "") for key in ("degree", "major", "education")
+        ).lower()
+
+    if not requirement or "不限" in requirement or "学历不限" in requirement:
+        return 5.0
+    if not education_text:
+        return 0.0
+
+    bachelor_terms = ["本科", "bachelor", "undergraduate"]
+    master_terms = ["研究生", "硕士", "master", "graduate"]
+    phd_terms = ["博士", "phd", "doctor"]
+
+    if any(term in requirement for term in bachelor_terms):
+        return 5.0 if any(term in education_text for term in bachelor_terms + master_terms + phd_terms) else 0.0
+    if any(term in requirement for term in master_terms):
+        return 5.0 if any(term in education_text for term in master_terms + phd_terms) else 0.0
+    if any(term in requirement for term in phd_terms):
+        return 5.0 if any(term in education_text for term in phd_terms) else 0.0
+
+    requirement_tokens = _tokenize(requirement)
+    education_tokens = _tokenize(education_text)
+    return 5.0 if requirement_tokens & education_tokens else 2.5
+
+
+def _availability_or_experience_score(profile: dict, job: dict) -> float:
+    requirement = str(job.get("experience_requirement") or job.get("raw_text") or "").lower()
+    if not requirement or "不限" in requirement or "无要求" in requirement:
+        return 5.0
+
+    preferences = profile.get("preferences") if isinstance(profile.get("preferences"), dict) else {}
+    profile_days = _number_from_value(preferences.get("days_per_week"))
+    profile_months = _number_from_value(preferences.get("duration_months"))
+    profile_text = _profile_evidence_text(profile)
+
+    day_numbers = [float(item) for item in re.findall(r"(\d+(?:\.\d+)?)\s*(?:天/周|天|日)", requirement)]
+    month_numbers = [float(item) for item in re.findall(r"(\d+(?:\.\d+)?)\s*(?:个月|月)", requirement)]
+    required_days = max(day_numbers) if day_numbers else None
+    required_months = max(month_numbers) if month_numbers else None
+
+    score = 0.0
+    if required_days is None:
+        score += 2.0
+    elif profile_days is not None and profile_days >= required_days:
+        score += 2.0
+
+    if required_months is None:
+        score += 2.0
+    elif profile_months is not None and profile_months >= required_months:
+        score += 2.0
+
+    if "线下" in requirement or "到岗" in requirement or "北京" in requirement:
+        if "线下" in profile_text or "北京" in profile_text:
+            score += 1.0
+    else:
+        score += 1.0
+
+    if score > 0:
+        return round(_clamp(score, 0.0, 5.0), 2)
+
+    evidence = _profile_evidence_text(profile)
+    requirement_tokens = _tokenize(requirement)
+    evidence_tokens = _tokenize(evidence)
+    if requirement_tokens & evidence_tokens:
+        return 5.0
+    if _as_list(profile.get("internships")):
+        return 3.0
+    return 0.0
+
+
+def _role_location_score(profile: dict, job: dict) -> float:
+    score = 0.0
+    title_tokens = _tokenize(str(job.get("title") or ""))
+    target_role_tokens = _tokenize(" ".join(str(item) for item in _as_list(profile.get("target_roles"))))
+    target_role = profile.get("target_role")
+    if target_role:
+        target_role_tokens.update(_tokenize(str(target_role)))
+    if title_tokens & target_role_tokens:
+        score += 3.0
+
+    preferences = profile.get("preferences")
+    if isinstance(preferences, dict):
+        preferred_location = " ".join(
+            str(preferences.get(key) or "") for key in ("location", "work_mode", "availability")
+        ).lower()
+        job_location = str(job.get("location") or "").lower()
+        if preferred_location and job_location and (preferred_location in job_location or job_location in preferred_location):
+            score += 2.0
+        elif "线下" in preferred_location and job_location:
+            score += 1.0
+
+    return round(_clamp(score, 0.0, 5.0), 2)
 
 
 def compute_requirement_score(profile: dict, job: dict) -> dict:

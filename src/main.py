@@ -10,10 +10,10 @@ from dotenv import load_dotenv
 from .tools import save_json, save_markdown
 from .trace_logger import TraceLogger
 
-
 ROOT_DIR = Path(__file__).resolve().parents[1]
-OUTPUT_DIR = ROOT_DIR / "outputs"
-TRACE_DIR = ROOT_DIR / "traces"
+PERSISTENT_DATA_DIR = os.getenv("JOBPILOT_DATA_DIR")
+OUTPUT_DIR = Path(PERSISTENT_DATA_DIR) / "outputs" if PERSISTENT_DATA_DIR else ROOT_DIR / "outputs"
+TRACE_DIR = Path(PERSISTENT_DATA_DIR) / "traces" if PERSISTENT_DATA_DIR else ROOT_DIR / "traces"
 
 
 def _resolve_project_path(path: str) -> Path:
@@ -56,6 +56,7 @@ def build_final_report_markdown(state: dict, target_role: str) -> str:
     matched_jobs = _as_list(state.get("matched_jobs"))
     gaps = _as_list(state.get("gaps"))
     resume_suggestions = _as_list(state.get("resume_suggestions"))
+    token_usage = state.get("token_usage") if isinstance(state.get("token_usage"), dict) else {}
 
     candidate_roles = _as_list(candidate_profile.get("target_roles")) if isinstance(candidate_profile, dict) else []
     target_role_text = target_role or ", ".join(candidate_roles) or "未指定"
@@ -70,6 +71,18 @@ def build_final_report_markdown(state: dict, target_role: str) -> str:
 
     if candidate_roles:
         lines.extend(["- 候选人画像中的目标岗位:", _format_list(candidate_roles)])
+
+    lines.extend(
+        [
+            "",
+            "## Token 消耗",
+            "",
+            f"- LLM 调用次数: {token_usage.get('calls', 0)}",
+            f"- Prompt Tokens: {token_usage.get('prompt_tokens', 0)}",
+            f"- Completion Tokens: {token_usage.get('completion_tokens', 0)}",
+            f"- Total Tokens: {token_usage.get('total_tokens', 0)}",
+        ]
+    )
 
     lines.extend(["", "## Top 5 推荐岗位", ""])
     top_jobs = matched_jobs[:5]
@@ -135,22 +148,31 @@ def build_final_report_markdown(state: dict, target_role: str) -> str:
 def build_final_report_data(state: dict, target_role: str) -> dict:
     return {
         "target_role": target_role,
+        "token_usage": state.get("token_usage", {}),
         "top_5_jobs": _as_list(state.get("matched_jobs"))[:5],
         "top_3_gap_analysis": _as_list(state.get("gaps"))[:3],
         "top_3_resume_suggestions": _as_list(state.get("resume_suggestions"))[:3],
     }
 
 
-def write_outputs(state: dict, target_role: str) -> dict[str, Path]:
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    TRACE_DIR.mkdir(parents=True, exist_ok=True)
+def write_outputs(
+    state: dict,
+    target_role: str,
+    *,
+    output_dir: str | Path | None = None,
+    trace_dir: str | Path | None = None,
+) -> dict[str, Path]:
+    resolved_output_dir = Path(output_dir) if output_dir is not None else OUTPUT_DIR
+    resolved_trace_dir = Path(trace_dir) if trace_dir is not None else TRACE_DIR
+    resolved_output_dir.mkdir(parents=True, exist_ok=True)
+    resolved_trace_dir.mkdir(parents=True, exist_ok=True)
 
     state["final_report"] = build_final_report_data(state, target_role)
 
-    matched_jobs_path = OUTPUT_DIR / "matched_jobs.json"
-    resume_suggestions_path = OUTPUT_DIR / "resume_suggestions.json"
-    final_report_path = OUTPUT_DIR / "final_report.md"
-    trace_path = TRACE_DIR / "latest_trace.json"
+    matched_jobs_path = resolved_output_dir / "matched_jobs.json"
+    resume_suggestions_path = resolved_output_dir / "resume_suggestions.json"
+    final_report_path = resolved_output_dir / "final_report.md"
+    trace_path = resolved_trace_dir / "latest_trace.json"
 
     save_json(_as_list(state.get("matched_jobs")), str(matched_jobs_path))
     save_json(_as_list(state.get("resume_suggestions")), str(resume_suggestions_path))

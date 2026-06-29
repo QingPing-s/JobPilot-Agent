@@ -1,43 +1,452 @@
 [
   {
     "case_id": "case_001",
-    "target_role": "AI Agent Intern",
-    "query": "我想找 AI Agent 开发实习，熟悉 LangGraph、RAG、DeepSeek API",
+    "target_role": "算法工程师-AI Agent",
+    "query": "寻找算法工程师-AI Agent方向的实习，重点关注RAG、Python、SFT、Multi-Agent、Memory能力。",
     "relevant_job_ids": [
-      "job_agent_intern_01"
-    ]
+      "job_batch15_alibaba_algorithm_engineer_ai_agent_ai_agent_7c706812"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
   },
   {
     "case_id": "case_002",
-    "target_role": "RAG Intern",
-    "query": "我想做 RAG 检索增强生成实习，关注 embedding、向量数据库、ChromaDB 和评测",
+    "target_role": "大模型agent算法实习生",
+    "query": "寻找大模型agent算法实习生方向的实习，重点关注RAG、Python、LLM、多模态能力。",
     "relevant_job_ids": [
-      "job_rag_intern_02"
-    ]
+      "job_batch15_xiaohongshu_llm_agent_algorithm_intern_agent_8f1c17dc"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
   },
   {
     "case_id": "case_003",
-    "target_role": "LLM Application Intern",
-    "query": "我想找 LLM 应用开发实习，熟悉 prompt engineering、结构化输出、Pydantic 和 API 调用",
+    "target_role": "大模型Agent研发实习生（自动科研方向）",
+    "query": "寻找大模型Agent研发实习生（自动科研方向）方向的实习，重点关注Python、Tool Calling、LLM能力。",
     "relevant_job_ids": [
-      "job_llm_app_intern_03"
-    ]
+      "job_batch15_zhipu_llm_agent_autoresearch_intern_agent_1eed403b"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
   },
   {
     "case_id": "case_004",
-    "target_role": "AI Agent Intern",
-    "query": "希望申请 Python + LLM API + tool calling 方向的实习，能写测试和执行日志",
+    "target_role": "【北斗实习】下一代Agent前沿研究实习生",
+    "query": "寻找【北斗实习】下一代Agent前沿研究实习生方向的实习，重点关注AI Agent、工程实践、问题解决能力。",
     "relevant_job_ids": [
-      "job_agent_intern_01",
-      "job_llm_app_intern_03"
-    ]
+      "job_batch15_meituan_next_gen_agent_research_intern_agent_2001d759"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
   },
   {
     "case_id": "case_005",
-    "target_role": "RAG Intern",
-    "query": "我做过本地文档问答，想找 document QA、chunking、embedding、retrieval evaluation 相关岗位",
+    "target_role": "Agent开发实习生 - AI生产力中台",
+    "query": "寻找Agent开发实习生 - AI生产力中台方向的实习，重点关注RAG、MySQL、SQL、Java、LLM能力。",
     "relevant_job_ids": [
-      "job_rag_intern_02"
-    ]
+      "job_batch15_kuaishou_ai_productivity_agent_dev_intern_agent_ai_af34803f"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_006",
+    "target_role": "ai agent 大模型算法工程师",
+    "query": "寻找ai agent 大模型算法工程师方向的实习，重点关注LangChain、RAG、Python、PyTorch、TensorFlow能力。",
+    "relevant_job_ids": [
+      "job_batch14_xiaohongshu_ai_agent_llm_algorithm_engineer_ai_agent_a0e9e094"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_007",
+    "target_role": "后端开发实习生-BJ",
+    "query": "寻找后端开发实习生-BJ方向的实习，重点关注Python、MySQL、SQL、Java、LLM能力。",
+    "relevant_job_ids": [
+      "job_batch15_shopee_backend_dev_intern_bj_shopee_bj_f42604af"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_008",
+    "target_role": "LLM Agent基础架构实习生-TRAE",
+    "query": "寻找LLM Agent基础架构实习生-TRAE方向的实习，重点关注Python、Java、C++、LLM、后端能力。",
+    "relevant_job_ids": [
+      "job_batch15_bytedance_trae_llm_agent_arch_intern_llm_agent_trae_701459ed"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_009",
+    "target_role": "AI Agent 场景拓展实习生（Prompt方向）",
+    "query": "寻找AI Agent 场景拓展实习生（Prompt方向）方向的实习，重点关注RAG、Python、评测能力。",
+    "relevant_job_ids": [
+      "job_batch14_zhipu_ai_agent_scenario_prompt_intern_ai_agent_prompt_17e9ef71"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_010",
+    "target_role": "AI 应用开发实习生",
+    "query": "寻找AI 应用开发实习生方向的实习，重点关注RAG、Python、Prompt Engineering、Memory、Java能力。",
+    "relevant_job_ids": [
+      "job_batch14_kuaishou_ai_app_dev_intern_ai_367febdb"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_011",
+    "target_role": "【Ace顶尖实习生】交互式进化审核Agent系统实习生",
+    "query": "寻找【Ace顶尖实习生】交互式进化审核Agent系统实习生方向的实习，重点关注Python、Memory、强化学习、多模态能力。",
+    "relevant_job_ids": [
+      "job_batch14_xiaohongshu_ace_interactive_agent_rl_intern_ace_agent_0969465d"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_012",
+    "target_role": "AI Agent算法工程师",
+    "query": "寻找AI Agent算法工程师方向的实习，重点关注Python、MCP、强化学习能力。",
+    "relevant_job_ids": [
+      "job_batch14_huawei_digital_ai_agent_algorithm_engineer_ai_agent_ff6a5906"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_013",
+    "target_role": "AI应用开发实习生（北京）",
+    "query": "寻找AI应用开发实习生（北京）方向的实习，重点关注LangChain、RAG、Python、Prompt Engineering、Redis能力。",
+    "relevant_job_ids": [
+      "job_batch14_360_ai_app_dev_rag_intern_360_ai_c2af1669"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_014",
+    "target_role": "Agent Infra 开发工程师（春招实习）",
+    "query": "寻找Agent Infra 开发工程师（春招实习）方向的实习，重点关注Python、Docker、Kubernetes、Golang、后端能力。",
+    "relevant_job_ids": [
+      "job_batch14_alibaba_cloud_agent_infra_engineer_intern_agent_infra_9bd37e37"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_015",
+    "target_role": "AI Agent开发工程师-27实习",
+    "query": "寻找AI Agent开发工程师-27实习方向的实习，重点关注Python、Redis、Java、C++、LLM能力。",
+    "relevant_job_ids": [
+      "job_batch13_huaweicloud_ai_agent_dev_engineer_27_intern_ai_agent_27_99b3871b"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_016",
+    "target_role": "智能体平台实习生（agent）",
+    "query": "寻找智能体平台实习生（agent）方向的实习，重点关注RAG、LLM能力。",
+    "relevant_job_ids": [
+      "job_batch13_ctai_agent_platform_intern_agent_b231ad17"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_017",
+    "target_role": "【北斗实习】复杂Agent技术研究实习生",
+    "query": "寻找【北斗实习】复杂Agent技术研究实习生方向的实习，重点关注强化学习能力。",
+    "relevant_job_ids": [
+      "job_batch14_meituan_complex_agent_research_intern_agent_ad117abe"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_018",
+    "target_role": "飞书后端开发实习生（agent）",
+    "query": "寻找飞书后端开发实习生（agent）方向的实习，重点关注LangChain、RAG、Prompt Engineering、Redis、MySQL能力。",
+    "relevant_job_ids": [
+      "job_batch13_bytedance_feishu_backend_agent_intern_agent_dbc7b802"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_019",
+    "target_role": "Agent工程师",
+    "query": "寻找Agent工程师方向的实习，重点关注LangChain、RAG、Python、Java、LLM能力。",
+    "relevant_job_ids": [
+      "job_batch13_huawei_digital_agent_engineer_agent_5fb3030a"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_020",
+    "target_role": "AI测试Agent开发工程师",
+    "query": "寻找AI测试Agent开发工程师方向的实习，重点关注评测能力。",
+    "relevant_job_ids": [
+      "job_batch12_kuaishou_ai_test_agent_dev_engineer_ai_agent_09902fae"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_021",
+    "target_role": "AI Agent研发实习生",
+    "query": "寻找AI Agent研发实习生方向的实习，重点关注LangGraph、LangChain、RAG、Python、Docker能力。",
+    "relevant_job_ids": [
+      "job_batch12_jd_ai_agent_rd_intern_ai_agent_5d1bb4ff"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_022",
+    "target_role": "AI Agent 研发工程师实习岗",
+    "query": "寻找AI Agent 研发工程师实习岗方向的实习，重点关注LangGraph、LangChain、Python、Function Calling、Redis能力。",
+    "relevant_job_ids": [
+      "job_batch12_neworiental_ai_agent_rd_engineer_intern_ai_agent_9526fe1e"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_023",
+    "target_role": "Agent算法实习生",
+    "query": "寻找Agent算法实习生方向的实习，重点关注Python、PyTorch、Memory、多模态能力。",
+    "relevant_job_ids": [
+      "job_batch12_gaode_agent_algorithm_intern_agent_259b9d55"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_024",
+    "target_role": "世界模型仿真平台开发实习生",
+    "query": "寻找世界模型仿真平台开发实习生方向的实习，重点关注Python、FastAPI、Flask、Java、后端能力。",
+    "relevant_job_ids": [
+      "job_batch12_chinatelecom_world_model_sim_platform_intern_5afb4bfa"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_025",
+    "target_role": "大模型算法实习生（Agent Memory方向）",
+    "query": "寻找大模型算法实习生（Agent Memory方向）方向的实习，重点关注Python、PyTorch、RLHF、SFT、Memory能力。",
+    "relevant_job_ids": [
+      "job_batch11_xpeng_agent_memory_algorithm_intern_agent_memory_88165a92"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_026",
+    "target_role": "大模型/Agent 算法实习生",
+    "query": "寻找大模型/Agent 算法实习生方向的实习，重点关注LangChain、RAG、Python、Prompt Engineering、SQL能力。",
+    "relevant_job_ids": [
+      "job_batch11_haidilao_llm_agent_algorithm_intern_agent_8c39b489"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_027",
+    "target_role": "AI Agent算法工程师",
+    "query": "寻找AI Agent算法工程师方向的实习，重点关注LangChain、Python、SQL能力。",
+    "relevant_job_ids": [
+      "job_batch12_cmri_ai_agent_algorithm_engineer_ai_agent_bfc96c85"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_028",
+    "target_role": "OPA-AI AGENT开发工程师-BJ",
+    "query": "寻找OPA-AI AGENT开发工程师-BJ方向的实习，重点关注LangGraph、LangChain、RAG、Python、Java能力。",
+    "relevant_job_ids": [
+      "job_batch11_shopee_opa_ai_agent_engineer_bj_shopee_opa_ai_agent_bj_230f1c6d"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_029",
+    "target_role": "AI Agent 开发实习生招聘 - 理想空间质量部",
+    "query": "寻找AI Agent 开发实习生招聘 - 理想空间质量部方向的实习，重点关注LangChain、RAG、Python、Prompt Engineering、Memory能力。",
+    "relevant_job_ids": [
+      "job_batch11_lixiang_ai_agent_dev_quality_intern_ai_agent_d43ccd7d"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_030",
+    "target_role": "微信 AI Agent 后台开发工程师",
+    "query": "寻找微信 AI Agent 后台开发工程师方向的实习，重点关注RAG、C++、LLM能力。",
+    "relevant_job_ids": [
+      "job_batch11_tencent_wechat_ai_agent_backend_engineer_ai_agent_ecd41f31"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_031",
+    "target_role": "Agent 模型算法实习生（可转正）",
+    "query": "寻找Agent 模型算法实习生（可转正）方向的实习，重点关注Python、Tool Calling、PyTorch、SFT、ReAct能力。",
+    "relevant_job_ids": [
+      "job_batch11_youdao_agent_model_algorithm_intern_agent_805dfe90"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_032",
+    "target_role": "Agent开发实习生",
+    "query": "寻找Agent开发实习生方向的实习，重点关注RAG、Python、Redis、MySQL、SQL能力。",
+    "relevant_job_ids": [
+      "job_batch11_meituan_agent_dev_intern_agent_615a834e"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_033",
+    "target_role": "AI Agent研发与效能优化实习生",
+    "query": "寻找AI Agent研发与效能优化实习生方向的实习，重点关注LangChain、RAG、Python、LLM能力。",
+    "relevant_job_ids": [
+      "job_batch11_baidu_ai_agent_efficiency_intern_ai_agent_881f46a7"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_034",
+    "target_role": "AI agent全栈实习生",
+    "query": "寻找AI agent全栈实习生方向的实习，重点关注RAG、Python、Function Calling、LLM、强化学习能力。",
+    "relevant_job_ids": [
+      "job_batch10_didi_ai_agent_fullstack_intern_ai_agent_4a6ed6a6"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_035",
+    "target_role": "agent 开发实习生(A53781)",
+    "query": "寻找agent 开发实习生(A53781)方向的实习，重点关注LangGraph、LangChain、RAG、Multi-Agent、MySQL能力。",
+    "relevant_job_ids": [
+      "job_batch10_lixiang_agent_dev_intern_agent_a53781_426e63e6"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_036",
+    "target_role": "AI Agent算法工程师",
+    "query": "寻找AI Agent算法工程师方向的实习，重点关注RAG、强化学习、多模态能力。",
+    "relevant_job_ids": [
+      "job_batch10_kuaishou_ai_agent_algorithm_engineer_ai_agent_7527e4c9"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_037",
+    "target_role": "Agent算法实习生",
+    "query": "寻找Agent算法实习生方向的实习，重点关注RAG、Python、Tool Calling、Prompt Engineering、PyTorch能力。",
+    "relevant_job_ids": [
+      "job_batch10_gaotu_agent_algorithm_intern_agent_8f80c3fd"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_038",
+    "target_role": "Agent 应用开发实习生（后端方向）",
+    "query": "寻找Agent 应用开发实习生（后端方向）方向的实习，重点关注LangChain、RAG、Python、Prompt Engineering、Java能力。",
+    "relevant_job_ids": [
+      "job_batch10_momenta_agent_backend_intern_momenta_agent_3e77839d"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_039",
+    "target_role": "agent实习生",
+    "query": "寻找agent实习生方向的实习，重点关注RAG、Python、PyTorch、TensorFlow能力。",
+    "relevant_job_ids": [
+      "job_batch10_baidu_agent_intern_agent_b7194741"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_040",
+    "target_role": "Agent开发工程师",
+    "query": "寻找Agent开发工程师方向的实习，重点关注Python、Java、C++能力。",
+    "relevant_job_ids": [
+      "job_batch10_huawei_agent_dev_engineer_a_agent_b3d7dbd6"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_041",
+    "target_role": "AI 实习生",
+    "query": "寻找AI 实习生方向的实习，重点关注RAG、Python、Tool Calling、Memory、TypeScript能力。",
+    "relevant_job_ids": [
+      "job_batch9_wanjie_ai_intern_ai_0b5ebc7e"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_042",
+    "target_role": "Agent算法实习生",
+    "query": "寻找Agent算法实习生方向的实习，重点关注Python、Prompt Engineering、Golang、Transformer、LLM能力。",
+    "relevant_job_ids": [
+      "job_batch9_baai_agent_algorithm_intern_agent_50c3db97"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_043",
+    "target_role": "AI Agent",
+    "query": "寻找AI Agent方向的实习，重点关注LangChain、RAG、MCP、Prompt Engineering、RLHF能力。",
+    "relevant_job_ids": [
+      "job_batch10_jd_ai_agent_ai_agent_ba5a5712"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_044",
+    "target_role": "agent算法实习生",
+    "query": "寻找agent算法实习生方向的实习，重点关注Python、多模态能力。",
+    "relevant_job_ids": [
+      "job_batch9_yuanlijinzhi_agent_algorithm_intern_agent_c144d3c4"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_045",
+    "target_role": "Harness 工程师实习生",
+    "query": "寻找Harness 工程师实习生方向的实习，重点关注Python、MySQL、SQL能力。",
+    "relevant_job_ids": [
+      "job_batch9_chelaile_harness_engineer_intern_harness_75ea20d2"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_046",
+    "target_role": "大模型应用开发工程师（日常实习）",
+    "query": "寻找大模型应用开发工程师（日常实习）方向的实习，重点关注RAG、Python、MCP、C++能力。",
+    "relevant_job_ids": [
+      "job_batch9_kuande_large_model_app_dev_engineer_intern_5d7396a4"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_047",
+    "target_role": "Agent开发工程师实习生",
+    "query": "寻找Agent开发工程师实习生方向的实习，重点关注LangChain、RAG、Python、FastAPI、Flask能力。",
+    "relevant_job_ids": [
+      "job_batch8_jiahe_agent_dev_engineer_intern_agent_62ec65d7"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_048",
+    "target_role": "AI Agent算法实习",
+    "query": "寻找AI Agent算法实习方向的实习，重点关注Python、TypeScript、Transformer、LLM、评测能力。",
+    "relevant_job_ids": [
+      "job_batch8_xiwang_ai_agent_algorithm_intern_ai_agent_94d2289f"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_049",
+    "target_role": "agent开发工程师",
+    "query": "寻找agent开发工程师方向的实习，重点关注LangChain、Python、MCP、SQL、多模态能力。",
+    "relevant_job_ids": [
+      "job_batch8_feidu_agent_dev_engineer_agent_94c735e7"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
+  },
+  {
+    "case_id": "case_050",
+    "target_role": "AI Agent实习生",
+    "query": "寻找AI Agent实习生方向的实习，重点关注AI Agent、工程实践、问题解决能力。",
+    "relevant_job_ids": [
+      "job_batch8_quanzhi_ai_agent_intern_ai_agent_e0ab5c8b"
+    ],
+    "label_source": "manual_reviewed_seed_v1"
   }
 ]

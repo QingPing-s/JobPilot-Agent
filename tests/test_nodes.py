@@ -146,11 +146,41 @@ def test_jd_parse_node_continues_after_one_file_fails(tmp_path, monkeypatch):
 
     state = nodes.jd_parse_node({"jd_folder": str(tmp_path)})
 
-    assert len(state["parsed_jobs"]) == 1
+    assert len(state["parsed_jobs"]) == 2
+    assert state["parsed_jobs"][1]["job_id"] == "job_rag_intern_02"
+    assert state["jd_parse_failure_count"] == 1
     assert state["parsed_jobs"][0]["job_id"] == "job_agent_intern_01"
     assert state["parsed_jobs"][0]["raw_text"] == "Agent JD"
-    assert any(trace["status"] == "error" and "rag_intern_02.txt" in trace["message"] for trace in state["trace"])
+    assert any(trace["status"] == "warning" and "rag_intern_02.txt" in trace["message"] for trace in state["trace"])
     assert state["trace"][-1]["status"] == "success"
+
+
+def test_jd_parse_node_uses_cached_parsed_jobs(monkeypatch):
+    cached_job = _sample_job("job_cached", "Cached Agent Intern")
+
+    def fail_load_jd_files(folder):
+        raise AssertionError("jd_parse_node should not read JD files when parsed cache is provided.")
+
+    def fail_call_llm_json(messages):
+        raise AssertionError("jd_parse_node should not call LLM when parsed cache is provided.")
+
+    monkeypatch.setattr(nodes, "load_jd_files", fail_load_jd_files)
+    monkeypatch.setattr(nodes, "call_llm_json", fail_call_llm_json)
+
+    state = nodes.jd_parse_node(
+        {
+            "skip_jd_parse": True,
+            "job_source": "sqlite_job_library",
+            "parsed_jobs": [cached_job],
+        }
+    )
+
+    assert state["parsed_jobs"] == [cached_job]
+    assert state["trace"][-1]["node"] == "jd_parse_node"
+    assert state["trace"][-1]["status"] == "success"
+    assert state["trace"][-1]["input_count"] == 1
+    assert state["trace"][-1]["output_count"] == 1
+    assert "跳过 JD 文本解析" in state["trace"][-1]["message"]
 
 
 def test_match_score_node_sorts_rule_based_results_and_skips_invalid_jobs():
@@ -173,10 +203,6 @@ def test_match_score_node_sorts_rule_based_results_and_skips_invalid_jobs():
 
 def test_retrieve_node_writes_retrieved_jobs(monkeypatch, tmp_path):
     jobs = [_sample_job("job_agent", "Agent Intern"), _sample_job("job_rag", "RAG Intern")]
-    build_calls = []
-
-    def fake_build_chroma_store(parsed_jobs, persist_dir):
-        build_calls.append((parsed_jobs, persist_dir))
 
     def fake_hybrid_retrieve(query, jobs, top_k, persist_dir):
         assert "AI Agent Intern" in query
@@ -192,7 +218,6 @@ def test_retrieve_node_writes_retrieved_jobs(monkeypatch, tmp_path):
         }
         return [jobs[1]]
 
-    monkeypatch.setattr(nodes, "build_chroma_store", fake_build_chroma_store)
     monkeypatch.setattr(nodes, "hybrid_retrieve", fake_hybrid_retrieve)
 
     state = nodes.retrieve_node(
@@ -205,7 +230,6 @@ def test_retrieve_node_writes_retrieved_jobs(monkeypatch, tmp_path):
         }
     )
 
-    assert build_calls[0][0] == jobs
     assert state["retrieved_jobs"] == [jobs[1]]
     assert state["trace"][-1]["node"] == "retrieve_node"
     assert state["trace"][-1]["status"] == "success"
@@ -215,13 +239,8 @@ def test_retrieve_node_writes_retrieved_jobs(monkeypatch, tmp_path):
     assert state["trace"][-1]["final_retrieved_count"] == 1
 
 
-def test_retrieve_node_uses_keyword_when_vector_store_build_fails(monkeypatch, tmp_path):
+def test_retrieve_node_uses_keyword_when_vector_store_is_unavailable(tmp_path):
     jobs = [_sample_job("job_agent", "Agent Intern")]
-
-    def fake_build_chroma_store(parsed_jobs, persist_dir):
-        raise RuntimeError("chroma unavailable")
-
-    monkeypatch.setattr(nodes, "build_chroma_store", fake_build_chroma_store)
 
     state = nodes.retrieve_node(
         {
@@ -235,7 +254,7 @@ def test_retrieve_node_uses_keyword_when_vector_store_build_fails(monkeypatch, t
     assert state["retrieved_jobs"][0]["retrieve_source"] == "keyword"
     assert state["trace"][-1]["node"] == "retrieve_node"
     assert state["trace"][-1]["status"] == "success"
-    assert "向量库构建警告" in state["trace"][-1]["message"]
+    assert "运行阶段不会重建 Chroma 索引" in state["trace"][-1]["message"]
 
 
 def test_retrieve_node_falls_back_to_all_jobs_when_hybrid_retrieval_fails(monkeypatch, tmp_path):
@@ -277,8 +296,8 @@ def test_rerank_node_writes_reranked_jobs(monkeypatch):
     jobs = [_sample_job("job_agent", "Agent Intern"), _sample_job("job_rag", "RAG Intern")]
     calls = []
 
-    def fake_rerank_jobs(profile, jobs_to_rerank, use_llm=False):
-        calls.append((profile, jobs_to_rerank, use_llm))
+    def fake_rerank_jobs(profile, jobs_to_rerank, use_llm=False, llm_top_n=5):
+        calls.append((profile, jobs_to_rerank, use_llm, llm_top_n))
         return [
             dict(jobs_to_rerank[1], rerank_score=91.0, rerank_reason="RAG fit"),
             dict(jobs_to_rerank[0], rerank_score=70.0, rerank_reason="Agent fit"),
@@ -298,6 +317,7 @@ def test_rerank_node_writes_reranked_jobs(monkeypatch):
     assert [job["job_id"] for job in state["reranked_jobs"]] == ["job_rag", "job_agent"]
     assert calls[0][0]["target_role"] == "AI Agent Intern"
     assert calls[0][2] is True
+    assert calls[0][3] == 5
     assert state["trace"][-1]["node"] == "rerank_node"
     assert state["trace"][-1]["status"] == "success"
 
@@ -385,6 +405,9 @@ def test_gap_analysis_node_uses_top_3_and_skips_failures(monkeypatch):
     monkeypatch.setattr(nodes, "call_llm_json", fake_call_llm_json)
     state = {
         "candidate_profile": _sample_profile(),
+        "llm_node_max_retries": 0,
+        "gap_top_n": 3,
+        "use_llm_deep_analysis": True,
         "parsed_jobs": [
             _sample_job("job_1", "Job One"),
             _sample_job("job_2", "Job Two"),
@@ -409,6 +432,58 @@ def test_gap_analysis_node_uses_top_3_and_skips_failures(monkeypatch):
     assert result["trace"][-1]["status"] == "success"
 
 
+def test_resume_suggestion_node_defaults_to_top_1_rule_fallback(monkeypatch):
+    called = []
+
+    def fake_call_llm_json(messages):
+        called.append(messages)
+        raise AssertionError("default fast mode should not call LLM resume suggestions")
+
+    monkeypatch.setattr(nodes, "call_llm_json", fake_call_llm_json)
+    state = {
+        "api_available": True,
+        "candidate_profile": _sample_profile(),
+        "parsed_jobs": [_sample_job("job_1", "Job One"), _sample_job("job_2", "Job Two")],
+        "gaps": [
+            {"job_id": "job_1", "gaps": [{"type": "missing_skill", "description": "Need LangGraph", "suggestion": "Add LangGraph evidence"}]},
+            {"job_id": "job_2", "gaps": [{"type": "low_keyword_match", "description": "Need RAG", "suggestion": "Add RAG evidence"}]},
+        ],
+    }
+
+    result = nodes.resume_suggestion_node(state)
+
+    assert called == []
+    assert [item["job_id"] for item in result["resume_suggestions"]] == ["job_1"]
+    assert result["trace"][-1]["resume_top_n"] == 1
+    assert result["trace"][-1]["use_llm"] is False
+
+
+def test_gap_analysis_node_defaults_to_top_1_rule_fallback(monkeypatch):
+    called = []
+
+    def fake_call_llm_json(messages):
+        called.append(messages)
+        raise AssertionError("default fast mode should not call LLM gap analysis")
+
+    monkeypatch.setattr(nodes, "call_llm_json", fake_call_llm_json)
+    state = {
+        "api_available": True,
+        "candidate_profile": _sample_profile(),
+        "parsed_jobs": [_sample_job("job_1", "Job One"), _sample_job("job_2", "Job Two")],
+        "matched_jobs": [
+            {"job_id": "job_1", "title": "Job One", "company": "Example AI", "match_score": 95, "missing_skills": ["LangGraph"]},
+            {"job_id": "job_2", "title": "Job Two", "company": "Example AI", "match_score": 90, "missing_skills": ["RAG"]},
+        ],
+    }
+
+    result = nodes.gap_analysis_node(state)
+
+    assert called == []
+    assert [item["job_id"] for item in result["gaps"]] == ["job_1"]
+    assert result["trace"][-1]["gap_top_n"] == 1
+    assert result["trace"][-1]["use_llm"] is False
+
+
 def test_resume_suggestion_node_uses_top_3_gap_results_and_skips_failures(monkeypatch):
     seen_prompts = []
 
@@ -431,6 +506,9 @@ def test_resume_suggestion_node_uses_top_3_gap_results_and_skips_failures(monkey
     monkeypatch.setattr(nodes, "call_llm_json", fake_call_llm_json)
     state = {
         "candidate_profile": _sample_profile(),
+        "llm_node_max_retries": 0,
+        "resume_top_n": 3,
+        "use_llm_deep_analysis": True,
         "parsed_jobs": [
             _sample_job("job_1", "Job One"),
             _sample_job("job_2", "Job Two"),

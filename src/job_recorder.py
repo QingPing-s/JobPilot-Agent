@@ -7,7 +7,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-
 DEFAULT_RECORDS_PATH = Path("data/jobs_csv/job_records.jsonl")
 DEFAULT_JD_DIR = Path("data/sample_jds")
 

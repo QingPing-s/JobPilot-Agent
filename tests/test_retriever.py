@@ -111,6 +111,9 @@ def test_hybrid_retrieve_merges_and_marks_sources(monkeypatch):
     assert by_id["job_agent"]["retrieve_source"] == "both"
     assert by_id["job_vector_only"]["retrieve_source"] == "vector"
     assert by_id["job_keyword_only"]["retrieve_source"] == "keyword"
+    assert by_id["job_agent"]["vector_rank"] == 1
+    assert by_id["job_agent"]["keyword_rank"] == 1
+    assert by_id["job_agent"]["hybrid_score"] > by_id["job_vector_only"]["hybrid_score"]
     assert retriever.hybrid_retrieve.last_stats["merged_count"] == 3
     assert retriever.hybrid_retrieve.last_stats["final_retrieved_count"] == 3
 
@@ -138,3 +141,48 @@ def test_chroma_retriever_wrapper(monkeypatch, tmp_path):
     results = wrapper.search("Python", top_k=3)
 
     assert results == [{"job_id": "job_agent", "query": "Python", "top_k": 3}]
+
+
+def test_incremental_chroma_sync_only_upserts_changed_documents(monkeypatch, tmp_path):
+    class FakeCollection:
+        def __init__(self):
+            self.upserted = []
+            self.deleted = []
+
+        def get(self, include):
+            return {
+                "ids": ["job_agent", "job_stale"],
+                "metadatas": [
+                    {"content_hash": retriever._document_hash(retriever.build_job_documents(_jobs())[0])},
+                    {"content_hash": "old"},
+                ],
+            }
+
+        def upsert(self, **kwargs):
+            self.upserted.extend(kwargs["ids"])
+
+        def delete(self, ids):
+            self.deleted.extend(ids)
+
+    collection = FakeCollection()
+
+    class FakeClient:
+        def get_or_create_collection(self, **kwargs):
+            return collection
+
+    class FakeChroma:
+        @staticmethod
+        def PersistentClient(path):
+            return FakeClient()
+
+    monkeypatch.setattr(retriever, "_import_chromadb", lambda: FakeChroma)
+    monkeypatch.setattr(retriever, "_embedding_function", lambda: object())
+
+    stats = retriever._sync_chroma_store(
+        retriever.build_job_documents(_jobs()),
+        tmp_path,
+    )
+
+    assert collection.upserted == ["job_backend"]
+    assert collection.deleted == ["job_stale"]
+    assert stats == {"total": 2, "upserted": 1, "deleted": 1, "unchanged": 1}

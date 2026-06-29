@@ -1,7 +1,8 @@
 {
   "name": "Alex Chen",
   "education": [
-    "Computer Science undergraduate candidate"
+    "研究生学历",
+    "人工智能专业"
   ],
   "skills": [
     "Python",
@@ -10,6 +11,15 @@
     "Prompt Engineering",
     "API integration",
     "Pytest"
+  ],
+  "soft_skills": [
+    "学习速度快",
+    "主动查阅资料",
+    "问题拆解能力",
+    "自驱力强",
+    "沟通协作能力",
+    "责任心强",
+    "能独立解决问题"
   ],
   "projects": [
     {
@@ -34,6 +44,12 @@
   ],
   "preferences": {
     "role_type": "internship",
-    "focus": "AI Agent / RAG / LLM applications"
+    "focus": "AI Agent / RAG / LLM applications",
+    "degree": "研究生",
+    "major": "人工智能",
+    "days_per_week": 5,
+    "duration_months": 6,
+    "work_mode": "线下",
+    "availability": "每周5天，可持续6个月，接受线下实习"
   }
 }

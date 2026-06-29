@@ -18,12 +18,14 @@ Rules:
 - Return JSON only.
 - Do not invent or infer information that is not present in the source text.
 - Skills, projects, and internships must come directly from the source text.
+- soft_skills must come directly from the source text. Use it for work traits such as learning ability, self-drive, problem decomposition, communication, responsibility, and independent problem solving.
 - If a field is missing, use null for name, [] for list fields, and {} for preferences.
 - The JSON object must match this CandidateProfile schema:
 {
   "name": string | null,
   "education": [string],
   "skills": [string],
+  "soft_skills": [string],
   "projects": [
     {
       "name": string,
