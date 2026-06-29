@@ -21,6 +21,75 @@
   --shadow: 0 12px 30px rgba(24, 33, 31, 0.06);
 }
 
+.login-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: var(--page);
+}
+
+.error-boundary {
+  min-height: 100vh;
+  display: grid;
+  place-content: center;
+  gap: 10px;
+  padding: 24px;
+  text-align: center;
+}
+
+.error-boundary h1,
+.error-boundary p {
+  margin: 0;
+}
+
+.login-panel {
+  display: grid;
+  gap: 16px;
+  width: min(380px, 100%);
+  padding: 28px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.login-panel h1,
+.login-panel p {
+  margin: 0;
+}
+
+.login-panel p {
+  margin-top: 4px;
+  color: var(--muted);
+}
+
+.login-panel label {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.login-panel input {
+  min-height: 42px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.login-panel > button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  border: 0;
+  border-radius: 6px;
+  color: #ffffff;
+  background: var(--teal);
+  font-weight: 800;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -417,6 +486,51 @@ textarea:disabled {
   font-weight: 800;
 }
 
+.library-tools {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 10px 0;
+}
+
+.library-search {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  height: 34px;
+  padding: 0 9px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: #fbfdfc;
+  color: var(--muted);
+}
+
+.library-search input {
+  height: 30px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  font-size: 12px;
+}
+
+.library-search input:focus {
+  box-shadow: none;
+}
+
+.library-count {
+  padding: 4px 7px;
+  border-radius: 999px;
+  color: var(--teal);
+  background: var(--teal-soft);
+  font-size: 11px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
 .library-toggle {
   display: flex;
   align-items: center;
@@ -439,7 +553,7 @@ textarea:disabled {
 .library-list {
   display: grid;
   gap: 7px;
-  max-height: 220px;
+  max-height: 280px;
   padding: 10px;
   overflow: auto;
 }
@@ -486,6 +600,17 @@ textarea:disabled {
 .library-item small {
   color: #718079;
   font-size: 11px;
+}
+
+.library-more {
+  min-height: 32px;
+  margin: 0 10px 10px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  color: #24423d;
+  background: #fbfdfc;
+  font-size: 12px;
+  font-weight: 900;
 }
 
 .source-segment {
@@ -575,7 +700,7 @@ textarea:focus {
   display: grid;
   grid-template-columns: 88px 1fr 1fr;
   gap: 10px;
-  margin: 8px 0 14px;
+  margin: 0;
 }
 
 .settings-grid label {
@@ -598,6 +723,31 @@ textarea:focus {
   width: 16px;
   height: 16px;
   padding: 0;
+}
+
+.settings-help {
+  display: grid;
+  gap: 8px;
+}
+
+.settings-help div {
+  display: grid;
+  gap: 3px;
+  padding: 8px;
+  border: 1px solid #e4ebe6;
+  border-radius: 7px;
+  background: #ffffff;
+}
+
+.settings-help strong {
+  color: var(--text);
+  font-size: 12px;
+}
+
+.settings-help span {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
 }
 
 .run-button {
@@ -626,6 +776,19 @@ textarea:focus {
   border-top: 1px solid var(--border);
   background: rgba(255, 255, 255, 0.94);
   backdrop-filter: blur(8px);
+}
+
+.run-dock:has(.cancel-button) {
+  grid-template-columns: minmax(0, 96px) 68px minmax(0, 1fr);
+}
+
+.cancel-button {
+  min-height: 42px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--red);
+  background: #ffffff;
+  font-weight: 800;
 }
 
 .run-dock > div {
@@ -719,6 +882,15 @@ textarea:focus {
   border: 1px solid #e4ebe6;
   border-radius: 8px;
   background: #ffffff;
+}
+
+.overview-summary > div.warning-card {
+  border-color: #f5c36c;
+  background: #fff8eb;
+}
+
+.overview-summary > div.warning-card svg {
+  color: var(--amber);
 }
 
 .overview-summary svg {
@@ -826,7 +998,7 @@ textarea:focus {
 
 .stats-bar {
   display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   border-bottom: 1px solid var(--border);
 }
 
@@ -948,9 +1120,18 @@ textarea:focus {
 }
 
 .empty-state span,
-.loading-state span {
+.loading-state span,
+.loading-state small {
   max-width: 520px;
   line-height: 1.5;
+}
+
+.loading-state small {
+  display: block;
+  margin-top: 4px;
+  color: var(--amber);
+  font-size: 12px;
+  font-weight: 800;
 }
 
 .start-steps {
@@ -1423,6 +1604,10 @@ textarea:focus {
   background: var(--red);
 }
 
+.trace-event.warning .trace-dot {
+  background: var(--amber);
+}
+
 .trace-event.running .trace-dot {
   background: var(--blue);
 }
@@ -1474,6 +1659,11 @@ textarea:focus {
 .trace-status.error {
   color: var(--red);
   background: var(--red-soft);
+}
+
+.trace-status.warning {
+  color: var(--amber);
+  background: var(--amber-soft);
 }
 
 .trace-status.running {

@@ -1,0 +1,16 @@
+services:
+  jobpilot:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      JOBPILOT_DATA_DIR: /home/jobpilot-data
+      JOBPILOT_FRONTEND_DIST: /app/frontend/dist
+    volumes:
+      - jobpilot-data:/home/jobpilot-data
+    restart: unless-stopped
+
+volumes:
+  jobpilot-data:
