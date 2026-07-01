@@ -1,23 +1,56 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import { sitePath } from "../../lib/site.js";
 
-const base = import.meta.env.BASE_URL;
+const posts = [
+  {
+    category: "AI Agent Engineering",
+    title: "如何把 LLM Demo 做成可写进简历的 Agent 项目",
+    description: "从单次 Prompt 调用升级到具备状态、检索、评分、日志、评测和部署能力的工程系统。",
+    href: sitePath("blog/jobpilot-agent-engineering-notes/"),
+    meta: "工程方法 · 8 分钟",
+  },
+  {
+    category: "Hybrid Retrieval",
+    title: "为什么 JobPilot 使用 Vector + Keyword + Weighted RRF",
+    description: "解释纯向量检索的漏召回问题，以及关键词召回、RRF 融合和规则重排如何协作。",
+    href: sitePath("blog/hybrid-retrieval-rrf/"),
+    meta: "检索设计 · 7 分钟",
+  },
+  {
+    category: "LangGraph",
+    title: "条件路由、降级与 checkpoint：让 Agent 不止能顺序执行",
+    description: "从错误处理、人工审核和低分跳过策略出发，拆解 JobPilot 的可靠工作流设计。",
+    href: sitePath("blog/langgraph-resilience/"),
+    meta: "工作流设计 · 7 分钟",
+  },
+];
 ---
 
-<BaseLayout title="技术博客 | JY Portfolio">
+<BaseLayout
+  title="技术博客 | JY AI Agent Portfolio"
+  description="记录 AI Agent、Hybrid RAG、LangGraph、评测和云部署的工程实践。"
+>
   <section class="article-page">
     <header class="article-header">
-      <p class="eyebrow">Blog</p>
+      <p class="eyebrow">Engineering Notes</p>
       <h1>技术博客</h1>
-      <p>记录 AI Agent、RAG、LLM 应用工程化和求职项目复盘。</p>
+      <p>
+        不只记录“用了什么框架”，更关注为什么这样设计、如何验证效果，以及系统失败时怎样继续工作。
+      </p>
     </header>
 
     <div class="post-list">
-      <a class="post-card" href={`${base}blog/jobpilot-agent-engineering-notes/`}>
-        <span>AI Agent Engineering</span>
-        <h2>如何把 LLM Demo 做成可写进简历的 Agent 项目</h2>
-        <p>从单次 Prompt 调用升级到可运行、可评测、可展示的工程系统。</p>
-      </a>
+      {
+        posts.map((post) => (
+          <a class="post-card" href={post.href}>
+            <span>{post.category}</span>
+            <h2>{post.title}</h2>
+            <p>{post.description}</p>
+            <small>{post.meta}</small>
+          </a>
+        ))
+      }
     </div>
   </section>
 </BaseLayout>

@@ -1,38 +1,65 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import { sitePath } from "../../lib/site.js";
 ---
 
 <BaseLayout
   title="如何把 LLM Demo 做成可写进简历的 Agent 项目 | JY Portfolio"
-  description="JobPilot-Agent engineering notes."
+  description="从输入契约、工作流、检索、评测和部署角度拆解 JobPilot-Agent 的工程化过程。"
 >
   <article class="article-page prose">
     <header class="article-header">
-      <p class="eyebrow">Engineering Notes</p>
+      <p class="eyebrow">AI Agent Engineering</p>
       <h1>如何把 LLM Demo 做成可写进简历的 Agent 项目</h1>
       <p>
-        关键不是多调用一次大模型，而是把输入、结构化输出、检索、评分、日志和评测做成闭环。
+        关键不是增加模型调用次数，而是让输入、状态、检索、输出、错误处理和评测形成可验证闭环。
       </p>
+      <div class="article-meta"><span>工程方法</span><span>约 8 分钟阅读</span></div>
     </header>
 
-    <h2>1. 从任务链路开始设计</h2>
+    <h2>1. 先定义系统问题，而不是先选框架</h2>
     <p>
-      JobPilot-Agent 将求职场景拆成候选人画像、JD 解析、岗位召回、重排序、匹配评分、差距分析和简历建议。每个节点都有明确输入输出，便于定位问题。
+      JobPilot 要解决的不是“让 LLM 判断岗位是否合适”这样一个模糊问题，而是把候选人信息和大量 JD 转换为可排序、可解释、可继续优化的结果。因此系统需要岗位持久化、召回、重排、评分、差距分析和报告输出。
     </p>
 
-    <h2>2. 让结构化输出可校验</h2>
+    <h2>2. 用数据契约约束节点边界</h2>
     <p>
-      使用 Pydantic 约束 CandidateProfile、JobPosting、MatchResult 等结构，避免模型输出随意变形，也方便前端直接消费。
+      CandidateProfile、JobPosting、MatchResult、GapItem 和 ResumeSuggestion 都由 Pydantic 定义。每个节点接收和返回明确字段，模型 JSON 必须通过校验，前端不需要猜测模型输出格式。
     </p>
 
-    <h2>3. 用检索和规则降低成本</h2>
+    <h2>3. 将 LLM 放在适合它的位置</h2>
     <p>
-      岗位数量变多时，先通过 Hybrid Retrieval 召回候选岗位，再用规则重排序和规则评分做稳定 fallback，减少不必要的 LLM 调用。
+      LLM 适合从非结构化文本抽取信息、解释匹配原因和生成建议，但不适合承担全部检索和排序。JobPilot 使用规则完成基础解析、重排和评分，仅让 DeepSeek 处理需要语义生成的部分。
     </p>
 
-    <h2>4. 展示工程能力</h2>
+    <aside class="callout">
+      <strong>设计原则</strong>
+      <p>LLM 是可替换的增强组件，而不是系统唯一能够运行的前提。</p>
+    </aside>
+
+    <h2>4. 从线性脚本升级为状态工作流</h2>
     <p>
-      Trace Logger、离线评测、SQLite 岗位库和 React 工作台让项目不只是命令行脚本，而是一个可演示、可解释、可迭代的产品原型。
+      LangGraph 管理节点状态和条件边：画像失败直接终止，JD 解析失败率过高进入人工审核，低匹配结果跳过昂贵的深度分析，成功路径最终统一生成报告。SQLite checkpoint 让人工审核后可以继续原任务。
     </p>
+
+    <h2>5. 用检索漏斗控制成本</h2>
+    <p>
+      岗位库先进行 Hybrid Retrieval Top-20，再经过规则重排 Top-10；只有开启 LLM 重排时才发送 Top-5，深度解释进一步限制在最相关岗位。这样避免对 100 条岗位逐条调用模型。
+    </p>
+
+    <h2>6. 让结果可以被评测</h2>
+    <p>
+      离线评测对比五种检索与融合基线，不只统计 Recall@K 和 Hit@K，还包含 MRR、NDCG、Top-1 和 P95 延迟。Trace 则记录每个在线节点的输入输出数量、耗时、异常和降级情况。
+    </p>
+
+    <h2>7. 最后补齐真实交付链路</h2>
+    <p>
+      React 工作台、FastAPI 异步任务、SSE、pytest、Playwright、GitHub Actions、Docker 和 Azure 部署共同证明系统不是只在开发者机器上运行的一次性脚本。
+    </p>
+
+    <div class="article-next">
+      <span>继续阅读</span>
+      <a href={sitePath("blog/hybrid-retrieval-rrf/")}>Vector、Keyword 与 Weighted RRF 如何协作 →</a>
+    </div>
   </article>
 </BaseLayout>

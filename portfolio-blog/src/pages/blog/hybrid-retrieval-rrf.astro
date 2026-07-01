@@ -1,0 +1,64 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { sitePath } from "../../lib/site.js";
+---
+
+<BaseLayout
+  title="Vector + Keyword + Weighted RRF | JY Portfolio"
+  description="JobPilot Hybrid Retrieval 的召回、融合、重排和增量索引设计。"
+>
+  <article class="article-page prose">
+    <header class="article-header">
+      <p class="eyebrow">Hybrid Retrieval</p>
+      <h1>为什么 JobPilot 使用 Vector + Keyword + Weighted RRF</h1>
+      <p>语义相近不等于技术要求完全一致。岗位检索必须同时照顾含义和精确关键词。</p>
+      <div class="article-meta"><span>检索设计</span><span>约 7 分钟阅读</span></div>
+    </header>
+
+    <h2>1. 纯向量检索会漏掉什么</h2>
+    <p>
+      LangGraph、FastAPI、ChromaDB、MCP 等词对岗位匹配非常关键，但它们在短 JD 中可能被语义相近的描述稀释。向量检索可以找到“Agent 工作流”相关岗位，却不一定优先返回明确要求某个框架的岗位。
+    </p>
+
+    <h2>2. 两路召回承担不同职责</h2>
+    <div class="comparison-grid">
+      <div>
+        <h3>Vector Search</h3>
+        <p>使用固定版本 BGE Embedding 表达标题、职责、任职要求和加分项，负责语义相关性。</p>
+      </div>
+      <div>
+        <h3>Keyword Search</h3>
+        <p>使用 TF-IDF 提高精确技术词的权重，负责框架名、语言和工具等强信号。</p>
+      </div>
+    </div>
+
+    <h2>3. 为什么使用 RRF</h2>
+    <p>
+      两路检索的原始分数不在同一尺度上，直接相加难以解释。Reciprocal Rank Fusion 根据排名位置计算贡献，避免依赖不同检索器的分数校准；Weighted RRF 还允许调整语义和关键词的重要程度。
+    </p>
+
+    <div class="pipeline article-pipeline">
+      <span>Profile Query</span><i>→</i><span>Vector Top-K</span><strong>+</strong><span>Keyword Top-K</span><i>→</i><span>Weighted RRF</span><i>→</i><span>Rerank</span>
+    </div>
+
+    <h2>4. 召回之后仍需要重排</h2>
+    <p>
+      RRF 解决“哪些岗位应该进入候选集”，规则重排进一步比较 required skills、preferred skills、目标职位和缺失技能。两者解决的问题不同，不能互相替代。
+    </p>
+
+    <h2>5. 索引生命周期同样重要</h2>
+    <p>
+      JobPilot 保存 Embedding 模型和 revision，并对岗位文档计算哈希。新增或修改岗位时只更新变化记录，删除岗位时同步清理索引，避免每次运行重新向量化整个岗位库。
+    </p>
+
+    <h2>6. 如何验证改进是否真实</h2>
+    <p>
+      评测脚本同时运行 Keyword、Vector、Hybrid Union、Weighted RRF 和 RRF + Rule Rerank，比较 Recall、Hit、MRR、NDCG 与延迟。只有指标改善，混合检索才不是架构图上的装饰。
+    </p>
+
+    <div class="article-next">
+      <span>继续阅读</span>
+      <a href={sitePath("blog/langgraph-resilience/")}>Agent 如何处理失败、审核和恢复 →</a>
+    </div>
+  </article>
+</BaseLayout>

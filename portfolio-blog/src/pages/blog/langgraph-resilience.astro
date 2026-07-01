@@ -1,0 +1,56 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { sitePath } from "../../lib/site.js";
+---
+
+<BaseLayout
+  title="LangGraph 条件路由、降级与 checkpoint | JY Portfolio"
+  description="JobPilot LangGraph 工作流中的条件边、重试、人工审核和状态恢复。"
+>
+  <article class="article-page prose">
+    <header class="article-header">
+      <p class="eyebrow">LangGraph Workflow</p>
+      <h1>条件路由、降级与 checkpoint：让 Agent 不止能顺序执行</h1>
+      <p>真正的工作流需要知道何时继续、何时跳过、何时等待人工处理，以及失败后怎样恢复。</p>
+      <div class="article-meta"><span>工作流设计</span><span>约 7 分钟阅读</span></div>
+    </header>
+
+    <h2>1. 顺序节点不是完整 Agent 工作流</h2>
+    <p>
+      如果每个节点无条件执行，画像解析失败后仍会继续检索，低质量岗位也会触发昂贵的深度分析。JobPilot 在关键节点后读取 state，并选择不同的下一步。
+    </p>
+
+    <h2>2. 四类控制分支</h2>
+    <div class="comparison-grid">
+      <div><h3>Halt</h3><p>候选人画像或岗位输入不可用时终止，避免错误继续扩散。</p></div>
+      <div><h3>Human Review</h3><p>JD 解析失败率过高时暂停，由管理员决定继续或终止。</p></div>
+      <div><h3>Skip</h3><p>最高匹配分不足时跳过差距分析和简历生成，节省模型调用。</p></div>
+      <div><h3>Fallback</h3><p>LLM、Embedding 或 Chroma 异常时切换本地规则和关键词路径。</p></div>
+    </div>
+
+    <h2>3. 重试必须有边界</h2>
+    <p>
+      结构化 LLM 调用采用有限次数重试，记录每次失败原因；超时、取消和 API Key 缺失不会无限循环。超过边界后返回可解释的规则结果。
+    </p>
+
+    <h2>4. checkpoint 解决什么问题</h2>
+    <p>
+      SQLiteSaver 按 `thread_id` 保存 LangGraph 状态。人工审核后无需重新执行画像、JD 解析和召回，可以从中断位置继续；如果 SQLite checkpoint 不可用，则退化到内存保存。
+    </p>
+
+    <h2>5. 前端如何感知工作流状态</h2>
+    <p>
+      FastAPI 后台任务执行节点时发布事件，React 通过 SSE 展示当前节点、输入输出数量、耗时和 warning。用户可以取消任务，RunManager 将状态更新为 cancelling、cancelled、timed_out 或 awaiting_review。
+    </p>
+
+    <h2>6. 可靠性最终要进入测试</h2>
+    <p>
+      测试不仅覆盖成功路径，也验证条件分支、规则降级、checkpoint 参数和异常任务状态。浏览器 Smoke Test 则确认进度、推荐结果、差距分析、Trace 和报告能够完成真实交互闭环。
+    </p>
+
+    <div class="article-next">
+      <span>返回案例</span>
+      <a href={sitePath("projects/jobpilot-agent/")}>查看 JobPilot 完整项目架构 →</a>
+    </div>
+  </article>
+</BaseLayout>

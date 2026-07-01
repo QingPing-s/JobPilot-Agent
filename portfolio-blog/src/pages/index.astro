@@ -1,64 +1,121 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { githubUrl, liveDemoUrl, sitePath } from "../lib/site.js";
 
-const base = import.meta.env.BASE_URL;
-const heroImage = `${base}jobpilot-workbench.png`;
+const heroImage = sitePath("jobpilot-workbench.png");
+const metrics = [
+  ["94", "后端自动化测试"],
+  ["50", "离线评测样本"],
+  ["5", "检索基线对比"],
+  ["Azure", "云端持续运行"],
+];
 ---
 
 <BaseLayout
-  title="JY | AI Agent Portfolio Blog"
-  description="AI Agent, RAG, and LLM application portfolio for internship applications."
+  title="JY | AI Agent 工程作品集"
+  description="人工智能专业研究生的 AI Agent、RAG 与 LLM 应用工程作品集，展示 JobPilot RAG-Agent 的检索、评测、前后端和云部署实践。"
 >
   <section class="hero" style={`--hero-image: url('${heroImage}')`}>
     <div class="hero-content">
-      <p class="eyebrow">AI Agent / RAG / LLM Application</p>
-      <h1>JY 的 AI Agent 工程作品集</h1>
+      <p class="eyebrow">AI Agent / RAG / LLM Application Engineering</p>
+      <h1>把 AI Agent<br />做成可运行的工程系统</h1>
       <p class="hero-copy">
-        聚焦 LangGraph、RAG、DeepSeek API、结构化输出、检索评测和前后端交互，把实习项目做成可展示、可运行、可复盘的工程案例。
+        人工智能专业研究生，聚焦 LangGraph 工作流、Hybrid RAG、结构化输出、离线评测与全栈交付。这里记录从需求拆解到 Azure 部署的完整工程实践。
       </p>
       <div class="hero-actions">
-        <a class="primary-link" href={`${base}projects/jobpilot-agent/`}>查看核心项目</a>
-        <a class="secondary-link" href={`${base}blog/`}>阅读技术博客</a>
+        <a class="primary-link" href={sitePath("projects/jobpilot-agent/")}>查看项目案例</a>
+        <a class="secondary-link" href={liveDemoUrl} target="_blank" rel="noreferrer">体验在线系统</a>
       </div>
     </div>
+  </section>
+
+  <section class="metric-band" aria-label="项目数据">
+    {
+      metrics.map(([value, label]) => (
+        <div>
+          <strong>{value}</strong>
+          <span>{label}</span>
+        </div>
+      ))
+    }
   </section>
 
   <section class="section">
     <div class="section-heading">
       <p class="eyebrow">Featured Project</p>
-      <h2>核心项目</h2>
+      <h2>JobPilot RAG-Agent</h2>
+      <p>
+        面向 AI Agent、RAG 与 LLM 应用实习岗位的智能匹配系统。它不是一次 Prompt 调用，而是一条包含数据、检索、评分、生成、观测和评测的完整链路。
+      </p>
     </div>
     <article class="feature-card">
-      <img src={heroImage} alt="JobPilot Agent 工作台界面截图" loading="lazy" />
+      <img src={heroImage} alt="JobPilot Agent 中文工作台界面" loading="lazy" />
       <div>
-        <p class="tagline">LangGraph + FastAPI + React + ChromaDB</p>
-        <h3>JobPilot RAG-Agent</h3>
+        <p class="tagline">LangGraph + FastAPI + React + ChromaDB + DeepSeek</p>
+        <h3>从岗位库召回到可解释推荐</h3>
         <p>
-          面向 AI Agent / RAG / LLM 应用实习岗位申请的岗位匹配与简历优化系统，支持岗位库、混合检索、重排序、规则评分、Trace 日志和离线评测。
+          使用固定 BGE Embedding 与 TF-IDF 双路召回，通过 Weighted RRF 融合结果，再经过规则重排和 70/20/10 的岗位匹配评分，输出岗位推荐、差距分析与简历建议。
         </p>
-        <div class="chips">
-          <span>Hybrid Retrieval</span>
-          <span>Rule-based Scoring</span>
-          <span>Trace Logging</span>
-          <span>Offline Eval</span>
+        <ul class="check-list">
+          <li>条件路由、重试、人工审核和 SQLite checkpoint</li>
+          <li>ChromaDB 增量索引与关键词检索降级</li>
+          <li>异步任务、SSE 进度、取消和超时控制</li>
+          <li>Trace、离线评测、Docker 与 Azure 部署</li>
+        </ul>
+        <div class="inline-actions">
+          <a class="text-link" href={sitePath("projects/jobpilot-agent/")}>阅读完整案例</a>
+          <a class="text-link" href={githubUrl} target="_blank" rel="noreferrer">查看 GitHub</a>
         </div>
-        <a class="text-link" href={`${base}projects/jobpilot-agent/`}>进入项目案例</a>
       </div>
     </article>
   </section>
 
+  <section class="full-band">
+    <div class="band-inner">
+      <div class="section-heading">
+        <p class="eyebrow">Engineering Workflow</p>
+        <h2>系统如何完成一次匹配</h2>
+      </div>
+      <ol class="workflow-grid">
+        <li><strong>01</strong><span>候选人画像与 JD 结构化</span></li>
+        <li><strong>02</strong><span>Vector + Keyword 双路召回</span></li>
+        <li><strong>03</strong><span>Weighted RRF 与规则重排</span></li>
+        <li><strong>04</strong><span>任职要求、加分项和职责评分</span></li>
+        <li><strong>05</strong><span>差距分析与简历建议</span></li>
+        <li><strong>06</strong><span>Trace、评测与报告输出</span></li>
+      </ol>
+    </div>
+  </section>
+
   <section class="section split">
     <div>
-      <p class="eyebrow">Writing</p>
-      <h2>技术文章方向</h2>
+      <p class="eyebrow">Focus</p>
+      <h2>我关注的工程问题</h2>
       <p>
-        博客会围绕项目本身沉淀工程复盘，例如岗位 JD 结构化、混合召回、评分体系设计、Agent Trace 和离线评测。
+        如何降低纯 LLM 流程的不稳定性，如何证明检索和排序确实有效，以及如何让 Agent 在失败、超时或 API 不可用时仍然给出可解释结果。
       </p>
+      <div class="chips">
+        <span>Agent Orchestration</span>
+        <span>Hybrid Retrieval</span>
+        <span>Structured Output</span>
+        <span>Evaluation</span>
+        <span>Observability</span>
+        <span>Cloud Deployment</span>
+      </div>
     </div>
     <div class="list-panel">
-      <a href={`${base}blog/jobpilot-agent-engineering-notes/`}>如何把 LLM Demo 做成可写进简历的 Agent 项目</a>
-      <a href={`${base}projects/jobpilot-agent/`}>JobPilot-Agent 项目架构拆解</a>
-      <a href={`${base}resume/`}>简历展示页面</a>
+      <a href={sitePath("blog/jobpilot-agent-engineering-notes/")}>
+        <span>工程化</span>
+        <strong>如何把 LLM Demo 做成可写进简历的 Agent 项目</strong>
+      </a>
+      <a href={sitePath("blog/hybrid-retrieval-rrf/")}>
+        <span>检索</span>
+        <strong>为什么 JobPilot 使用 Vector + Keyword + RRF</strong>
+      </a>
+      <a href={sitePath("blog/langgraph-resilience/")}>
+        <span>工作流</span>
+        <strong>LangGraph 条件路由、降级与 checkpoint 设计</strong>
+      </a>
     </div>
   </section>
 </BaseLayout>
