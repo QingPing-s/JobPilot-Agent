@@ -157,7 +157,30 @@ function JobsView({ jobs, loading }) {
   return <div className="job-list">{values.map((job, index) => <JobCard job={job} index={index} key={job.job_id || index} />)}</div>;
 }
 
-function GapsView({ gaps, loading }) {
+const SEVERITY_LABELS = {
+  high: "高",
+  medium: "中",
+  low: "低",
+};
+
+function AnalysisHeader({ group, index, jobs, itemCount, itemLabel }) {
+  const matchedJob = asArray(jobs).find((job) => job.job_id === group.job_id);
+  const title = group.title || matchedJob?.title || `岗位 ${index + 1}`;
+  const company = group.company || matchedJob?.company;
+
+  return (
+    <header className="analysis-group-head">
+      <div>
+        <span>岗位 {index + 1}</span>
+        <h2>{title}</h2>
+        {company && <p>{company}</p>}
+      </div>
+      <em>{itemCount} 项{itemLabel}</em>
+    </header>
+  );
+}
+
+function GapsView({ gaps, jobs, loading }) {
   if (loading) return <LoadingState />;
   const values = asArray(gaps);
   if (!values.length) return <EmptyState title="暂无差距分析" description="高匹配岗位完成后会生成差距分析。" />;
@@ -165,15 +188,26 @@ function GapsView({ gaps, loading }) {
     <div className="plain-list">
       {values.map((group, index) => (
         <section className="plain-section" key={group.job_id || index}>
-          <h2>{group.title || group.job_id || `岗位 ${index + 1}`}</h2>
+          <AnalysisHeader
+            group={group}
+            index={index}
+            itemCount={asArray(group.gaps).length}
+            itemLabel="差距"
+            jobs={jobs}
+          />
           {asArray(group.gaps).map((gap, gapIndex) => (
             <article className={`gap-item ${gap.severity || "medium"}`} key={`${gap.type}-${gapIndex}`}>
-              <div>
+              <header>
                 <strong>{GAP_LABELS[gap.type] || gap.type || "差距项"}</strong>
-                <span>{gap.severity || "medium"}</span>
+                <span className={`severity ${gap.severity || "medium"}`}>
+                  {SEVERITY_LABELS[gap.severity] || "中"}
+                </span>
+              </header>
+              <p className="analysis-description">{gap.description}</p>
+              <div className="analysis-action">
+                <strong>改进建议</strong>
+                <p>{gap.suggestion}</p>
               </div>
-              <p>{gap.description}</p>
-              <small>{gap.suggestion}</small>
             </article>
           ))}
         </section>
@@ -182,7 +216,7 @@ function GapsView({ gaps, loading }) {
   );
 }
 
-function ResumeView({ suggestions, loading }) {
+function ResumeView({ jobs, suggestions, loading }) {
   if (loading) return <LoadingState />;
   const values = asArray(suggestions);
   if (!values.length) return <EmptyState title="暂无简历建议" description="深度分析完成后会在这里给出可执行的改写建议。" />;
@@ -190,13 +224,31 @@ function ResumeView({ suggestions, loading }) {
     <div className="plain-list">
       {values.map((group, index) => (
         <section className="plain-section" key={group.job_id || index}>
-          <h2>{group.title || group.job_id || `岗位 ${index + 1}`}</h2>
+          <AnalysisHeader
+            group={group}
+            index={index}
+            itemCount={asArray(group.suggestions).length}
+            itemLabel="建议"
+            jobs={jobs}
+          />
           {asArray(group.suggestions).map((item, itemIndex) => (
             <article className="resume-item" key={`${item.section}-${itemIndex}`}>
-              <strong>{item.section || "简历模块"}</strong>
-              <p><b>问题：</b>{item.original_problem}</p>
-              <p><b>建议：</b>{item.suggestion}</p>
-              <pre>{item.improved_example}</pre>
+              <header>
+                <strong>{item.section || "简历模块"}</strong>
+                <span>建议 {itemIndex + 1}</span>
+              </header>
+              <div className="resume-field">
+                <b>当前问题</b>
+                <p>{item.original_problem}</p>
+              </div>
+              <div className="resume-field">
+                <b>优化建议</b>
+                <p>{item.suggestion}</p>
+              </div>
+              <div className="resume-field improved-example">
+                <b>改写示例</b>
+                <pre>{item.improved_example}</pre>
+              </div>
             </article>
           ))}
         </section>
@@ -227,8 +279,6 @@ function TraceView({ trace, loading }) {
               <div className="trace-detail">
                 <span>输入 {record.input_count ?? 0}</span>
                 <span>输出 {record.output_count ?? 0}</span>
-                <span>LLM {record.llm_calls ?? 0} 次</span>
-                <span>Token {record.total_tokens ?? 0}</span>
               </div>
             </div>
           </article>
@@ -277,7 +327,6 @@ function ReportView({ result, loading, onMessage }) {
 
 function Stats({ result, durationMs }) {
   const jobs = asArray(result?.matched_jobs);
-  const usage = result?.token_usage || {};
   const scores = jobs.map((job) => safeScore(job.match_score));
   const average = scores.length ? scores.reduce((sum, value) => sum + value, 0) / scores.length : 0;
   const warnings = asArray(result?.trace).filter(isTraceWarning).length;
@@ -288,9 +337,6 @@ function Stats({ result, durationMs }) {
     ["Top1 匹配分", scores.length ? Math.max(...scores).toFixed(1) : "0.0"],
     ["缺失技能总数", missing],
     ["警告节点", warnings],
-    ["LLM 调用", usage.calls || 0],
-    ["Token 消耗", Number(usage.total_tokens || 0).toLocaleString()],
-    ["估算成本", `$${Number(usage.estimated_cost_usd || 0).toFixed(4)}`],
     ["运行耗时", formatDuration(durationMs)],
   ];
   return <div className="stats-bar">{stats.map(([label, value]) => <div className="stat-card" key={label}><span>{label}</span><strong>{value}</strong></div>)}</div>;
@@ -322,8 +368,8 @@ export function ResultWorkspace({ durationMs, liveTrace, loading, result }) {
       {message && <div className="result-actions"><span>{message}</span></div>}
       <div className="tab-body">
         {tab === "jobs" && <JobsView jobs={result?.matched_jobs} loading={loading} />}
-        {tab === "gaps" && <GapsView gaps={result?.gaps} loading={loading} />}
-        {tab === "resume" && <ResumeView suggestions={result?.resume_suggestions} loading={loading} />}
+        {tab === "gaps" && <GapsView gaps={result?.gaps} jobs={result?.matched_jobs} loading={loading} />}
+        {tab === "resume" && <ResumeView jobs={result?.matched_jobs} suggestions={result?.resume_suggestions} loading={loading} />}
         {tab === "trace" && <TraceView trace={trace} loading={loading} />}
         {tab === "report" && <ReportView result={result} loading={loading} onMessage={setMessage} />}
       </div>

@@ -59,6 +59,79 @@ def _append_trace(
         publish_event(run_id, safe_record)
 
 
+def _node_statuses(state: dict) -> dict[str, dict[str, Any]]:
+    statuses = state.setdefault("node_statuses", {})
+    if not isinstance(statuses, dict):
+        statuses = {}
+        state["node_statuses"] = statuses
+    return statuses
+
+
+def _set_node_status(
+    state: dict,
+    node_name: str,
+    status: str,
+    message: str,
+    input_count: int = 0,
+    output_count: int = 0,
+    **extra: Any,
+) -> None:
+    payload = {
+        "timestamp": utc_timestamp(),
+        "status": status,
+        "message": message,
+        "input_count": input_count,
+        "output_count": output_count,
+    }
+    payload.update(extra)
+    _node_statuses(state)[node_name] = _safe_payload(payload)
+
+
+def _node_retry_counts(state: dict) -> dict[str, int]:
+    retry_counts = state.setdefault("_llm_retry_counts", {})
+    if not isinstance(retry_counts, dict):
+        retry_counts = {}
+        state["_llm_retry_counts"] = retry_counts
+    return retry_counts
+
+
+def _get_retry_count(state: dict, node_name: str) -> int:
+    value = _node_retry_counts(state).get(node_name, 0)
+    return value if isinstance(value, int) else 0
+
+
+def _record_node_result(
+    state: dict,
+    node_name: str,
+    node_status: str,
+    message: str,
+    input_count: int = 0,
+    output_count: int = 0,
+    trace_status: str | None = None,
+    **extra: Any,
+) -> None:
+    effective_trace_status = trace_status or ("error" if node_status == "error" else "success")
+    payload = {"node_status": node_status, **extra}
+    _set_node_status(
+        state,
+        node_name,
+        node_status,
+        message,
+        input_count=input_count,
+        output_count=output_count,
+        **payload,
+    )
+    _append_trace(
+        state,
+        node_name,
+        effective_trace_status,
+        message,
+        input_count=input_count,
+        output_count=output_count,
+        **payload,
+    )
+
+
 class WorkflowCancelledError(RuntimeError):
     """Raised when an asynchronous run requests cooperative cancellation."""
 
@@ -101,6 +174,8 @@ def _call_llm_json_with_retry(state: dict, node_name: str, messages: list[dict])
             last_error = exc
             if attempt >= max_retries:
                 break
+            retry_counts = _node_retry_counts(state)
+            retry_counts[node_name] = _get_retry_count(state, node_name) + 1
             _append_trace(
                 state,
                 node_name,
@@ -150,16 +225,19 @@ def _begin_node(
     state: dict, node_name: str, started_at: float
 ) -> tuple[bool, dict[str, int | float]]:
     token_usage_before = get_token_usage()
+    _node_retry_counts(state)[node_name] = 0
+    _set_node_status(state, node_name, "running", f"{node_name} started")
     try:
         _ensure_execution_allowed(state)
     except (WorkflowCancelledError, WorkflowTimeoutError) as exc:
-        _append_trace(
+        _record_node_result(
             state,
             node_name,
             "error",
             str(exc),
             input_count=0,
             output_count=0,
+            retry_count=_get_retry_count(state, node_name),
             **_node_observability(started_at, token_usage_before),
         )
         return False, token_usage_before
@@ -422,60 +500,66 @@ def profile_node(state: dict) -> dict:
     try:
         user_profile_text = state.get("user_profile_text")
         user_profile_path = state.get("user_profile_path")
+        fallback_used = False
 
         if user_profile_text:
             if state.get("api_available", True):
                 try:
                     messages = build_profile_extraction_prompt(user_profile_text)
                     profile_data = _call_llm_json_with_retry(state, node_name, messages)
-                    source = "user_profile_text"
+                    source = "llm_profile_extraction"
                 except Exception as exc:
+                    profile_data = _fallback_profile_from_text(user_profile_text, state.get("target_role"))
+                    source = "rule_based_profile_fallback"
+                    fallback_used = True
                     _append_trace(
                         state,
                         node_name,
-                        "error",
-                        f"LLM 候选人画像抽取失败，已使用本地规则兜底。{exc}",
+                        "warning",
+                        f"候选人画像 LLM 抽取失败，已使用本地规则兜底：{exc}",
                         input_count=1,
-                        output_count=0,
+                        output_count=1,
+                        fallback_used=True,
                     )
-                    profile_data = _fallback_profile_from_text(user_profile_text, state.get("target_role"))
-                    source = "候选人文本规则兜底"
             else:
                 profile_data = _fallback_profile_from_text(user_profile_text, state.get("target_role"))
-                source = "候选人文本规则兜底"
+                source = "rule_based_profile_fallback"
+                fallback_used = True
         elif user_profile_path:
             profile_data = load_user_profile(user_profile_path)
             source = user_profile_path
         else:
-            raise ValueError("state 中缺少 user_profile_text 或 user_profile_path。")
+            raise ValueError("state 缺少 user_profile_text 或 user_profile_path。")
 
         profile = _model_validate(CandidateProfile, profile_data)
         state["candidate_profile"] = _model_to_dict(profile)
-        _append_trace(
+        node_status = "partial" if fallback_used else "success"
+        _record_node_result(
             state,
             node_name,
-            "success",
+            node_status,
             f"候选人画像已从 {source} 加载。",
             input_count=1,
             output_count=1,
-            fallback_used="规则兜底" in source,
+            fallback_used=fallback_used,
+            retry_count=_get_retry_count(state, node_name),
             **_node_observability(started_at, token_usage_before),
         )
     except Exception as exc:
         state["workflow_status"] = "failed"
         state["halt_reason"] = str(exc)
-        _append_trace(
+        _record_node_result(
             state,
             node_name,
             "error",
             str(exc),
             input_count=1,
             output_count=0,
+            retry_count=_get_retry_count(state, node_name),
             **_node_observability(started_at, token_usage_before),
         )
 
     return state
-
 
 def jd_parse_node(state: dict) -> dict:
     """Parse JD text files into JobPosting objects and write them to state."""
@@ -487,41 +571,59 @@ def jd_parse_node(state: dict) -> dict:
     cached_jobs = state.get("parsed_jobs")
     if state.get("skip_jd_parse") and isinstance(cached_jobs, list):
         validated_jobs: list[dict[str, Any]] = []
+        invalid_count = 0
         for index, job in enumerate(cached_jobs, start=1):
             try:
                 if not isinstance(job, dict):
                     raise ValueError(f"cached job #{index} is not a dict")
                 validated_jobs.append(_model_to_dict(_model_validate(JobPosting, job)))
             except Exception as exc:
+                invalid_count += 1
                 _append_trace(
                     state,
                     node_name,
-                    "error",
-                    f"岗位库缓存中的第 {index} 个岗位结构无效，已跳过：{exc}",
+                    "warning",
+                    f"缓存岗位 #{index} 校验失败，已跳过：{exc}",
                     input_count=1,
                     output_count=0,
                 )
         state["parsed_jobs"] = validated_jobs
-        _append_trace(
+        state["jd_parse_input_count"] = len(cached_jobs)
+        state["jd_parse_failure_count"] = invalid_count
+        state["jd_parse_failure_rate"] = round(invalid_count / len(cached_jobs), 4) if cached_jobs else 0.0
+
+        if not validated_jobs:
+            state["workflow_status"] = "failed"
+            state["halt_reason"] = "缓存岗位全部校验失败。"
+            _record_node_result(
+                state,
+                node_name,
+                "error",
+                state["halt_reason"],
+                input_count=len(cached_jobs),
+                output_count=0,
+                source=state.get("job_source", "cached_parsed_jobs"),
+                parse_failure_count=invalid_count,
+                parse_failure_rate=state["jd_parse_failure_rate"],
+                retry_count=_get_retry_count(state, node_name),
+                **_node_observability(started_at, token_usage_before),
+            )
+            return state
+
+        node_status = "partial" if invalid_count else "success"
+        _record_node_result(
             state,
             node_name,
-            "success",
-            f"已使用岗位库中的 {len(validated_jobs)} 条结构化岗位缓存，跳过 JD 文本解析。",
+            node_status,
+            f"已校验并复用 {len(validated_jobs)} 条岗位库 JD。",
             input_count=len(cached_jobs),
             output_count=len(validated_jobs),
             source=state.get("job_source", "cached_parsed_jobs"),
-            parse_failure_count=max(0, len(cached_jobs) - len(validated_jobs)),
-            parse_failure_rate=(
-                max(0, len(cached_jobs) - len(validated_jobs)) / len(cached_jobs)
-                if cached_jobs
-                else 0.0
-            ),
+            parse_failure_count=invalid_count,
+            parse_failure_rate=state["jd_parse_failure_rate"],
+            fallback_used=invalid_count > 0,
+            retry_count=_get_retry_count(state, node_name),
             **_node_observability(started_at, token_usage_before),
-        )
-        state["jd_parse_input_count"] = len(cached_jobs)
-        state["jd_parse_failure_count"] = max(0, len(cached_jobs) - len(validated_jobs))
-        state["jd_parse_failure_rate"] = (
-            state["jd_parse_failure_count"] / len(cached_jobs) if cached_jobs else 0.0
         )
         return state
 
@@ -534,18 +636,21 @@ def jd_parse_node(state: dict) -> dict:
     except Exception as exc:
         state["workflow_status"] = "failed"
         state["halt_reason"] = str(exc)
-        _append_trace(
+        _record_node_result(
             state,
             node_name,
             "error",
             str(exc),
             input_count=0,
             output_count=0,
+            retry_count=_get_retry_count(state, node_name),
             **_node_observability(started_at, token_usage_before),
         )
         return state
 
-    parse_failures = 0
+    parse_failure_count = 0
+    fallback_count = 0
+    hard_failure_count = 0
     for index, jd_file in enumerate(jd_files, start=1):
         try:
             _ensure_execution_allowed(state)
@@ -561,56 +666,81 @@ def jd_parse_node(state: dict) -> dict:
                 job_data = _call_llm_json_with_retry(state, node_name, messages)
                 job_data["job_id"] = generate_job_id(filename, index)
                 job_data["raw_text"] = raw_text
-
                 job = _model_validate(JobPosting, job_data)
                 parsed_jobs.append(_model_to_dict(job))
             else:
                 parsed_jobs.append(_fallback_parse_jd(filename, raw_text, index))
+                fallback_count += 1
+                parse_failure_count += 1
+        except Exception as exc:
+            parse_failure_count += 1
+            try:
+                parsed_jobs.append(_fallback_parse_jd(filename, raw_text, index))
+                fallback_count += 1
                 _append_trace(
                     state,
                     node_name,
-                    "success",
-                    f"由于 API 不可用，已使用本地规则解析 {filename}。",
+                    "warning",
+                    f"岗位 {filename} 的 LLM 解析失败，已使用本地规则兜底：{exc}",
                     input_count=1,
                     output_count=1,
+                    fallback_used=True,
                 )
-        except Exception as exc:
-            parse_failures += 1
-            try:
-                parsed_jobs.append(_fallback_parse_jd(filename, raw_text, index))
-                fallback_message = "已使用本地规则保留该岗位。"
             except Exception as fallback_exc:
-                fallback_message = f"本地规则也解析失败：{fallback_exc}"
-            _append_trace(
-                state,
-                node_name,
-                "warning",
-                f"解析 {filename} 的 LLM 路径失败：{exc}；{fallback_message}",
-                input_count=1,
-                output_count=1 if "已使用" in fallback_message else 0,
-                fallback_used="已使用" in fallback_message,
-            )
-            continue
+                hard_failure_count += 1
+                _append_trace(
+                    state,
+                    node_name,
+                    "error",
+                    f"岗位 {filename} 解析失败，已跳过：{fallback_exc}",
+                    input_count=1,
+                    output_count=0,
+                )
 
     input_count = len(jd_files)
-    failure_rate = parse_failures / input_count if input_count else 1.0
+    failure_rate = round(parse_failure_count / input_count, 4) if input_count else 1.0
     state["jd_parse_input_count"] = input_count
-    state["jd_parse_failure_count"] = parse_failures
-    state["jd_parse_failure_rate"] = round(failure_rate, 4)
-    _append_trace(
+    state["jd_parse_failure_count"] = parse_failure_count
+    state["jd_parse_failure_rate"] = failure_rate
+
+    if not parsed_jobs:
+        state["workflow_status"] = "failed"
+        state["halt_reason"] = "没有岗位成功解析。"
+        _record_node_result(
+            state,
+            node_name,
+            "error",
+            state["halt_reason"],
+            input_count=input_count,
+            output_count=0,
+            parse_failure_count=parse_failure_count,
+            parse_failure_rate=failure_rate,
+            fallback_count=fallback_count,
+            hard_failure_count=hard_failure_count,
+            retry_count=_get_retry_count(state, node_name),
+            **_node_observability(started_at, token_usage_before),
+        )
+        return state
+
+    node_status = "success"
+    if parse_failure_count > 0 or fallback_count > 0:
+        node_status = "partial"
+
+    _record_node_result(
         state,
         node_name,
-        "success",
-        f"已解析 {len(parsed_jobs)} / {len(jd_files)} 个 JD 文件。",
-        input_count=len(jd_files),
+        node_status,
+        f"已解析 {len(parsed_jobs)} / {input_count} 条 JD。",
+        input_count=input_count,
         output_count=len(parsed_jobs),
-        parse_failure_count=parse_failures,
-        parse_failure_rate=round(failure_rate, 4),
-        fallback_used=parse_failures > 0 or not state.get("api_available", True),
+        parse_failure_count=parse_failure_count,
+        parse_failure_rate=failure_rate,
+        fallback_count=fallback_count,
+        hard_failure_count=hard_failure_count,
+        retry_count=_get_retry_count(state, node_name),
         **_node_observability(started_at, token_usage_before),
     )
     return state
-
 
 def retrieve_node(state: dict) -> dict:
     """Retrieve Top-K relevant jobs from the existing retrieval store."""
@@ -623,28 +753,31 @@ def retrieve_node(state: dict) -> dict:
     parsed_jobs = state.get("parsed_jobs")
     candidate_profile = state.get("candidate_profile")
     if not isinstance(parsed_jobs, list):
-        _append_trace(
+        state["retrieved_jobs"] = []
+        _record_node_result(
             state,
             node_name,
             "error",
-            "state 中缺少 parsed_jobs，召回结果置为空。",
+            "state 缺少 parsed_jobs，无法执行岗位召回。",
             input_count=0,
             output_count=0,
+            retry_count=_get_retry_count(state, node_name),
             **_node_observability(started_at, token_usage_before),
         )
-        state["retrieved_jobs"] = []
         return state
     if not isinstance(candidate_profile, dict):
-        _append_trace(
+        state["retrieved_jobs"] = parsed_jobs
+        _record_node_result(
             state,
             node_name,
-            "error",
-            "state 中缺少 candidate_profile，直接使用 parsed_jobs 作为召回结果。",
+            "partial",
+            "candidate_profile 缺失，已退化为按原顺序返回岗位。",
             input_count=len(parsed_jobs),
             output_count=len(parsed_jobs),
+            fallback_used=True,
+            retry_count=_get_retry_count(state, node_name),
             **_node_observability(started_at, token_usage_before),
         )
-        state["retrieved_jobs"] = parsed_jobs
         return state
 
     persist_dir = state.get("vector_store_dir", "data/vector_store")
@@ -662,41 +795,45 @@ def retrieve_node(state: dict) -> dict:
 
         state["retrieved_jobs"] = retrieved_jobs
         stats = getattr(hybrid_retrieve, "last_stats", {})
-        message = f"混合检索已召回 {len(retrieved_jobs)} / {len(parsed_jobs)} 个岗位，Top-K={top_k}。运行阶段不会重建 Chroma 索引。"
-        _append_trace(
+        _record_node_result(
             state,
             node_name,
             "success",
-            message,
+            f"混合召回完成：从 {len(parsed_jobs)} 条岗位中召回 {len(retrieved_jobs)} 条，Top-K={top_k}。",
             input_count=len(parsed_jobs),
             output_count=len(retrieved_jobs),
             query=stats.get("query", query),
             vector_top_k=stats.get("vector_top_k", top_k),
             keyword_top_k=stats.get("keyword_top_k", top_k),
+            vector_result_count=stats.get("vector_result_count", 0),
+            keyword_result_count=stats.get("keyword_result_count", 0),
             merged_count=stats.get("merged_count", len(retrieved_jobs)),
             final_retrieved_count=stats.get("final_retrieved_count", len(retrieved_jobs)),
+            vector_error=stats.get("vector_error", ""),
+            keyword_error=stats.get("keyword_error", ""),
             fusion=stats.get("fusion", "rrf"),
             rrf_k=stats.get("rrf_k"),
             embedding_model=stats.get("embedding_model"),
             index_version=stats.get("index_version"),
+            retry_count=_get_retry_count(state, node_name),
             **_node_observability(started_at, token_usage_before),
         )
     except Exception as exc:
         state["retrieved_jobs"] = parsed_jobs
-        _append_trace(
+        _record_node_result(
             state,
             node_name,
-            "error",
-            f"召回失败，已回退为全部已解析岗位。{exc}",
+            "partial",
+            f"混合召回失败，已回退为全量岗位：{exc}",
             input_count=len(parsed_jobs),
             output_count=len(parsed_jobs),
             fallback_used=True,
             error_type=type(exc).__name__,
+            retry_count=_get_retry_count(state, node_name),
             **_node_observability(started_at, token_usage_before),
         )
 
     return state
-
 
 def rerank_node(state: dict) -> dict:
     """Rerank retrieved jobs before expensive LLM match scoring."""
@@ -709,59 +846,77 @@ def rerank_node(state: dict) -> dict:
     retrieved_jobs = state.get("retrieved_jobs")
 
     if not isinstance(candidate_profile, dict):
-        _append_trace(state, node_name, "error", "state 中缺少 candidate_profile。", input_count=0, output_count=0, **_node_observability(started_at, token_usage_before))
         state["reranked_jobs"] = []
+        _record_node_result(
+            state,
+            node_name,
+            "error",
+            "state 缺少 candidate_profile。",
+            input_count=0,
+            output_count=0,
+            retry_count=_get_retry_count(state, node_name),
+            **_node_observability(started_at, token_usage_before),
+        )
         return state
     if not isinstance(retrieved_jobs, list):
-        _append_trace(state, node_name, "error", "state 中缺少 retrieved_jobs。", input_count=0, output_count=0, **_node_observability(started_at, token_usage_before))
         state["reranked_jobs"] = []
+        _record_node_result(
+            state,
+            node_name,
+            "error",
+            "state 缺少 retrieved_jobs。",
+            input_count=0,
+            output_count=0,
+            retry_count=_get_retry_count(state, node_name),
+            **_node_observability(started_at, token_usage_before),
+        )
         return state
 
-    profile_for_rerank = dict(candidate_profile)
-    target_role = state.get("target_role")
-    if target_role:
-        target_roles = list(_as_list_for_node(profile_for_rerank.get("target_roles")))
-        if target_role not in target_roles:
-            target_roles.append(target_role)
-        profile_for_rerank["target_roles"] = target_roles
-        profile_for_rerank["target_role"] = target_role
-
     use_llm = bool(state.get("use_llm_rerank", False))
+    rerank_top_k = state.get("rerank_top_k", len(retrieved_jobs) or 10)
     try:
-        rerank_top_k = int(state.get("rerank_top_k", 10))
+        rerank_top_k = max(1, int(rerank_top_k))
     except (TypeError, ValueError):
-        rerank_top_k = 10
-    rerank_top_k = max(1, rerank_top_k)
-
+        rerank_top_k = len(retrieved_jobs) or 10
     try:
         llm_top_n = int(state.get("llm_rerank_top_n", 5))
     except (TypeError, ValueError):
         llm_top_n = 5
     llm_top_n = max(1, min(llm_top_n, 5))
 
+    profile_for_rerank = dict(candidate_profile)
+    if state.get("target_role"):
+        profile_for_rerank.setdefault("target_role", state["target_role"])
+
     try:
-        reranked_jobs = rerank_jobs(profile_for_rerank, retrieved_jobs, use_llm=use_llm, llm_top_n=llm_top_n)
+        reranked_jobs = rerank_jobs(
+            profile_for_rerank,
+            retrieved_jobs,
+            use_llm=use_llm,
+            llm_top_n=llm_top_n,
+        )
         reranked_jobs = reranked_jobs[:rerank_top_k]
         state["reranked_jobs"] = reranked_jobs
-        _append_trace(
+        _record_node_result(
             state,
             node_name,
             "success",
-            f"已对 {len(retrieved_jobs)} 个召回岗位完成规则重排，保留 Top {len(reranked_jobs)}。LLM 重排最多处理 Top {llm_top_n}。",
+            f"已对 {len(retrieved_jobs)} 条召回岗位完成重排，保留 Top {len(reranked_jobs)}。",
             input_count=len(retrieved_jobs),
             output_count=len(reranked_jobs),
             use_llm=use_llm,
             rerank_top_k=rerank_top_k,
             llm_rerank_top_n=llm_top_n,
+            retry_count=_get_retry_count(state, node_name),
             **_node_observability(started_at, token_usage_before),
         )
     except Exception as exc:
         state["reranked_jobs"] = retrieved_jobs
-        _append_trace(
+        _record_node_result(
             state,
             node_name,
-            "error",
-            f"重排失败，已回退为召回岗位列表。{exc}",
+            "partial",
+            f"岗位重排失败，已保留原召回顺序：{exc}",
             input_count=len(retrieved_jobs),
             output_count=len(retrieved_jobs),
             use_llm=use_llm,
@@ -769,11 +924,11 @@ def rerank_node(state: dict) -> dict:
             llm_rerank_top_n=llm_top_n,
             fallback_used=True,
             error_type=type(exc).__name__,
+            retry_count=_get_retry_count(state, node_name),
             **_node_observability(started_at, token_usage_before),
         )
 
     return state
-
 
 def _as_list_for_node(value: Any) -> list:
     return value if isinstance(value, list) else []
@@ -799,10 +954,32 @@ def match_score_node(state: dict) -> dict:
         jobs_to_score = parsed_jobs
 
     if not isinstance(candidate_profile, dict):
-        _append_trace(state, node_name, "error", "state 中缺少 candidate_profile。", input_count=0, output_count=0, **_node_observability(started_at, token_usage_before))
+        state["workflow_status"] = "failed"
+        state["halt_reason"] = "state 缺少 candidate_profile。"
+        _record_node_result(
+            state,
+            node_name,
+            "error",
+            state["halt_reason"],
+            input_count=0,
+            output_count=0,
+            retry_count=_get_retry_count(state, node_name),
+            **_node_observability(started_at, token_usage_before),
+        )
         return state
     if not isinstance(jobs_to_score, list):
-        _append_trace(state, node_name, "error", "state 中缺少待评分岗位。", input_count=0, output_count=0, **_node_observability(started_at, token_usage_before))
+        state["workflow_status"] = "failed"
+        state["halt_reason"] = "state 缺少可评分岗位列表。"
+        _record_node_result(
+            state,
+            node_name,
+            "error",
+            state["halt_reason"],
+            input_count=0,
+            output_count=0,
+            retry_count=_get_retry_count(state, node_name),
+            **_node_observability(started_at, token_usage_before),
+        )
         return state
 
     use_llm = bool(state.get("use_llm_match_scoring", False))
@@ -812,6 +989,9 @@ def match_score_node(state: dict) -> dict:
         llm_match_top_n = 3
     llm_match_top_n = max(0, min(llm_match_top_n, 3))
 
+    failed_count = 0
+    fallback_count = 0
+
     for index, job in enumerate(jobs_to_score):
         try:
             _ensure_execution_allowed(state)
@@ -820,7 +1000,7 @@ def match_score_node(state: dict) -> dict:
             break
         try:
             if not isinstance(job, dict):
-                raise ValueError("解析后的岗位必须是 dict。")
+                raise ValueError("岗位数据必须是 dict。")
 
             match_data = compute_rule_based_match(candidate_profile, job)
             if use_llm and index < llm_match_top_n:
@@ -831,20 +1011,23 @@ def match_score_node(state: dict) -> dict:
                     match_data["reason"] = llm_result["reason"]
                     match_data["recommendation"] = llm_result["recommendation"]
                 except Exception as exc:
+                    fallback_count += 1
                     job_id = job.get("job_id", "<未知岗位>")
                     _append_trace(
                         state,
                         node_name,
-                        "error",
-                        f"岗位 {job_id} 的 LLM 匹配解释生成失败，已保留规则评分结果：{exc}",
+                        "warning",
+                        f"岗位 {job_id} 的 LLM 解释失败，已保留规则评分结果：{exc}",
                         input_count=1,
                         output_count=1,
+                        fallback_used=True,
                     )
 
             match_result = _model_validate(MatchResult, match_data)
             matched_jobs.append(_model_to_dict(match_result))
         except Exception as exc:
-            job_id = job.get("job_id", "<未知岗位>") if isinstance(job, dict) else "<无效岗位>"
+            failed_count += 1
+            job_id = job.get("job_id", "<未知岗位>") if isinstance(job, dict) else "<未知岗位>"
             _append_trace(
                 state,
                 node_name,
@@ -856,19 +1039,45 @@ def match_score_node(state: dict) -> dict:
             continue
 
     matched_jobs.sort(key=lambda item: item["match_score"], reverse=True)
-    _append_trace(
+
+    if not matched_jobs:
+        state["workflow_status"] = "failed"
+        state["halt_reason"] = "No jobs were successfully scored."
+        _record_node_result(
+            state,
+            node_name,
+            "error",
+            state["halt_reason"],
+            input_count=len(jobs_to_score),
+            output_count=0,
+            failed_count=failed_count,
+            fallback_count=fallback_count,
+            use_llm=use_llm,
+            llm_match_top_n=llm_match_top_n,
+            retry_count=_get_retry_count(state, node_name),
+            **_node_observability(started_at, token_usage_before),
+        )
+        return state
+
+    node_status = "success"
+    if failed_count > 0 or fallback_count > 0:
+        node_status = "partial"
+
+    _record_node_result(
         state,
         node_name,
-        "success",
+        node_status,
         f"已完成 {len(matched_jobs)} / {len(jobs_to_score)} 个岗位评分。",
         input_count=len(jobs_to_score),
         output_count=len(matched_jobs),
+        failed_count=failed_count,
+        fallback_count=fallback_count,
         use_llm=use_llm,
         llm_match_top_n=llm_match_top_n,
+        retry_count=_get_retry_count(state, node_name),
         **_node_observability(started_at, token_usage_before),
     )
     return state
-
 
 def gap_analysis_node(state: dict) -> dict:
     """Generate gap analysis for the top matched jobs."""
@@ -885,13 +1094,40 @@ def gap_analysis_node(state: dict) -> dict:
     matched_jobs = state.get("matched_jobs")
 
     if not isinstance(candidate_profile, dict):
-        _append_trace(state, node_name, "error", "state 中缺少 candidate_profile。", input_count=0, output_count=0, **_node_observability(started_at, token_usage_before))
+        _record_node_result(
+            state,
+            node_name,
+            "error",
+            "state 缺少 candidate_profile。",
+            input_count=0,
+            output_count=0,
+            retry_count=_get_retry_count(state, node_name),
+            **_node_observability(started_at, token_usage_before),
+        )
         return state
     if not isinstance(parsed_jobs, list):
-        _append_trace(state, node_name, "error", "state 中缺少 parsed_jobs。", input_count=0, output_count=0, **_node_observability(started_at, token_usage_before))
+        _record_node_result(
+            state,
+            node_name,
+            "error",
+            "state 缺少 parsed_jobs。",
+            input_count=0,
+            output_count=0,
+            retry_count=_get_retry_count(state, node_name),
+            **_node_observability(started_at, token_usage_before),
+        )
         return state
     if not isinstance(matched_jobs, list):
-        _append_trace(state, node_name, "error", "state 中缺少 matched_jobs。", input_count=0, output_count=0, **_node_observability(started_at, token_usage_before))
+        _record_node_result(
+            state,
+            node_name,
+            "error",
+            "state 缺少 matched_jobs。",
+            input_count=0,
+            output_count=0,
+            retry_count=_get_retry_count(state, node_name),
+            **_node_observability(started_at, token_usage_before),
+        )
         return state
 
     jobs_by_id = _job_lookup(parsed_jobs)
@@ -902,6 +1138,9 @@ def gap_analysis_node(state: dict) -> dict:
     gap_top_n = max(1, min(gap_top_n, 3))
     use_llm_deep_analysis = bool(state.get("use_llm_deep_analysis", False))
     top_matches = sorted(matched_jobs, key=lambda item: item.get("match_score", 0), reverse=True)[:gap_top_n]
+
+    failed_count = 0
+    fallback_count = 0
 
     for match_result in top_matches:
         try:
@@ -916,41 +1155,99 @@ def gap_analysis_node(state: dict) -> dict:
             job_id = match_result.get("job_id")
             job = jobs_by_id.get(job_id)
             if job is None:
-                raise ValueError(f"找不到 job_id={job_id} 对应的 JobPosting。")
+                raise ValueError(f"未找到 job_id={job_id} 对应的 JobPosting。")
 
             if not (state.get("api_available", True) and use_llm_deep_analysis):
-                gap_results.append({"job_id": job_id, "gaps": _fallback_gaps(match_result)})
+                gap_results.append(
+                    {
+                        "job_id": job_id,
+                        "title": job.get("title"),
+                        "company": job.get("company"),
+                        "gaps": _fallback_gaps(match_result),
+                    }
+                )
                 continue
 
-            messages = build_gap_analysis_prompt(candidate_profile, job, match_result)
-            gap_payload = _call_llm_json_with_retry(state, node_name, messages)
-            gaps = _validate_gap_payload(gap_payload)
-            gap_results.append({"job_id": job_id, "gaps": gaps})
+            try:
+                messages = build_gap_analysis_prompt(candidate_profile, job, match_result)
+                gap_payload = _call_llm_json_with_retry(state, node_name, messages)
+                gaps = _validate_gap_payload(gap_payload)
+                gap_results.append(
+                    {
+                        "job_id": job_id,
+                        "title": job.get("title"),
+                        "company": job.get("company"),
+                        "gaps": gaps,
+                    }
+                )
+            except Exception as exc:
+                fallback_count += 1
+                gap_results.append(
+                    {
+                        "job_id": job_id,
+                        "title": job.get("title"),
+                        "company": job.get("company"),
+                        "gaps": _fallback_gaps(match_result),
+                    }
+                )
+                _append_trace(
+                    state,
+                    node_name,
+                    "warning",
+                    f"岗位 {job_id} 的差距分析 LLM 调用失败，已使用规则兜底：{exc}",
+                    input_count=1,
+                    output_count=1,
+                    fallback_used=True,
+                )
         except Exception as exc:
-            job_id = match_result.get("job_id", "<未知岗位>") if isinstance(match_result, dict) else "<无效岗位>"
+            failed_count += 1
+            job_id = match_result.get("job_id", "<未知岗位>") if isinstance(match_result, dict) else "<未知岗位>"
             _append_trace(
                 state,
                 node_name,
                 "error",
-                f"岗位 {job_id} 的差距分析失败：{exc}",
+                f"岗位 {job_id} 差距分析失败：{exc}",
                 input_count=1,
                 output_count=0,
             )
             continue
 
-    _append_trace(
+    if not gap_results and top_matches:
+        _record_node_result(
+            state,
+            node_name,
+            "error",
+            "Top 岗位均未能生成差距分析。",
+            input_count=len(top_matches),
+            output_count=0,
+            gap_top_n=gap_top_n,
+            use_llm=use_llm_deep_analysis,
+            failed_count=failed_count,
+            fallback_count=fallback_count,
+            retry_count=_get_retry_count(state, node_name),
+            **_node_observability(started_at, token_usage_before),
+        )
+        return state
+
+    node_status = "success"
+    if failed_count > 0 or fallback_count > 0:
+        node_status = "partial"
+
+    _record_node_result(
         state,
         node_name,
-        "success",
-        f"已为前 {len(top_matches)} 个候选岗位中的 {len(gap_results)} 个生成差距分析。",
+        node_status,
+        f"已为 {len(top_matches)} 个 Top 岗位生成 {len(gap_results)} 组差距分析。",
         input_count=len(top_matches),
         output_count=len(gap_results),
         gap_top_n=gap_top_n,
         use_llm=use_llm_deep_analysis,
+        failed_count=failed_count,
+        fallback_count=fallback_count,
+        retry_count=_get_retry_count(state, node_name),
         **_node_observability(started_at, token_usage_before),
     )
     return state
-
 
 def resume_suggestion_node(state: dict) -> dict:
     """Generate resume suggestions for the top jobs with gap analysis."""
@@ -967,13 +1264,40 @@ def resume_suggestion_node(state: dict) -> dict:
     gaps = state.get("gaps")
 
     if not isinstance(candidate_profile, dict):
-        _append_trace(state, node_name, "error", "state 中缺少 candidate_profile。", input_count=0, output_count=0, **_node_observability(started_at, token_usage_before))
+        _record_node_result(
+            state,
+            node_name,
+            "error",
+            "state 缺少 candidate_profile。",
+            input_count=0,
+            output_count=0,
+            retry_count=_get_retry_count(state, node_name),
+            **_node_observability(started_at, token_usage_before),
+        )
         return state
     if not isinstance(parsed_jobs, list):
-        _append_trace(state, node_name, "error", "state 中缺少 parsed_jobs。", input_count=0, output_count=0, **_node_observability(started_at, token_usage_before))
+        _record_node_result(
+            state,
+            node_name,
+            "error",
+            "state 缺少 parsed_jobs。",
+            input_count=0,
+            output_count=0,
+            retry_count=_get_retry_count(state, node_name),
+            **_node_observability(started_at, token_usage_before),
+        )
         return state
     if not isinstance(gaps, list):
-        _append_trace(state, node_name, "error", "state 中缺少 gaps。", input_count=0, output_count=0, **_node_observability(started_at, token_usage_before))
+        _record_node_result(
+            state,
+            node_name,
+            "error",
+            "state 缺少 gaps。",
+            input_count=0,
+            output_count=0,
+            retry_count=_get_retry_count(state, node_name),
+            **_node_observability(started_at, token_usage_before),
+        )
         return state
 
     jobs_by_id = _job_lookup(parsed_jobs)
@@ -984,6 +1308,9 @@ def resume_suggestion_node(state: dict) -> dict:
     resume_top_n = max(1, min(resume_top_n, 3))
     use_llm_deep_analysis = bool(state.get("use_llm_deep_analysis", False))
     top_gap_results = gaps[:resume_top_n]
+
+    failed_count = 0
+    fallback_count = 0
 
     for gap_result in top_gap_results:
         try:
@@ -998,45 +1325,103 @@ def resume_suggestion_node(state: dict) -> dict:
             job_id = gap_result.get("job_id")
             job = jobs_by_id.get(job_id)
             if job is None:
-                raise ValueError(f"找不到 job_id={job_id} 对应的 JobPosting。")
+                raise ValueError(f"未找到 job_id={job_id} 对应的 JobPosting。")
 
             job_gaps = gap_result.get("gaps", [])
             if not isinstance(job_gaps, list):
-                raise ValueError("差距分析结果必须包含 gaps 列表。")
+                raise ValueError("差距分析结果中的 gaps 必须是列表。")
 
             if not (state.get("api_available", True) and use_llm_deep_analysis):
-                resume_suggestions.append({"job_id": job_id, "suggestions": _fallback_resume_suggestions(job_gaps)})
+                resume_suggestions.append(
+                    {
+                        "job_id": job_id,
+                        "title": job.get("title"),
+                        "company": job.get("company"),
+                        "suggestions": _fallback_resume_suggestions(job_gaps),
+                    }
+                )
                 continue
 
-            messages = build_resume_suggestion_prompt(candidate_profile, job, job_gaps)
-            suggestion_payload = _call_llm_json_with_retry(state, node_name, messages)
-            suggestions = _validate_resume_suggestion_payload(suggestion_payload)
-            resume_suggestions.append({"job_id": job_id, "suggestions": suggestions})
+            try:
+                messages = build_resume_suggestion_prompt(candidate_profile, job, job_gaps)
+                suggestion_payload = _call_llm_json_with_retry(state, node_name, messages)
+                suggestions = _validate_resume_suggestion_payload(suggestion_payload)
+                resume_suggestions.append(
+                    {
+                        "job_id": job_id,
+                        "title": job.get("title"),
+                        "company": job.get("company"),
+                        "suggestions": suggestions,
+                    }
+                )
+            except Exception as exc:
+                fallback_count += 1
+                resume_suggestions.append(
+                    {
+                        "job_id": job_id,
+                        "title": job.get("title"),
+                        "company": job.get("company"),
+                        "suggestions": _fallback_resume_suggestions(job_gaps),
+                    }
+                )
+                _append_trace(
+                    state,
+                    node_name,
+                    "warning",
+                    f"岗位 {job_id} 的简历建议 LLM 调用失败，已使用规则兜底：{exc}",
+                    input_count=1,
+                    output_count=1,
+                    fallback_used=True,
+                )
         except Exception as exc:
-            job_id = gap_result.get("job_id", "<未知岗位>") if isinstance(gap_result, dict) else "<无效岗位>"
+            failed_count += 1
+            job_id = gap_result.get("job_id", "<未知岗位>") if isinstance(gap_result, dict) else "<未知岗位>"
             _append_trace(
                 state,
                 node_name,
                 "error",
-                f"岗位 {job_id} 的简历建议生成失败：{exc}",
+                f"岗位 {job_id} 简历建议生成失败：{exc}",
                 input_count=1,
                 output_count=0,
             )
             continue
 
-    _append_trace(
+    if not resume_suggestions and top_gap_results:
+        _record_node_result(
+            state,
+            node_name,
+            "error",
+            "Top 岗位均未能生成简历建议。",
+            input_count=len(top_gap_results),
+            output_count=0,
+            resume_top_n=resume_top_n,
+            use_llm=use_llm_deep_analysis,
+            failed_count=failed_count,
+            fallback_count=fallback_count,
+            retry_count=_get_retry_count(state, node_name),
+            **_node_observability(started_at, token_usage_before),
+        )
+        return state
+
+    node_status = "success"
+    if failed_count > 0 or fallback_count > 0:
+        node_status = "partial"
+
+    _record_node_result(
         state,
         node_name,
-        "success",
-        f"已为前 {len(top_gap_results)} 个候选岗位中的 {len(resume_suggestions)} 个生成简历建议。",
+        node_status,
+        f"已为 {len(top_gap_results)} 个 Top 岗位生成 {len(resume_suggestions)} 组简历建议。",
         input_count=len(top_gap_results),
         output_count=len(resume_suggestions),
         resume_top_n=resume_top_n,
         use_llm=use_llm_deep_analysis,
+        failed_count=failed_count,
+        fallback_count=fallback_count,
+        retry_count=_get_retry_count(state, node_name),
         **_node_observability(started_at, token_usage_before),
     )
     return state
-
 
 def human_review_node(state: dict) -> dict:
     """Pause the workflow when JD parsing quality is below the configured threshold."""
@@ -1048,9 +1433,7 @@ def human_review_node(state: dict) -> dict:
     failure_rate = float(state.get("jd_parse_failure_rate") or 0.0)
     state["workflow_status"] = "awaiting_review"
     state["review_required"] = True
-    state["review_reason"] = (
-        f"JD 解析失败率为 {failure_rate:.1%}，超过阈值，需确认本地规则解析结果后再继续。"
-    )
+    state["review_reason"] = f"JD 解析失败率为 {failure_rate:.1%}，需要人工确认后继续。"
     decision = interrupt(
         {
             "type": "jd_parse_review",
@@ -1063,26 +1446,26 @@ def human_review_node(state: dict) -> dict:
     if approved:
         state["workflow_status"] = "running"
         state["review_required"] = False
-        message = "人工确认已通过，继续执行岗位检索。"
-        status = "success"
+        message = "人工审核已通过，工作流继续执行。"
+        node_status = "success"
     else:
         state["workflow_status"] = "failed"
-        state["halt_reason"] = "人工确认未通过，工作流已停止。"
+        state["halt_reason"] = "人工审核未通过，工作流已终止。"
         message = state["halt_reason"]
-        status = "error"
-    _append_trace(
+        node_status = "error"
+    _record_node_result(
         state,
         node_name,
-        status,
+        node_status,
         message,
         input_count=int(state.get("jd_parse_input_count") or 0),
         output_count=len(state.get("parsed_jobs") or []),
         parse_failure_rate=failure_rate,
         approved=approved,
+        retry_count=_get_retry_count(state, node_name),
         **_node_observability(started_at, token_usage_before),
     )
     return state
-
 
 def skip_deep_analysis_node(state: dict) -> dict:
     """Skip expensive analysis when no job reaches the configured score threshold."""
@@ -1096,19 +1479,19 @@ def skip_deep_analysis_node(state: dict) -> dict:
     state["resume_suggestions"] = []
     state["deep_analysis_skipped"] = True
     state["workflow_status"] = "completed"
-    _append_trace(
+    _record_node_result(
         state,
         node_name,
         "success",
-        f"最高匹配分 {best_score:.1f} 低于阈值 {threshold:.1f}，已跳过差距分析和简历建议。",
+        f"最高匹配分 {best_score:.1f} 低于阈值 {threshold:.1f}，已跳过深度分析。",
         input_count=len(matched_jobs),
         output_count=0,
         best_match_score=best_score,
         threshold=threshold,
+        retry_count=_get_retry_count(state, node_name),
         **_node_observability(started_at, token_usage_before),
     )
     return state
-
 
 def halt_workflow_node(state: dict) -> dict:
     """Finish a workflow that cannot proceed and preserve a clear reason."""
@@ -1117,21 +1500,21 @@ def halt_workflow_node(state: dict) -> dict:
     token_usage_before = get_token_usage()
     if state.get("workflow_status") not in {"cancelled", "timed_out"}:
         state["workflow_status"] = "failed"
-    reason = str(state.get("halt_reason") or "工作流缺少继续执行所需的有效输入。")
+    reason = str(state.get("halt_reason") or "工作流无法继续执行。")
     state.setdefault("matched_jobs", [])
     state.setdefault("gaps", [])
     state.setdefault("resume_suggestions", [])
-    _append_trace(
+    _record_node_result(
         state,
         node_name,
         "error",
         reason,
         input_count=0,
         output_count=0,
+        retry_count=_get_retry_count(state, node_name),
         **_node_observability(started_at, token_usage_before),
     )
     return state
-
 
 def finalize_workflow_node(state: dict) -> dict:
     """Mark a normally completed workflow and emit a final summary trace."""
@@ -1140,17 +1523,17 @@ def finalize_workflow_node(state: dict) -> dict:
     token_usage_before = get_token_usage()
     state["workflow_status"] = "completed"
     state["review_required"] = False
-    _append_trace(
+    _record_node_result(
         state,
         node_name,
         "success",
-        "JobPilot 工作流已完成。",
+        "JobPilot 工作流执行完成。",
         input_count=len(state.get("matched_jobs") or []),
         output_count=len(state.get("resume_suggestions") or []),
+        retry_count=_get_retry_count(state, node_name),
         **_node_observability(started_at, token_usage_before),
     )
     return state
-
 
 def parse_jd_node(state: dict) -> dict:
     """Backward-compatible alias for jd_parse_node."""

@@ -37,6 +37,7 @@ class JobPilotState(TypedDict, total=False):
     gaps: list[dict]
     resume_suggestions: list[dict]
     trace: list[dict]
+    node_statuses: dict
     token_usage: dict
     final_report: dict
     workflow_status: str
@@ -51,6 +52,7 @@ class JobPilotState(TypedDict, total=False):
     checkpoint_backend: str
     run_id: str
     _deadline_epoch: float
+    _llm_retry_counts: dict
 
 
 AgentState = JobPilotState

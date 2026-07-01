@@ -21,7 +21,6 @@ import {
   asArray,
   parseProfileInput,
   splitJdText,
-  summarizeProfileInput,
   validateProfileInput,
 } from "./utils/jobpilot";
 
@@ -96,26 +95,6 @@ function CollapsibleSection({ children, defaultOpen = true, meta, title }) {
   );
 }
 
-function InputReadiness({ jdCount, profileSummary, targetRole, uploadedCount }) {
-  const items = [
-    ["目标岗位", targetRole || "未填写"],
-    ["画像模式", profileSummary.mode],
-    ["JD 数量", `${jdCount} 条`],
-    ["上传文件", `${uploadedCount} 个`],
-  ];
-  return (
-    <section className="readiness-card">
-      <div>
-        <strong>输入已就绪</strong>
-        <span>{jdCount > 0 ? "可以运行 Agent" : "请选择岗位库或输入 JD"}</span>
-      </div>
-      <div className="readiness-grid">
-        {items.map(([label, value]) => <div key={label}><span>{label}</span><strong>{value}</strong></div>)}
-      </div>
-    </section>
-  );
-}
-
 export default function App() {
   const {
     cancel,
@@ -145,7 +124,6 @@ export default function App() {
   const [error, setError] = useState("");
 
   const profileStatus = useMemo(() => validateProfileInput(profileInput), [profileInput]);
-  const profileSummary = useMemo(() => summarizeProfileInput(profileInput), [profileInput]);
   const manualJds = useMemo(() => splitJdText(jdInput), [jdInput]);
   const jdCount = sourceMode === "library" ? jobLibrary.length : uploadedJds.length + manualJds.length;
   const canRun = profileStatus.status !== "empty" && jdCount > 0 && !libraryLoading;
@@ -249,13 +227,6 @@ export default function App() {
             <label>目标岗位</label>
             <input disabled={loading} value={targetRole} onChange={(event) => setTargetRole(event.target.value)} />
           </div>
-
-          <InputReadiness
-            jdCount={jdCount}
-            profileSummary={profileSummary}
-            targetRole={targetRole}
-            uploadedCount={uploadedJds.length}
-          />
 
           <ProfileEditor
             disabled={loading}

@@ -34,28 +34,64 @@ _SQLITE_CHECKPOINTERS: dict[str, Any] = {}
 _SQLITE_CONNECTIONS: dict[str, sqlite3.Connection] = {}
 
 
+def _node_status(state: dict, node_name: str) -> str:
+    node_statuses = state.get("node_statuses")
+    if not isinstance(node_statuses, dict):
+        return ""
+    payload = node_statuses.get(node_name)
+    if not isinstance(payload, dict):
+        return ""
+    status = payload.get("status")
+    return status if isinstance(status, str) else ""
+
+
+def _halt_with_node_message(state: dict, node_name: str, default_reason: str) -> str:
+    node_statuses = state.get("node_statuses")
+    if isinstance(node_statuses, dict):
+        payload = node_statuses.get(node_name)
+        if isinstance(payload, dict):
+            message = payload.get("message")
+            if isinstance(message, str) and message:
+                state["halt_reason"] = message
+                return "halt_workflow_node"
+    state["halt_reason"] = default_reason
+    return "halt_workflow_node"
+
+
 def _route_after_profile(state: dict) -> str:
     if state.get("workflow_status") in {"cancelled", "timed_out", "failed"}:
         return "halt_workflow_node"
+    if _node_status(state, "profile_node") == "error":
+        return _halt_with_node_message(state, "profile_node", "Candidate profile is unavailable.")
     if isinstance(state.get("candidate_profile"), dict):
         return "jd_parse_node"
-    state["halt_reason"] = "候选人画像为空，工作流无法继续。"
-    return "halt_workflow_node"
+    return _halt_with_node_message(
+        state,
+        "profile_node",
+        "Candidate profile is empty, workflow cannot continue.",
+    )
 
 
 def _route_after_jd_parse(state: dict) -> str:
     if state.get("workflow_status") in {"cancelled", "timed_out", "failed"}:
         return "halt_workflow_node"
+    if _node_status(state, "jd_parse_node") == "error":
+        return _halt_with_node_message(state, "jd_parse_node", "No valid jobs were parsed.")
+
     parsed_jobs = state.get("parsed_jobs")
     if not isinstance(parsed_jobs, list) or not parsed_jobs:
-        state["halt_reason"] = "未获得任何有效岗位，请检查岗位库或手动输入的 JD。"
-        return "halt_workflow_node"
+        return _halt_with_node_message(
+            state,
+            "jd_parse_node",
+            "No valid jobs were parsed. Check the job library or manual JD input.",
+        )
 
     try:
         failure_rate = float(state.get("jd_parse_failure_rate") or 0.0)
         threshold = float(state.get("jd_parse_review_threshold") or 0.5)
     except (TypeError, ValueError):
         failure_rate, threshold = 0.0, 0.5
+
     if bool(state.get("require_human_review_on_parse_failure")) and failure_rate >= threshold:
         return "human_review_node"
     return "retrieve_node"
@@ -64,20 +100,29 @@ def _route_after_jd_parse(state: dict) -> str:
 def _route_after_match(state: dict) -> str:
     if state.get("workflow_status") in {"cancelled", "timed_out", "failed"}:
         return "halt_workflow_node"
+    if _node_status(state, "match_score_node") == "error":
+        return _halt_with_node_message(state, "match_score_node", "No jobs were successfully scored.")
+
     matched_jobs = state.get("matched_jobs")
     if not isinstance(matched_jobs, list) or not matched_jobs:
-        state["halt_reason"] = "没有岗位成功完成匹配评分。"
-        return "halt_workflow_node"
+        return _halt_with_node_message(
+            state,
+            "match_score_node",
+            "No jobs were successfully scored.",
+        )
 
     try:
         threshold = float(state.get("min_deep_analysis_score") or 35.0)
     except (TypeError, ValueError):
         threshold = 35.0
+
     best_score = max(float(job.get("match_score", 0)) for job in matched_jobs)
     return "gap_analysis_node" if best_score >= threshold else "skip_deep_analysis_node"
 
 
 def _route_after_review(state: dict) -> str:
+    if _node_status(state, "human_review_node") == "error":
+        return "halt_workflow_node"
     if state.get("workflow_status") == "running" and not state.get("review_required"):
         return "retrieve_node"
     return "halt_workflow_node"

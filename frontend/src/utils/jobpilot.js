@@ -145,25 +145,6 @@ export function validateProfileInput(text) {
   }
 }
 
-export function summarizeProfileInput(text) {
-  try {
-    const parsed = JSON.parse(text);
-    return {
-      mode: "JSON 画像",
-      skillCount: asArray(parsed.skills).length,
-      projectCount: asArray(parsed.projects).length,
-      educationCount: asArray(parsed.education).length,
-    };
-  } catch {
-    return {
-      mode: text.trim() ? "文本画像" : "未填写",
-      skillCount: 0,
-      projectCount: 0,
-      educationCount: 0,
-    };
-  }
-}
-
 export function formatDuration(ms) {
   if (!ms) return "尚未运行";
   if (ms < 1000) return `${Math.round(ms)}ms`;

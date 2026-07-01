@@ -366,11 +366,46 @@ def test_initialize_persistent_data_skips_refresh_when_vector_store_is_current(t
     monkeypatch.setattr(api_module, "JOB_SEED_PATH", tmp_path / "missing_seed.json")
     monkeypatch.setattr(api_module, "_default_vector_store_dir", lambda: vector_store_dir)
     monkeypatch.setattr(api_module, "list_jobs", lambda **kwargs: [{"job_id": "job_001"}])
+    monkeypatch.setattr(api_module, "list_parsed_jobs", lambda **kwargs: [{"job_id": "job_001"}])
+    monkeypatch.setattr(api_module, "is_retrieval_store_current", lambda jobs, persist_dir: True)
     monkeypatch.setattr(api_module, "_refresh_job_retrieval_store", lambda: calls.__setitem__("refresh", calls["refresh"] + 1))
 
     api_module._initialize_persistent_data()
 
     assert calls["refresh"] == 0
+
+
+def test_vector_store_refreshes_when_manifest_is_stale(tmp_path, monkeypatch):
+    db_path = tmp_path / "jobpilot.db"
+    db_path.write_text("db", encoding="utf-8")
+    vector_store_dir = tmp_path / "vector_store"
+    vector_store_dir.mkdir(parents=True, exist_ok=True)
+    (vector_store_dir / "job_documents.json").write_text("{}", encoding="utf-8")
+    (vector_store_dir / "retriever_backend.json").write_text("{}", encoding="utf-8")
+
+    monkeypatch.setattr(api_module, "DEFAULT_JOB_DB_PATH", db_path)
+    monkeypatch.setattr(api_module, "_default_vector_store_dir", lambda: vector_store_dir)
+    monkeypatch.setattr(api_module, "list_parsed_jobs", lambda **kwargs: [{"job_id": "job_001"}])
+    monkeypatch.setattr(api_module, "is_retrieval_store_current", lambda jobs, persist_dir: False)
+
+    assert api_module._vector_store_needs_refresh() is True
+
+
+def test_refresh_job_retrieval_store_reports_vector_fallback(tmp_path, monkeypatch):
+    def fake_build_chroma_store(jobs, persist_dir):
+        fake_build_chroma_store.last_stats = {
+            "backend": "simple",
+            "warning": "embedding model unavailable",
+        }
+
+    monkeypatch.setattr(api_module, "list_parsed_jobs", lambda **kwargs: [{"job_id": "job_001"}])
+    monkeypatch.setattr(api_module, "build_chroma_store", fake_build_chroma_store)
+    monkeypatch.setattr(api_module, "_default_vector_store_dir", lambda: tmp_path / "vector_store")
+
+    refreshed, warning = api_module._refresh_job_retrieval_store()
+
+    assert refreshed is True
+    assert warning == "embedding model unavailable"
 
 
 def test_initialize_persistent_data_refreshes_when_vector_store_missing(tmp_path, monkeypatch):

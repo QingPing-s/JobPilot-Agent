@@ -1,74 +1,125 @@
-# JobPilot RAG-Agent: Internship Job Matching and Resume Optimization Agent
+<p align="center">
+  <strong>简体中文</strong> | <a href="./README_EN.md">English</a>
+</p>
 
-JobPilot RAG-Agent is an internship job matching and resume optimization agent built with LangGraph, DeepSeek API, ChromaDB, FastAPI, and React. It reads a candidate profile and local job descriptions, records reusable job postings, retrieves relevant jobs, reranks candidates, scores job fit, analyzes gaps, generates resume suggestions, records execution traces, and supports offline evaluation.
+# JobPilot RAG-Agent
 
-This project is designed as an engineering-oriented AI Agent system rather than a simple LLM demo. It combines structured Pydantic schemas, LangGraph orchestration, hybrid retrieval, deterministic scoring, trace logging, a Web workbench, and offline metrics.
+面向 AI Agent、RAG 与 LLM 应用实习岗位的智能匹配和简历优化系统。
 
-## Core Features
+JobPilot 使用 React + FastAPI 提供交互式工作台，以 LangGraph 编排候选人画像、JD 解析、混合召回、岗位重排、匹配评分、差距分析和简历建议。系统通过确定性规则保证可解释性，并在 DeepSeek 不可用时自动降级，不依赖 LLM 也能完成核心匹配流程。
 
-- Candidate Profile Extraction
-- JD Parsing
-- Weighted RRF Hybrid Retrieval
-- Reranking
-- Match Scoring
-- Gap Analysis
-- Resume Suggestions
-- Job Posting Recorder
-- Trace Logging
-- Offline Evaluation
-- FastAPI Backend
-- React Agent Workbench
-- Async Runs, SSE Progress, Cancellation, Timeout, and Cache
-- JWT Authentication, RBAC, Rate Limiting, and Audit Logging
+**在线演示：** [Azure Container Apps](https://jobpilot-agent.gentlefield-019d4ae8.eastasia.azurecontainerapps.io/)
 
-## Architecture
+## 核心功能
+
+- 候选人画像读取、整理与 Pydantic 校验
+- JD 结构化解析和 SQLite 岗位库持久化
+- BGE 向量检索 + TF-IDF 关键词检索
+- Weighted RRF 混合召回
+- 规则重排与可选 LLM Top-5 重排
+- 可解释的确定性岗位匹配评分
+- Top 岗位差距分析和简历优化建议
+- LangGraph 条件路由、重试、降级和 checkpoint
+- FastAPI 异步任务、SSE 进度、取消与超时
+- Trace、延迟、Token 和成本监控
+- 离线检索与排序评测
+
+## 系统架构
 
 ```text
-User Profile + Job Descriptions
-        ↓
-React Agent Workbench
-        ↓
-FastAPI Backend
-        ↓
-Profile Agent / JD Parser Agent
-        ↓
-Keyword + BGE Vector Retriever
-        ↓
-Weighted Reciprocal Rank Fusion
-        ↓
-Rule Reranker / Optional LLM Reranker
-        ↓
-Match Scoring Agent
-        ↓
-Gap Analysis Agent
-        ↓
-Resume Suggestion Agent
-        ↓
-Reports + Traces + Evaluation
+候选人画像 + 目标岗位 + 岗位 JD
+                 |
+                 v
+        React Agent 工作台
+                 |
+          REST API + SSE
+                 |
+                 v
+            FastAPI 后端
+                 |
+                 v
+       LangGraph 条件工作流
+                 |
+   +-------------+--------------+
+   |                            |
+   v                            v
+ChromaDB 向量召回          TF-IDF 关键词召回
+   |                            |
+   +-------------+--------------+
+                 |
+          Weighted RRF 融合
+                 |
+                 v
+        规则重排 / 可选 LLM 重排
+                 |
+                 v
+     匹配评分 -> 差距分析 -> 简历建议
+                 |
+                 v
+       推荐结果 + Trace + Markdown 报告
 ```
 
-The graph uses conditional routing. Fatal profile/JD failures halt the workflow,
-high JD parse-failure rates can interrupt for administrator review, and low
-match scores skip expensive deep analysis. SQLite checkpoints allow interrupted
-runs to resume with the same `thread_id`.
+LangGraph 主流程：
 
-## Tech Stack
+```text
+START
+  -> profile_node
+  -> jd_parse_node
+  -> retrieve_node
+  -> rerank_node
+  -> match_score_node
+  -> gap_analysis_node
+  -> resume_suggestion_node
+  -> finalize_workflow_node
+  -> END
+```
+
+流程包含失败终止、人工审核、低分跳过深度分析、LLM 重试和规则降级等条件分支。SQLite checkpoint 支持使用相同 `thread_id` 恢复中断任务。
+
+## 技术栈
 
 - Python 3.10+
 - LangGraph
-- DeepSeek API
-- OpenAI SDK
+- DeepSeek API / OpenAI SDK
 - FastAPI
-- React
-- Vite
 - Pydantic
+- React + Vite
 - ChromaDB
+- BAAI/bge-small-zh-v1.5
 - scikit-learn
-- pytest
+- SQLite
+- pytest + Playwright
+- Docker
+- Azure Container Registry
+- Azure Container Apps
+- Azure Files
 
-## Installation
+## 项目结构
 
-On Windows:
+```text
+JobPilot-Agent/
+├── src/                 # Agent、API、检索、评分、存储和日志
+├── frontend/            # React 工作台
+├── data/                # 候选人、岗位种子、SQLite 和向量索引
+├── eval/                # 离线评测集与评测脚本
+├── tests/               # 后端单元与集成测试
+├── traces/              # Agent 执行轨迹
+├── outputs/             # 推荐结果与 Markdown 报告
+├── scripts/             # 初始化和启动脚本
+├── portfolio-blog/      # 独立 Astro 项目展示页
+├── Dockerfile
+└── docker-compose.yml
+```
+
+## 本地运行
+
+运行环境：
+
+- Python 3.10.x
+- Node.js 20.19.5
+- npm 10.x
+
+安装后端依赖：
 
 ```powershell
 py -3.10 -m venv .venv
@@ -76,22 +127,41 @@ py -3.10 -m venv .venv
 python -m pip install -r requirements.txt
 ```
 
-Install frontend dependencies:
+需要与 CI 和容器完全一致的环境时：
+
+```powershell
+python -m pip install -r requirements.lock
+```
+
+安装前端依赖：
 
 ```powershell
 cd frontend
 npm ci
 ```
 
-One-command local build and startup:
+一键构建并启动：
 
 ```powershell
 .\scripts\start.ps1
 ```
 
-## Environment Variables
+也可以分别启动：
 
-Copy `.env.example` to `.env` and fill in your DeepSeek API key.
+```powershell
+py -3.10 -m uvicorn src.api:app --reload --host 127.0.0.1 --port 8000
+```
+
+```powershell
+cd frontend
+npm run dev
+```
+
+访问 `http://127.0.0.1:5173`。
+
+## 环境变量
+
+复制 `.env.example` 为 `.env`：
 
 ```env
 OPENAI_API_KEY=your_deepseek_api_key
@@ -99,14 +169,11 @@ OPENAI_BASE_URL=https://api.deepseek.com
 MODEL_NAME=deepseek-chat
 LLM_TIMEOUT_SECONDS=60
 LLM_SDK_MAX_RETRIES=1
-LLM_INPUT_COST_PER_MILLION=0
-LLM_OUTPUT_COST_PER_MILLION=0
 ```
 
-The API key is only read by the Python backend. It is never sent to the React frontend. If the API key is missing or still set to the placeholder value, JobPilot runs with local rule-based fallback for retrieval, scoring, gap analysis, and resume suggestions.
+API Key 只由 Python 后端读取，不会发送到 React 前端。如果 Key 缺失，系统会使用本地规则完成检索、评分、差距分析和简历建议。
 
-For public deployment, enable JWT authentication and configure separate user
-and administrator accounts:
+公网部署建议启用认证：
 
 ```env
 JOBPILOT_AUTH_ENABLED=true
@@ -118,154 +185,107 @@ JOBPILOT_ADMIN_PASSWORD=<password>
 JOBPILOT_RUNS_PER_MINUTE=10
 ```
 
-## CLI Run
+## 检索与索引
 
-```powershell
-py -3.10 -m src.main
+- 向量模型固定为 `BAAI/bge-small-zh-v1.5` 及指定 revision。
+- ChromaDB 只更新新增、修改或删除的岗位，避免每次运行重建索引。
+- TF-IDF 保留 LangGraph、FastAPI、RAG、DeepSeek 等精确关键词。
+- Weighted RRF 融合向量排名和关键词排名。
+- ChromaDB 或 Embedding 不可用时自动退化到关键词检索。
+
+推荐处理漏斗：
+
+```text
+岗位库
+  -> Hybrid Retrieval Top-20
+  -> Rule-based Rerank Top-10
+  -> Optional LLM Rerank Top-5
+  -> Match Scoring
+  -> Top Jobs Deep Analysis
 ```
 
-Optional arguments:
+## API
+
+- `GET /api/health`：健康状态和运行配置
+- `POST /api/auth/login`：认证启用时签发 JWT
+- `POST /api/runs`：创建异步任务
+- `GET /api/runs/{run_id}`：读取任务状态和结果
+- `GET /api/runs/{run_id}/events`：SSE 节点事件
+- `DELETE /api/runs/{run_id}`：取消任务
+- `POST /api/runs/{run_id}/review`：人工审核后恢复 checkpoint
+- `POST /api/record-jobs`：导入 JD 并增量更新索引
+- `GET /api/jobs`：查询有效岗位
+- `DELETE /api/jobs/{job_id}`：管理员软删除
+- `POST /api/jobs/{job_id}/restore`：管理员恢复岗位
+
+## 测试与评测
+
+后端测试：
 
 ```powershell
-py -3.10 -m src.main --profile data/user_profile.json --jd-folder data/sample_jds --target-role "AI Agent Intern"
+python -m pytest -q
 ```
 
-## Web App Run
-
-Start the FastAPI backend:
-
-```powershell
-py -3.10 -m uvicorn src.api:app --reload --host 127.0.0.1 --port 8000
-```
-
-Start the React frontend in a second terminal:
+前端测试与构建：
 
 ```powershell
 cd frontend
-npm run dev
+npm test
+npm run build
 ```
 
-If `5173` is already occupied, start Vite on another allowed port:
-
-```powershell
-cd frontend
-npm run dev -- --host 127.0.0.1 --port 5176
-```
-
-Open:
-
-```text
-http://127.0.0.1:5173
-```
-
-or, when using the fallback frontend port:
-
-```text
-http://127.0.0.1:5176
-```
-
-Run a real-browser UI smoke test after both services are running:
+浏览器冒烟测试：
 
 ```powershell
 cd frontend
 npm run smoke:ui
 ```
 
-The smoke test opens the React app with Playwright, saves sample JDs into the local job library, clicks `Run Agent`, waits for matched jobs, checks the Gaps, Resume, Trace, and Report tabs, verifies Markdown export/copy actions, then saves a screenshot to `outputs/jobpilot_ui_smoke.png`.
-
-## Azure App Service Deployment
-
-The root `Dockerfile` packages the React frontend and FastAPI backend into one
-production container. FastAPI serves both `/api/*` and the compiled React app.
-On an empty deployment, `data/job_seed.json` initializes the SQLite job library.
-
-Recommended Azure App Service settings:
-
-```text
-Region=East Asia
-Operating System=Linux
-Publish=Container
-Container Port=8000
-JOBPILOT_DATA_DIR=/home/jobpilot-data
-WEBSITES_ENABLE_APP_SERVICE_STORAGE=true
-OPENAI_API_KEY=<DeepSeek API Key>
-OPENAI_BASE_URL=https://api.deepseek.com
-MODEL_NAME=deepseek-chat
-```
-
-Keep `.env` local. Configure API keys only through Azure App Service environment
-variables.
-
-The same production container can be tested locally:
-
-```powershell
-docker compose up --build
-```
-
-## API Endpoints
-
-- `GET /api/health`: Backend health and API-key availability.
-- `POST /api/auth/login`: Issue a role-bearing JWT when authentication is enabled.
-- `POST /api/runs`: Create an asynchronous run and return `202 + run_id`.
-- `GET /api/runs/{run_id}`: Read owner-isolated run status and result.
-- `GET /api/runs/{run_id}/events`: Stream node/status events with SSE.
-- `DELETE /api/runs/{run_id}`: Cooperatively cancel a queued or running task.
-- `POST /api/runs/{run_id}/review`: Administrator review and checkpoint resume.
-- `POST /api/run-jobpilot`: Backward-compatible synchronous pipeline endpoint.
-- `POST /api/record-jobs`: Administrator-only JD import with incremental index refresh.
-- `GET /api/jobs`: List active jobs from SQLite.
-- `DELETE /api/jobs/{job_id}`: Administrator-only soft deletion.
-- `POST /api/jobs/{job_id}/restore`: Administrator-only restoration of a disabled job.
-- `GET /api/latest-trace`: Read the latest saved trace.
-- `GET /api/latest-report`: Read the latest Markdown report.
-
-## Evaluation
-
-Run offline evaluation:
+离线评测：
 
 ```powershell
 py -3.10 eval/run_eval.py
 ```
 
-The 50-case evaluation compares five deterministic baselines: keyword,
-vector, simple hybrid union, weighted RRF hybrid, and RRF hybrid plus rule rerank. It reports Recall@5/10,
-Precision@5, Hit@5/10, MRR, NDCG@10, Top-1 accuracy, average/P95 latency,
-fallback rate, JSON validity, tool success, Token usage, and estimated cost.
+评测对比 keyword、vector、hybrid union、weighted RRF 和 RRF + rule rerank，统计 Recall@5/10、Precision@5、Hit@5/10、MRR、NDCG@10、Top-1、平均延迟和 P95 延迟。
 
-## Outputs
+## Docker 与 Azure
 
-- `outputs/matched_jobs.json`: Ranked job matching results.
-- `outputs/resume_suggestions.json`: Resume optimization suggestions for top jobs.
-- `outputs/final_report.md`: Human-readable final report.
-- `traces/latest_trace.json`: Structured execution trace for debugging and presentation.
-- `eval/metrics_report.md`: Offline evaluation report with Recall@K, Precision@K, Hit@K, JSON Valid Rate, Tool Success Rate, and average match score.
-- `data/jobs_csv/job_records.jsonl`: Append-only job posting records.
-- `data/sample_jds/*.txt`: Local JD files generated for matching.
+本地验证生产容器：
 
-## Project Highlights
+```powershell
+docker compose up --build
+```
 
-- Not a simple LLM Demo: combines retrieval, reranking, scoring, generation, tracing, evaluation, and a real Web interface.
-- Uses LangGraph to orchestrate a multi-node Agent workflow.
-- Uses Pydantic to validate structured LLM outputs and internal data contracts.
-- Uses a pinned `BAAI/bge-small-zh-v1.5` revision and weighted RRF to fuse vector and exact-keyword retrieval.
-- Updates only new, changed, or deleted jobs in the persistent Chroma index.
-- Uses deterministic rule-based scoring as fallback to reduce LLM cost and improve explainability.
-- Uses conditional LangGraph routes, retry/timeout controls, human-review interrupts, and SQLite checkpoints.
-- Uses asynchronous run persistence, SSE progress, cooperative cancellation, owner-scoped caching, and per-run output isolation.
-- Uses optional JWT authentication, user/admin RBAC, rate limiting, soft deletion, and audit logging.
-- Uses FastAPI to expose the Agent pipeline as a backend service.
-- Uses React to provide an interactive Agent workbench with results, gaps, resume suggestions, job recording, and trace timeline.
-- Uses Playwright smoke testing to verify the real browser interaction path.
-- Uses Trace Logger to support debugging, observability, and engineering demonstration.
-- Uses Offline Eval to compare five retrieval/fusion baselines across 50 manually reviewed cases.
-- Uses GitHub Actions to run backend tests, frontend build, browser smoke tests, evaluation, and Docker build.
+线上架构：
 
-## Resume Description
+```text
+GitHub
+  -> Docker Multi-stage Build
+  -> Azure Container Registry
+  -> Azure Container Apps (East Asia)
+  -> Azure Files
+```
 
-### 中文版
+生产容器同时托管编译后的 React 页面和 FastAPI `/api/*`。Azure Files 持久化岗位库和检索索引，DeepSeek 配置通过 Azure Secrets 与环境变量注入。
 
-JobPilot RAG-Agent 是一个面向 AI Agent / RAG / LLM 实习岗位的智能匹配与简历优化系统。使用 LangGraph 构建支持条件路由、人工审核中断与 SQLite checkpoint 恢复的 Agent 工作流；基于固定版本 BGE 向量模型、TF-IDF 关键词召回和加权 RRF 实现混合检索，并通过增量 Chroma 索引降低重复 embedding 成本。使用 FastAPI 提供异步任务、SSE 进度、取消、超时、缓存和用户隔离能力，结合 JWT/RBAC、限流、审计日志和 Pydantic 结构化校验增强部署可靠性。构建 50 条人工标注评测集，对比五组检索与融合基线并统计 Recall、MRR、NDCG、P95 延迟、降级率和成本指标。
+## 输出文件
 
-### English
+- `outputs/matched_jobs.json`
+- `outputs/resume_suggestions.json`
+- `outputs/final_report.md`
+- `traces/latest_trace.json`
+- `eval/metrics_report.md`
 
-Built a production-oriented internship matching Agent with conditional LangGraph orchestration, resumable SQLite checkpoints, DeepSeek structured output, weighted RRF retrieval over pinned BGE embeddings and TF-IDF keywords, incremental Chroma indexing, and deterministic fallback scoring. Exposed asynchronous FastAPI runs with SSE progress, cancellation, timeout, owner-scoped cache, JWT/RBAC, rate limiting, and audit logs. Created a 50-case offline benchmark comparing five retrieval and fusion baselines with Recall, MRR, NDCG, P95 latency, fallback-rate, and cost reporting.
+## 项目亮点
+
+- 使用 LangGraph 构建具有条件路由、人工审核、重试、降级和恢复能力的 Agent 工作流。
+- 使用固定 BGE Embedding、TF-IDF 和 Weighted RRF 提升语义与精确关键词召回效果。
+- 使用增量 Chroma 索引减少重复 Embedding 开销。
+- 使用确定性规则评分控制成本，并提供稳定、可解释的 LLM fallback。
+- 使用异步 FastAPI、SSE、任务取消、超时和运行隔离支持真实 Web 工作流。
+- 使用 Pydantic、Trace、离线评测、pytest、Playwright 和 GitHub Actions提高工程可靠性。
+
+## 简历描述
+
+设计并实现面向 AI Agent / RAG / LLM 实习岗位的智能匹配系统，使用 LangGraph 编排支持条件路由、重试、人工审核和 checkpoint 恢复的多节点 Agent；基于固定版本 BGE Embedding、TF-IDF 与 Weighted RRF 构建混合检索，并通过增量 Chroma 索引降低重复向量化成本；使用 FastAPI 提供异步任务、SSE 实时进度、取消和超时控制，结合 Pydantic、确定性评分、Trace 和 50 条离线评测集提升系统可解释性与可验证性；通过 Docker、Azure Container Registry、Azure Container Apps 和 Azure Files 完成云端部署。

@@ -56,8 +56,6 @@ def build_final_report_markdown(state: dict, target_role: str) -> str:
     matched_jobs = _as_list(state.get("matched_jobs"))
     gaps = _as_list(state.get("gaps"))
     resume_suggestions = _as_list(state.get("resume_suggestions"))
-    token_usage = state.get("token_usage") if isinstance(state.get("token_usage"), dict) else {}
-
     candidate_roles = _as_list(candidate_profile.get("target_roles")) if isinstance(candidate_profile, dict) else []
     target_role_text = target_role or ", ".join(candidate_roles) or "未指定"
 
@@ -71,18 +69,6 @@ def build_final_report_markdown(state: dict, target_role: str) -> str:
 
     if candidate_roles:
         lines.extend(["- 候选人画像中的目标岗位:", _format_list(candidate_roles)])
-
-    lines.extend(
-        [
-            "",
-            "## Token 消耗",
-            "",
-            f"- LLM 调用次数: {token_usage.get('calls', 0)}",
-            f"- Prompt Tokens: {token_usage.get('prompt_tokens', 0)}",
-            f"- Completion Tokens: {token_usage.get('completion_tokens', 0)}",
-            f"- Total Tokens: {token_usage.get('total_tokens', 0)}",
-        ]
-    )
 
     lines.extend(["", "## Top 5 推荐岗位", ""])
     top_jobs = matched_jobs[:5]

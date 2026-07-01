@@ -131,12 +131,47 @@ def _backend_path(persist_dir: str | Path) -> Path:
     return Path(persist_dir) / BACKEND_FILE
 
 
+def _document_hash(document: dict) -> str:
+    return hashlib.sha256(str(document.get("text") or "").encode("utf-8")).hexdigest()
+
+
+def _document_set_hash(documents: list[dict]) -> str:
+    snapshot = sorted(
+        (
+            str(document.get("id") or ""),
+            _document_hash(document),
+        )
+        for document in documents
+        if isinstance(document, dict)
+    )
+    payload = json.dumps(snapshot, ensure_ascii=False, separators=(",", ":"))
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def _index_manifest(backend: str, documents: list[dict], **extra: Any) -> dict[str, Any]:
+    return {
+        "backend": backend,
+        "collection": COLLECTION_NAME if backend == "chroma" else "",
+        "embedding_model": EMBEDDING_MODEL_NAME,
+        "embedding_revision": EMBEDDING_MODEL_REVISION,
+        "index_version": INDEX_VERSION,
+        "document_count": len(documents),
+        "document_set_hash": _document_set_hash(documents),
+        **extra,
+    }
+
+
 def _write_json(path: Path, data: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
-def _write_simple_store(jobs: list[dict], documents: list[dict], persist_dir: str | Path, backend: str) -> None:
+def _write_simple_store(
+    jobs: list[dict],
+    documents: list[dict],
+    persist_dir: str | Path,
+    backend: str,
+) -> dict[str, Any]:
     path = Path(persist_dir)
     jobs_by_id = {}
     for index, job in enumerate(jobs):
@@ -150,7 +185,9 @@ def _write_simple_store(jobs: list[dict], documents: list[dict], persist_dir: st
             "jobs_by_id": jobs_by_id,
         },
     )
-    _write_json(_backend_path(path), {"backend": backend})
+    manifest = _index_manifest(backend, documents)
+    _write_json(_backend_path(path), manifest)
+    return manifest
 
 
 def _load_simple_store(persist_dir: str | Path) -> dict:
@@ -163,16 +200,54 @@ def _load_simple_store(persist_dir: str | Path) -> dict:
         raise RetrieverError(f"检索索引 JSON 格式无效：{path}。{exc}") from exc
 
 
-def _load_backend(persist_dir: str | Path) -> str | None:
+def _load_backend_data(persist_dir: str | Path) -> dict[str, Any]:
     path = _backend_path(persist_dir)
     if not path.exists():
-        return None
+        return {}
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
     except json.JSONDecodeError:
-        return None
-    backend = data.get("backend")
+        return {}
+    return data if isinstance(data, dict) else {}
+
+
+def _load_backend(persist_dir: str | Path) -> str | None:
+    manifest = _load_backend_data(persist_dir)
+    backend = manifest.get("backend")
+    if backend == "chroma" and (
+        manifest.get("embedding_model") != EMBEDDING_MODEL_NAME
+        or manifest.get("embedding_revision") != EMBEDDING_MODEL_REVISION
+        or manifest.get("index_version") != INDEX_VERSION
+    ):
+        return "simple"
     return backend if isinstance(backend, str) else None
+
+
+def is_retrieval_store_current(jobs: list[dict], persist_dir: str = "data/vector_store") -> bool:
+    """Return whether the persisted index matches the configured model and active jobs."""
+    if not _store_path(persist_dir).exists() or not _backend_path(persist_dir).exists():
+        return False
+
+    manifest = _load_backend_data(persist_dir)
+    expected_documents = build_job_documents(jobs)
+    expected_hash = _document_set_hash(expected_documents)
+    if (
+        manifest.get("embedding_model") != EMBEDDING_MODEL_NAME
+        or manifest.get("embedding_revision") != EMBEDDING_MODEL_REVISION
+        or manifest.get("index_version") != INDEX_VERSION
+        or manifest.get("document_set_hash") != expected_hash
+        or manifest.get("document_count") != len(expected_documents)
+    ):
+        return False
+
+    try:
+        stored_documents = _load_simple_store(persist_dir).get("documents", [])
+    except RetrieverError:
+        return False
+    return (
+        isinstance(stored_documents, list)
+        and _document_set_hash(stored_documents) == expected_hash
+    )
 
 
 def _import_chromadb():
@@ -190,10 +265,6 @@ def _embedding_function():
         normalize_embeddings=True,
         revision=EMBEDDING_MODEL_REVISION,
     )
-
-
-def _document_hash(document: dict) -> str:
-    return hashlib.sha256(str(document.get("text") or "").encode("utf-8")).hexdigest()
 
 
 def _chroma_metadata(document: dict) -> dict[str, str]:
@@ -260,13 +331,10 @@ def build_chroma_store(jobs: list[dict], persist_dir: str = "data/vector_store")
     continues to work from the lightweight JSON store.
     """
     documents = build_job_documents(jobs)
-    _write_simple_store(jobs, documents, persist_dir, backend="simple")
+    simple_manifest = _write_simple_store(jobs, documents, persist_dir, backend="simple")
     if os.getenv("JOBPILOT_EMBEDDING_BACKEND", "chroma").strip().lower() == "simple":
         build_chroma_store.last_stats = {
-            "backend": "simple",
-            "embedding_model": EMBEDDING_MODEL_NAME,
-            "embedding_revision": EMBEDDING_MODEL_REVISION,
-            "index_version": INDEX_VERSION,
+            **simple_manifest,
             "total": len(documents),
             "upserted": 0,
             "deleted": 0,
@@ -278,27 +346,18 @@ def build_chroma_store(jobs: list[dict], persist_dir: str = "data/vector_store")
     try:
         stats = _sync_chroma_store(documents, persist_dir)
     except Exception as exc:
+        fallback_manifest = _index_manifest("simple", documents, warning=str(exc))
+        _write_json(_backend_path(persist_dir), fallback_manifest)
         build_chroma_store.last_stats = {
-            "backend": "simple",
-            "embedding_model": EMBEDDING_MODEL_NAME,
-            "embedding_revision": EMBEDDING_MODEL_REVISION,
-            "index_version": INDEX_VERSION,
+            **fallback_manifest,
             "total": len(documents),
             "upserted": 0,
             "deleted": 0,
             "unchanged": 0,
-            "warning": str(exc),
         }
         return
 
-    backend_data = {
-        "backend": "chroma",
-        "collection": COLLECTION_NAME,
-        "embedding_model": EMBEDDING_MODEL_NAME,
-        "embedding_revision": EMBEDDING_MODEL_REVISION,
-        "index_version": INDEX_VERSION,
-        **stats,
-    }
+    backend_data = _index_manifest("chroma", documents, **stats)
     _write_json(_backend_path(persist_dir), backend_data)
     build_chroma_store.last_stats = backend_data
 
@@ -475,6 +534,13 @@ def _merge_hybrid_results(
     vector_weight: float = VECTOR_WEIGHT,
     keyword_weight: float = KEYWORD_WEIGHT,
 ) -> tuple[list[dict], int]:
+    if top_k <= 0:
+        return [], 0
+    if rrf_k < 0:
+        raise ValueError("rrf_k must be non-negative")
+    if vector_weight < 0 or keyword_weight < 0:
+        raise ValueError("RRF weights must be non-negative")
+
     merged: dict[str, dict] = {}
     order: dict[str, dict[str, int]] = {}
     sources: dict[str, set[str]] = {}
@@ -488,6 +554,9 @@ def _merge_hybrid_results(
 
         if job_id not in merged:
             merged[job_id] = dict(job)
+            retrieval = job.get("_retrieval")
+            if isinstance(retrieval, dict):
+                merged[job_id]["_retrieval"] = dict(retrieval)
             order[job_id] = {}
             sources[job_id] = set()
         else:
@@ -495,8 +564,13 @@ def _merge_hybrid_results(
             new_retrieval = job.get("_retrieval")
             if isinstance(existing_retrieval, dict) and isinstance(new_retrieval, dict):
                 existing_retrieval.update(new_retrieval)
+            elif isinstance(new_retrieval, dict):
+                merged[job_id]["_retrieval"] = dict(new_retrieval)
 
-        order[job_id][source] = rank + 1
+        rank_position = rank + 1
+        previous_rank = order[job_id].get(source)
+        if previous_rank is None or rank_position < previous_rank:
+            order[job_id][source] = rank_position
         sources[job_id].add(source)
 
     for rank, job in enumerate(vector_results):
@@ -562,25 +636,47 @@ def hybrid_retrieve(
             "query": query,
             "vector_top_k": top_k,
             "keyword_top_k": top_k,
+            "vector_result_count": 0,
+            "keyword_result_count": 0,
             "merged_count": 0,
             "final_retrieved_count": 0,
+            "vector_error": "",
+            "keyword_error": "",
+            "fusion": "rrf",
+            "rrf_k": RRF_K,
+            "vector_weight": VECTOR_WEIGHT,
+            "keyword_weight": KEYWORD_WEIGHT,
+            "embedding_model": EMBEDDING_MODEL_NAME,
+            "index_version": INDEX_VERSION,
         }
         return []
 
+    vector_error = ""
     try:
         vector_results = retrieve_jobs(query=query, top_k=top_k, persist_dir=persist_dir)
-    except Exception:
+    except Exception as exc:
         vector_results = []
+        vector_error = str(exc)
 
-    keyword_results = simple_bm25_retrieve(query=query, jobs=jobs, top_k=top_k)
+    keyword_error = ""
+    try:
+        keyword_results = simple_bm25_retrieve(query=query, jobs=jobs, top_k=top_k)
+    except Exception as exc:
+        keyword_results = []
+        keyword_error = str(exc)
+
     merged_results, merged_count = _merge_hybrid_results(vector_results, keyword_results, top_k=top_k)
 
     hybrid_retrieve.last_stats = {
         "query": query,
         "vector_top_k": top_k,
         "keyword_top_k": top_k,
+        "vector_result_count": len(vector_results),
+        "keyword_result_count": len(keyword_results),
         "merged_count": merged_count,
         "final_retrieved_count": len(merged_results),
+        "vector_error": vector_error,
+        "keyword_error": keyword_error,
         "fusion": "rrf",
         "rrf_k": RRF_K,
         "vector_weight": VECTOR_WEIGHT,
@@ -595,8 +691,12 @@ hybrid_retrieve.last_stats = {
     "query": "",
     "vector_top_k": 0,
     "keyword_top_k": 0,
+    "vector_result_count": 0,
+    "keyword_result_count": 0,
     "merged_count": 0,
     "final_retrieved_count": 0,
+    "vector_error": "",
+    "keyword_error": "",
     "fusion": "rrf",
     "rrf_k": RRF_K,
     "vector_weight": VECTOR_WEIGHT,

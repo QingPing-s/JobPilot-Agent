@@ -35,6 +35,7 @@ from .retriever import (
     INDEX_VERSION,
     STORE_FILE,
     build_chroma_store,
+    is_retrieval_store_current,
 )
 from .run_control import events_since
 from .run_manager import TERMINAL_STATUSES, RunManager, RunStore
@@ -64,9 +65,14 @@ JOB_RECORDS_PATH = PERSISTENT_DATA_DIR / "jobs_csv" / "job_records.jsonl"
 DEFAULT_RECORDS_PATH = JOB_RECORDS_PATH
 JOB_SEED_PATH = ROOT_DIR / "data" / "job_seed.json"
 FRONTEND_DIST = Path(os.getenv("JOBPILOT_FRONTEND_DIST", ROOT_DIR / "frontend" / "dist"))
-CHECKPOINT_PATH = PERSISTENT_DATA_DIR / "jobpilot_checkpoints.sqlite"
-RUN_DB_PATH = PERSISTENT_DATA_DIR / "jobpilot_runs.db"
+CHECKPOINT_PATH = Path(
+    os.getenv("JOBPILOT_CHECKPOINT_DB", PERSISTENT_DATA_DIR / "jobpilot_checkpoints.sqlite")
+)
+RUN_DB_PATH = Path(
+    os.getenv("JOBPILOT_RUN_DB", PERSISTENT_DATA_DIR / "jobpilot_runs.db")
+)
 RUN_MANAGER = RunManager(store=RunStore(RUN_DB_PATH))
+PIPELINE_CACHE_VERSION = "v3"
 
 
 class RunJobPilotRequest(BaseModel):
@@ -191,7 +197,9 @@ def _refresh_job_retrieval_store() -> tuple[bool, str | None]:
     try:
         jobs = list_parsed_jobs(db_path=DEFAULT_JOB_DB_PATH)
         build_chroma_store(jobs, persist_dir=str(_default_vector_store_dir()))
-        return True, None
+        stats = getattr(build_chroma_store, "last_stats", {})
+        warning = str(stats.get("warning") or "").strip() if isinstance(stats, dict) else ""
+        return True, warning or None
     except Exception as exc:
         return False, str(exc)
 
@@ -206,8 +214,8 @@ def _vector_store_needs_refresh() -> bool:
     if not DEFAULT_JOB_DB_PATH.exists():
         return False
 
-    db_mtime = DEFAULT_JOB_DB_PATH.stat().st_mtime
-    return db_mtime > min(store_path.stat().st_mtime, backend_path.stat().st_mtime)
+    jobs = list_parsed_jobs(db_path=DEFAULT_JOB_DB_PATH)
+    return not is_retrieval_store_current(jobs, persist_dir=str(vector_store_dir))
 
 
 def _initialize_persistent_data() -> None:
@@ -336,6 +344,7 @@ def _request_hash(request: RunJobPilotRequest) -> str:
     payload = request.model_dump() if hasattr(request, "model_dump") else request.dict()
     payload.pop("timeout_seconds", None)
     payload.pop("allow_cache", None)
+    payload["pipeline_cache_version"] = PIPELINE_CACHE_VERSION
     if request.use_job_library:
         library_records = list_jobs(db_path=DEFAULT_JOB_DB_PATH)
         version_payload = [

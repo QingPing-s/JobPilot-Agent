@@ -79,6 +79,7 @@ def test_write_outputs_creates_expected_files(tmp_path, monkeypatch):
     assert json.loads(paths["matched_jobs"].read_text(encoding="utf-8"))[0]["job_id"] == "job_1"
     report_text = paths["final_report"].read_text(encoding="utf-8")
     assert "Top 5 推荐岗位" in report_text
+    assert "Token 消耗" not in report_text
     assert "求职信草稿" not in report_text
     assert state["final_report"]["target_role"] == "AI Agent Intern"
 

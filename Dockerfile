@@ -1,4 +1,7 @@
-FROM node:20-alpine AS frontend-build
+ARG NODE_VERSION=20.19.5
+ARG PYTHON_VERSION=3.10.18
+
+FROM node:${NODE_VERSION}-alpine AS frontend-build
 
 WORKDIR /build/frontend
 COPY frontend/package*.json ./
@@ -6,7 +9,7 @@ RUN npm ci
 COPY frontend/ ./
 RUN npm run build
 
-FROM python:3.10-slim AS runtime
+FROM python:${PYTHON_VERSION}-slim-bookworm AS runtime
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -16,8 +19,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements.txt requirements.lock ./
+RUN pip install --no-cache-dir -r requirements.lock && pip check
 
 COPY src/ ./src/
 COPY data/user_profile.json ./data/user_profile.json
