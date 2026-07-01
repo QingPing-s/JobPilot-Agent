@@ -1,60 +1,165 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import { githubUrl, liveDemoUrl, sitePath } from "../../lib/site.js";
 
-const base = import.meta.env.BASE_URL;
+const capabilities = [
+  ["01", "Profile / JD Parsing", "Pydantic 约束候选人画像和岗位结构，LLM 失败时使用本地解析。"],
+  ["02", "Hybrid Retrieval", "BGE 向量召回与 TF-IDF 关键词召回通过 Weighted RRF 融合。"],
+  ["03", "Rerank / Scoring", "规则重排后按任职要求、加分项和岗位职责计算可解释分数。"],
+  ["04", "Deep Analysis", "仅对高匹配岗位生成差距分析和可执行的简历改写建议。"],
+  ["05", "Resilient Workflow", "LangGraph 条件路由、重试、人工审核、降级与 checkpoint。"],
+  ["06", "Evaluation / Trace", "记录节点耗时与异常，并对五组检索基线进行离线评测。"],
+];
 ---
 
 <BaseLayout
-  title="JobPilot RAG-Agent | Project Case"
-  description="JobPilot RAG-Agent project case study."
+  title="JobPilot RAG-Agent | 项目案例"
+  description="JobPilot RAG-Agent 的系统设计、Hybrid RAG、LangGraph 工作流、评测和 Azure 部署案例。"
 >
-  <article class="article-page">
-    <header class="article-header">
-      <p class="eyebrow">Project Case</p>
+  <article class="article-page project-page">
+    <header class="article-header project-header">
+      <p class="eyebrow">Project Case Study</p>
       <h1>JobPilot RAG-Agent</h1>
-      <p class="tagline">LangGraph + FastAPI + React + ChromaDB + DeepSeek API</p>
+      <p class="tagline">Internship Job Matching and Resume Optimization Agent</p>
       <p>
-        一个面向 AI Agent / RAG / LLM 应用实习岗位申请的岗位匹配与简历优化 Agent，重点展示完整工程链路，而不是单次 Prompt Demo。
+        将候选人画像与真实岗位库连接起来，通过混合检索、确定性评分和可选 LLM 增强，完成岗位筛选、差距分析与简历优化。
       </p>
+      <div class="inline-actions">
+        <a class="primary-link" href={liveDemoUrl} target="_blank" rel="noreferrer">在线体验</a>
+        <a class="outline-link" href={githubUrl} target="_blank" rel="noreferrer">GitHub 源码</a>
+      </div>
     </header>
 
-    <img class="wide-image" src={`${base}jobpilot-workbench.png`} alt="JobPilot Agent 工作台界面截图" />
+    <img
+      class="wide-image"
+      src={sitePath("jobpilot-workbench.png")}
+      alt="JobPilot Agent 中文工作台，包括岗位库、流程状态和推荐结果"
+    />
+
+    <section class="metric-grid project-metrics" aria-label="项目指标">
+      <div><strong>100</strong><span>持久化岗位数据</span></div>
+      <div><strong>50</strong><span>离线评测样本</span></div>
+      <div><strong>5</strong><span>检索基线</span></div>
+      <div><strong>94</strong><span>后端测试</span></div>
+    </section>
 
     <section class="content-grid">
       <div>
-        <h2>项目目标</h2>
+        <p class="eyebrow">Problem</p>
+        <h2>解决什么问题</h2>
         <p>
-          将候选人画像、岗位 JD、岗位库检索、匹配评分、差距分析、简历建议和运行日志串成一个可交互系统，用于辅助实习岗位筛选和求职材料优化。
+          求职者面对大量 JD 时，很难快速判断“岗位是否值得投递”“缺少的是能力还是简历证据”。单次 LLM 评分容易受提示词和上下文影响，也缺少可验证的排序依据。
         </p>
       </div>
       <div>
-        <h2>技术栈</h2>
-        <ul>
-          <li>Backend: Python, FastAPI, LangGraph, Pydantic</li>
-          <li>LLM: DeepSeek API via OpenAI SDK</li>
-          <li>Retrieval: ChromaDB, TF-IDF hybrid retrieval</li>
-          <li>Frontend: React, Vite</li>
-          <li>Quality: pytest, offline evaluation, trace logging</li>
-        </ul>
+        <p class="eyebrow">Approach</p>
+        <h2>为什么不是简单 Demo</h2>
+        <p>
+          系统将数据持久化、检索、重排、规则评分、生成、任务控制、Trace 和评测拆成独立模块。LLM 是增强能力，不是整个系统唯一的执行路径。
+        </p>
       </div>
     </section>
 
     <section class="section compact">
-      <h2>核心能力</h2>
-      <div class="metric-grid">
-        <div><strong>01</strong><span>Candidate Profile Extraction</span></div>
-        <div><strong>02</strong><span>JD Parsing and Job Library</span></div>
-        <div><strong>03</strong><span>Hybrid Retrieval and Rerank</span></div>
-        <div><strong>04</strong><span>Requirement-based Match Scoring</span></div>
-        <div><strong>05</strong><span>Gap Analysis and Resume Suggestions</span></div>
-        <div><strong>06</strong><span>Trace Logging and Offline Eval</span></div>
+      <div class="section-heading">
+        <p class="eyebrow">Architecture</p>
+        <h2>核心执行链路</h2>
+      </div>
+      <div class="pipeline">
+        <span>Candidate Profile</span>
+        <i>→</i>
+        <span>JD Parser</span>
+        <i>→</i>
+        <span>Hybrid Retrieval</span>
+        <i>→</i>
+        <span>RRF + Rerank</span>
+        <i>→</i>
+        <span>Match Scoring</span>
+        <i>→</i>
+        <span>Gap / Resume</span>
+      </div>
+      <p class="support-copy">
+        React 通过 FastAPI 创建异步任务，SSE 持续返回节点事件。LangGraph 根据解析质量、匹配分数和运行状态决定继续、审核、跳过深度分析或终止。
+      </p>
+    </section>
+
+    <section class="section compact">
+      <div class="section-heading">
+        <p class="eyebrow">Capabilities</p>
+        <h2>六个工程能力模块</h2>
+      </div>
+      <div class="capability-grid">
+        {
+          capabilities.map(([number, title, description]) => (
+            <article>
+              <strong>{number}</strong>
+              <h3>{title}</h3>
+              <p>{description}</p>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="section compact full-width-copy">
+      <p class="eyebrow">Retrieval & Scoring</p>
+      <h2>检索和评分如何协作</h2>
+      <div class="comparison-grid">
+        <div>
+          <h3>召回阶段</h3>
+          <p>
+            固定版本 BGE Embedding 负责语义相似度，TF-IDF 保留 LangGraph、FastAPI、RAG 等精确技术词，再通过 Weighted RRF 合并排名。ChromaDB 仅更新变化岗位。
+          </p>
+        </div>
+        <div>
+          <h3>排序阶段</h3>
+          <p>
+            先对 Top-20 进行规则重排，再按任职要求 70 分、加分项 20 分、岗位职责相关性 10 分计算最终结果。LLM 重排仅处理 Top-5。
+          </p>
+        </div>
+        <div>
+          <h3>降级策略</h3>
+          <p>
+            Chroma 不可用时保留关键词召回；DeepSeek 不可用时保留本地解析、规则评分、差距模板和简历建议，避免主流程直接失败。
+          </p>
+        </div>
       </div>
     </section>
 
     <section class="section compact">
-      <h2>简历表述</h2>
+      <div class="section-heading">
+        <p class="eyebrow">Quality</p>
+        <h2>如何证明系统有效</h2>
+      </div>
+      <div class="content-grid">
+        <div>
+          <h3>离线评测</h3>
+          <p>
+            对比 Keyword、Vector、Hybrid Union、Weighted RRF 和 RRF + Rule Rerank，统计 Recall、Precision、Hit、MRR、NDCG、Top-1 与 P95 延迟。
+          </p>
+        </div>
+        <div>
+          <h3>工程验证</h3>
+          <p>
+            pytest 覆盖核心模块，Playwright 验证真实浏览器链路，GitHub Actions 检查后端、前端、Smoke 和 Docker 构建。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section compact">
+      <p class="eyebrow">Deployment</p>
+      <h2>云端交付</h2>
+      <div class="deployment-strip">
+        <span>GitHub</span><i>→</i><span>Docker</span><i>→</i><span>Azure Container Registry</span><i>→</i><span>Azure Container Apps</span><i>→</i><span>Azure Files</span>
+      </div>
+    </section>
+
+    <section class="section compact">
+      <p class="eyebrow">Resume Bullet</p>
+      <h2>简历表达</h2>
       <p class="quote-block">
-        构建 JobPilot RAG-Agent 实习岗位匹配系统，使用 LangGraph 编排候选人画像抽取、JD 解析、混合检索、岗位重排序、规则评分、差距分析和简历建议生成流程；结合 Pydantic 约束结构化输出，SQLite 持久化岗位库，Trace Logger 记录节点执行过程，并通过离线评测统计 Recall@K、Precision@K、Hit@K 等指标。
+        设计并实现面向 AI Agent / RAG / LLM 实习岗位的智能匹配系统，使用 LangGraph 编排支持条件路由、重试、人工审核与 checkpoint 恢复的多节点工作流；基于固定 BGE Embedding、TF-IDF、Weighted RRF 和增量 Chroma 索引构建混合检索；通过 FastAPI 异步任务、SSE、Trace、离线评测和 Azure 容器化部署完成端到端工程交付。
       </p>
     </section>
   </article>

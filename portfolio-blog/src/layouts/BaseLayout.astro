@@ -1,11 +1,19 @@
 ---
 import "../styles/global.css";
+import { githubUrl, liveDemoUrl, sitePath } from "../lib/site.js";
 
 const {
   title = "JY | AI Agent Portfolio",
   description = "AI Agent, RAG, and LLM application portfolio and technical blog.",
 } = Astro.props;
-const base = import.meta.env.BASE_URL;
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
+const currentPath = Astro.url.pathname;
+const navigation = [
+  { href: sitePath(), label: "首页", prefix: sitePath() },
+  { href: sitePath("projects/jobpilot-agent/"), label: "项目", prefix: sitePath("projects/") },
+  { href: sitePath("blog/"), label: "博客", prefix: sitePath("blog/") },
+  { href: sitePath("resume/"), label: "简历", prefix: sitePath("resume/") },
+];
 ---
 
 <!doctype html>
@@ -14,24 +22,47 @@ const base = import.meta.env.BASE_URL;
     <meta charset="UTF-8" />
     <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#147f75" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={new URL(sitePath("jobpilot-workbench.png"), Astro.site)} />
+    <link rel="canonical" href={canonicalUrl} />
     <title>{title}</title>
   </head>
   <body>
     <header class="site-header">
-      <a class="brand" href={base}>JY</a>
+      <a class="brand" href={sitePath()} aria-label="返回首页">
+        <span>JY</span>
+        <small>AI Agent Engineer</small>
+      </a>
       <nav class="site-nav" aria-label="Primary navigation">
-        <a href={base}>首页</a>
-        <a href={`${base}projects/jobpilot-agent/`}>项目</a>
-        <a href={`${base}blog/`}>博客</a>
-        <a href={`${base}resume/`}>简历</a>
+        {
+          navigation.map((item, index) => {
+            const active =
+              index === 0 ? currentPath === item.href : currentPath.startsWith(item.prefix);
+            return (
+              <a class:list={{ active }} href={item.href}>
+                {item.label}
+              </a>
+            );
+          })
+        }
       </nav>
     </header>
     <main>
       <slot />
     </main>
     <footer class="site-footer">
-      <span>JY Portfolio Blog</span>
-      <span>AI Agent / RAG / LLM Apps</span>
+      <div>
+        <strong>JY Portfolio</strong>
+        <span>AI Agent / RAG / LLM Application Engineering</span>
+      </div>
+      <nav aria-label="Footer navigation">
+        <a href={githubUrl} target="_blank" rel="noreferrer">GitHub</a>
+        <a href={liveDemoUrl} target="_blank" rel="noreferrer">在线演示</a>
+      </nav>
     </footer>
   </body>
 </html>
