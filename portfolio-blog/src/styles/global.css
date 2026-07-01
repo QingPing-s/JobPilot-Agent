@@ -129,17 +129,18 @@ h3 {
 .hero {
   position: relative;
   display: flex;
-  min-height: calc(100vh - 112px);
-  align-items: flex-end;
+  height: min(620px, calc(100vh - 112px));
+  min-height: 520px;
+  align-items: center;
   overflow: hidden;
-  padding: 92px 5vw 76px;
-  background: var(--hero-image) center / cover no-repeat;
+  padding: 64px 5vw;
+  background: var(--hero-image) center 18% / cover no-repeat;
 }
 
 .hero::before {
   position: absolute;
   inset: 0;
-  background: rgba(8, 25, 23, 0.72);
+  background: rgba(8, 25, 23, 0.64);
   content: "";
 }
 
@@ -719,9 +720,10 @@ h3 {
   }
 
   .hero {
-    min-height: 72vh;
-    padding: 74px 5vw 58px;
-    background-position: 58% center;
+    height: min(580px, calc(100vh - 92px));
+    min-height: 520px;
+    padding: 48px 5vw;
+    background-position: 58% 16%;
   }
 
   .hero-copy {
