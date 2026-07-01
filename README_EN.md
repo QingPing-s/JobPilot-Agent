@@ -10,6 +10,10 @@ JobPilot provides an interactive React + FastAPI workbench and uses LangGraph to
 
 **Live demo:** [Azure Container Apps](https://jobpilot-agent.gentlefield-019d4ae8.eastasia.azurecontainerapps.io/)
 
+## System Architecture
+
+![JobPilot RAG-Agent System Architecture](docs/images/JobPilot.png)
+
 ## Core Features
 
 - Candidate profile ingestion, normalization, and Pydantic validation
