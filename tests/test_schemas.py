@@ -3,7 +3,6 @@ from pydantic import ValidationError
 
 from src.schemas import (
     CandidateProfile,
-    CoverLetterDraft,
     GapItem,
     JobPosting,
     MatchResult,
@@ -29,6 +28,7 @@ def test_candidate_profile_schema():
         name="Alex",
         education=["Computer Science"],
         skills=["Python"],
+        soft_skills=["学习速度快", "自驱力强"],
         projects=[
             ProjectExperience(
                 name="Agent Demo",
@@ -44,6 +44,7 @@ def test_candidate_profile_schema():
 
     assert profile.name == "Alex"
     assert profile.skills == ["Python"]
+    assert profile.soft_skills == ["学习速度快", "自驱力强"]
     assert profile.preferences["location"] == "remote"
 
 
@@ -112,14 +113,3 @@ def test_resume_suggestion_schema():
     )
 
     assert suggestion.section == "Projects"
-
-
-def test_cover_letter_draft_schema():
-    draft = CoverLetterDraft(
-        job_id="job-001",
-        company="Example AI",
-        title="RAG Intern",
-        body="Dear hiring team...",
-    )
-
-    assert draft.company == "Example AI"

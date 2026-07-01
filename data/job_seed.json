@@ -1,0 +1,502 @@
+[
+  {
+    "raw_text": "Title: 大模型agent实习生\nCompany: 小红书\nLocation: 北京\nSalary: 300-450元/天\nDuration: 4天/周，3个月\nEducation: 本科\nResponsibilities:\n- 提升模型搜索意图判断能力，将复杂需求拆解为可执行的搜索子目标，生成 Query，选择检索源，控制搜索预算。\n- 设计可增长、可替换、可分层的 context 架构，例如对话摘要层、搜索证据层、推理草稿层、最终引用层。\n- 做检索后处理与引用可信度提升，包括 Snippet 选优、去重、冲突检测与引用自检。\n- 降低模型幻觉，提高 evidence-answer 一致性。\nRequirements:\n- LLM 检索\n- RAG\n- 多轮对话\n- 搜索策略\n- Context Engineering\nPreferred:\n- Query Generation\n- Evidence Answer\n- Snippet Ranking\n- Hallucination Reduction",
+    "filename": "AI Agent Intern_1.txt",
+    "source": "frontend"
+  },
+  {
+    "raw_text": "Title: agent实习生\nCompany: 百度\nLocation: 北京\nSalary: 300-600元/天\nDuration: 5天/周 3个月\nEducation: 硕士\nWork Address: 北京海淀区百度科技园百度科技园\n\nResponsibilities:\n- 参与文本、跨模态大模型研发，包括但不限于大语言模型的预训练、对齐、任务调优等研发工作。\n- 研究高效模型调优、深度推理、Agent、RAG 等方向和高质量数据构建策略。\n- 深入调研和关注大模型前沿技术和未来趋势。\n- 利用大模型技术，将最新算法应用于产品开发中，推动大模型技术实际应用与创新落地。\n\nRequired Skills:\n- 硕士及以上学历在读，计算机相关专业优先，每周出勤不低于 4 天，至少实习 3 个月。\n- 具备大模型预训练、对齐、任务调优等实际经验优先。\n- 有一定学术能力，发表过 AI 顶会论文、算法竞赛获奖或参与大模型开源项目优先。\n- 熟练掌握 Python 编程语言以及 PyTorch、TensorFlow、PaddlePaddle 等至少一项深度学习开发框架。\n- 具有较好的团队沟通合作能力、分析问题和解决问题能力，有责任心和自驱力。\n\nPreferred Skills:\n- 有大模型训练、RAG、Agent、高质量数据构建或深度推理经验优先。\n- 有顶会论文、竞赛获奖或大模型开源项目经验优先。\n\nRaw Text:\n岗位来源：BOSS直聘截图。招聘人：钟舒涵，HR。",
+    "filename": "batch10_baidu_agent_intern.txt",
+    "source": "screenshot_batch_20260622_8"
+  },
+  {
+    "raw_text": "Title: AI agent全栈实习生\nCompany: 滴滴\nLocation: 北京\nSalary: 400-450元/天\nDuration: 4天/周 3个月\nEducation: 硕士\n\nResponsibilities:\n- 参与智能运营 Agent 产品 0 到 1，包含微调、RL、RAG、Agent 编排，参与智能运营大模型团队，打造下一代智能运营产品关键版本。\n- 设计智能运营 Agent 的结构化诊断、异常归因、链路分析能力。\n- 定义模型调用与业务逻辑抽象，如 Tool Schema、Function Calling、Agent Graph。\n- 将复杂运营体系抽象为多 Agent 可执行的智能场景。\n- 参与 RAG、Agent Orchestration、评估与推理链路产品化设计。\n- 参与 LLM 技术体系，包括微调、强化学习、多 Agent 产品化工程、模型评估与验证 Pipelines。\n- 打造智能运营产品前几版，从核心功能概念到落地迭代，面向高层展示真实产品版本。\n\nRequired Skills:\n- 产品、CS、AI、运筹、计科、自动化等相关背景。\n- 强逻辑拆解能力，对业务和技术都能深入理解。\n- 具备 Python 基础，读懂 Agent 流程并能写简单逻辑。\n- 对 LLM / Agent / RAG 有热情，愿意探索未定义领域。\n- 自驱力强，沟通好，喜欢创造而不是执行。\n- 每周实习 4 天，实习周期 3 个月，硕士在读。\n\nPreferred Skills:\n- 有 LLM 产品、科研经历、Prompt / Agent Workflow 经验。\n- 了解基本工程、前端或算法知识即可。\n- 对论文比赛有兴趣。\n\nRaw Text:\n岗位来源：BOSS直聘截图。招聘人：向女士，招聘经理。",
+    "filename": "batch10_didi_ai_agent_fullstack_intern.txt",
+    "source": "screenshot_batch_20260622_8"
+  },
+  {
+    "raw_text": "Title: Agent算法实习生\nCompany: 高途\nLocation: 北京\nSalary: 300-400元/天\nDuration: 4天/周 6个月\nEducation: 本科\nWork Address: 北京海淀区高途总部（中电金信）\n\nResponsibilities:\n- 参与 Agent 系统设计、优化与落地，包括 Agent 任务规划与策略设计。\n- 负责复杂多步骤任务拆解、规划（Task Planning）和 Agent 执行策略优化，如 Policy / Heuristics。\n- 设计 Agent 工具链（Toolchain），接入 OCR、公式识别、文档解析、题目理解等多模态组件。\n- 构建作业批改 Agent、试卷分析 Agent、个性化辅导 Agent 等场景模型。\n- 负责大模型提示工程与对话管理，包括系统提示、链式思考和工具约束。\n- 设计 State Management 与 Agent Memory 机制。\n- 负责数据处理与反馈优化，构建 Agent 效果验证与评测体系。\n\nRequired Skills:\n- 熟练掌握 Python。\n- 熟悉至少一种深度学习框架，如 PyTorch / TensorFlow。\n- 有大模型相关经验之一：Prompt Engineering、RAG、CoT、ReAct，或 LLM 推理与调用 OpenAI、Qwen、Gemini 等。\n- 具备较强代码能力和逻辑思维能力。\n- 每周实习 4 天，实习周期 6 个月，本科在读。\n\nPreferred Skills:\n- 做过 Agent / Tool Calling 项目。\n- 有大模型自动化评测或 Reward Model 经验。\n- 有多模态经验，如 OCR / CV / NLP。\n- 有 Kaggle / 竞赛获奖或论文成果。\n- 有教育场景应用经验，如题目分析、知识点、批改系统等。\n\nRaw Text:\n岗位标签：大模型算法、多模态算法、强化学习、Python。\n岗位来源：BOSS直聘截图。招聘人：刘明欣，HRBP。",
+    "filename": "batch10_gaotu_agent_algorithm_intern.txt",
+    "source": "screenshot_batch_20260622_8"
+  },
+  {
+    "raw_text": "Title: Agent开发工程师\nCompany: 华为技术有限公司\nLocation: 北京\nSalary: 400-600元/天\nDuration: 4天/周 4个月\nEducation: 本科\nWork Address: 北京海淀区华为公司北京研究所（环保园）\n\nResponsibilities:\n- 参与 Agent 应用开发，以及 Agent 开发框架的实现。\n- 探索大模型应用场景，比如代码转换、代码修复等。\n- 协助团队完成相关技术文档的整理和撰写。\n- 协助团队完成相关技术问题的定位分析与解决。\n\nRequired Skills:\n- 计算机科学、软件工程、电子信息、数学等相关专业在读本科或研究生。\n- 熟悉至少一门编程语言：C、C++、Java、Python、Go 等。\n- 具备良好的学习能力、逻辑思维和团队协作意识。\n- 在开源社区，如 GitHub、GitCode 等有贡献者优先。\n\nPreferred Skills:\n- 有 Agent 开发框架、大模型应用、代码转换、代码修复或开源项目经验优先。\n\nRaw Text:\n岗位来源：BOSS直聘截图。招聘人：李先生，软件开发工程师。",
+    "filename": "batch10_huawei_agent_dev_engineer_a.txt",
+    "source": "screenshot_batch_20260622_8"
+  },
+  {
+    "raw_text": "Title: AI Agent\nCompany: 京东科技集团\nLocation: 北京\nSalary: 500-550元/天\nDuration: 5天/周 3个月\nEducation: 本科\n\nResponsibilities:\n- 负责大模型（LLM）相关应用核心功能开发，包括但不限于 Agent 构建与工作流编排，持续优化系统准确性、稳定性和响应性能。\n- 深入理解业务场景，跟进并调研大模型领域前沿技术，如新模型特性、MCP 等新规范，探索智能化解决方案。\n- 参与大模型应用的数据处理、工程化部署及线上运维监控，保障 AI 应用高效稳定运行。\n\nRequired Skills:\n- 具备大模型应用系统的架构设计与落地经验，深度参与过系统设计、算法工程化或 AIGC 底层应用搭建。\n- 扎实掌握大模型底层原理，熟练应用向量数据库、RAG、Prompt Engineering、ReAct / Plan-and-Solve 等 Agent 核心技术。\n- 具备扎实编程基础和良好工程规范，熟悉常用后端开发语言及微服务架构。\n- 具备优秀逻辑思维能力和业务拆解能力，对前沿 AI 技术有强烈好奇心和自我驱动力。\n\nPreferred Skills:\n- 有主流 AI 应用框架，如 LangChain、LlamaIndex、Semantic Kernel 等实际落地经验者优先。\n- 了解或参与过大模型微调，如 SFT、RLHF、模型蒸馏者优先。\n- 活跃于开源社区，有相关领域开源项目贡献者优先。\n\nRaw Text:\n岗位来源：BOSS直聘截图。招聘人：万先生，技术总监。",
+    "filename": "batch10_jd_ai_agent.txt",
+    "source": "screenshot_batch_20260622_8"
+  },
+  {
+    "raw_text": "Title: AI Agent算法工程师\nCompany: 快手\nLocation: 北京\nSalary: 350-700元/天\nDuration: 4天/周 6个月\nEducation: 硕士\nWork Address: 北京海淀区上地·元中心\n\nResponsibilities:\n- 参与 AI Agent 相关算法设计、开发与优化，实现大模型技术的智能化落地。\n- 通过用户行为反馈，对 Agent 系统进行迭代升级。\n- 深度应用 AI Agent 相关技术栈，如多模态 RAG、强化学习、奖励模型、结构化能力构筑等。\n\nRequired Skills:\n- 有大模型后训练与强化学习经验。\n- 有 Agent 领域经验，对长上下文、多轮对话、Agent 系统搭建等有深度实践和理解。\n- 对前沿技术有持续跟踪与理解。\n- 每周实习 4 天，实习周期 6 个月，硕士在读。\n\nPreferred Skills:\n- 有多模态、VLM、大模型、Agent、RL 或 RAG 项目经验优先。\n- 有用户反馈驱动迭代、奖励模型或结构化能力构建经验优先。\n\nRaw Text:\n岗位标签：多模态、VLM、大模型、Agent。\n岗位来源：BOSS直聘截图。招聘人：王怀庆，多模态算法专家。",
+    "filename": "batch10_kuaishou_ai_agent_algorithm_engineer.txt",
+    "source": "screenshot_batch_20260622_8"
+  },
+  {
+    "raw_text": "Title: agent 开发实习生(A53781)\nCompany: 理想汽车\nLocation: 北京\nSalary: 200-250元/天\nDuration: 5天/周 3个月\nEducation: 本科\nWork Address: 北京顺义区理想汽车北京研发总部C区\n\nResponsibilities:\n- 聚焦智能汽车研发与质量，提交 AI Agent 和相关产品的全栈开发。\n- 负责 AI 应用产品的前端和后端系统设计与开发。\n- 参与需求分析、架构设计与方案评审，与需求方闭环协作，保障高质量交付。\n- 跟踪 LLM 技术及行业应用趋势，结合电动汽车研发质量业务特点，持续优化智能应用方案。\n\nRequired Skills:\n- 具备完整 Agent 开发能力，熟练掌握 LangChain / LangGraph、OpenAI Agents、Dify 等开发框架。\n- 熟悉 OpenClaw、Multi-Agent Systems 及前沿 AI Agent 技术趋势。\n- 能完成 AI 应用系统后端开发、API 接口开发及服务化部署。\n- 熟练掌握 RAG 架构及常见优化方法，如 Chunk 切分策略、Hybrid Search、Re-ranking、多路召回、结构化知识库构建等。\n- 熟悉常见数据库使用与数据处理，如 MySQL、PostgreSQL、MongoDB、Neo4j，能够完成数据查询、建模及系统对接。\n- 了解智能评审、质量数据分析相关方法，有相关项目实践经验者加分；了解车辆日志/信号/DTC 者优先。\n- 每周实习 5 天，实习周期 3 个月，本科在读。\n\nPreferred Skills:\n- 有智能汽车、研发质量、AI Agent、RAG、数据库建模或全栈开发经验优先。\n\nRaw Text:\n岗位标签：计算机相关专业。\n岗位来源：BOSS直聘截图。招聘人：王先生，Talent Acquisition。",
+    "filename": "batch10_lixiang_agent_dev_intern.txt",
+    "source": "screenshot_batch_20260622_8"
+  },
+  {
+    "raw_text": "Title: Agent 应用开发实习生（后端方向）\nCompany: Momenta\nLocation: 北京\nSalary: 360-500元/天\nDuration: 5天/周 4个月\nEducation: 硕士\n\nResponsibilities:\n- 参与支撑 Agent 应用的后端服务接口设计、开发、测试与维护，确保接口稳定性和性能。\n- 参与 Agent 开发，多与智能体 Agent 的核心逻辑设计与开发。\n- 负责 Prompt 编写与优化，提升 Agent 对复杂指令的理解能力、任务拆解能力和执行效率。\n- 参与 RAG 与向量数据库设计和实现，利用向量数据库如 Milvus、Chroma 等管理知识，实现 Agent 问答准确性与相关性提升。\n- 调研、评估并应用业界常用的大语言模型，包括商业 API 和开源模型，将其有效集成到 Agent 系统中。\n- 协助团队进行开源大模型私有化部署、环境配置、性能测试，并参与基础模型微调任务。\n- 撰写开发文档、技术方案和用户手册。\n\nRequired Skills:\n- 熟悉 Python、Go、Java 中的一种，有一年以上 Go 或 Python 开发经验加分。\n- 具备基础后端开发知识，了解 RESTful API 设计原则和数据库基本操作，熟悉 Git。\n- 对大语言模型、自然语言处理有基本了解和浓厚兴趣，了解 Agent、Prompt Engineering、RAG 等基本概念。\n- 计算机科学、软件工程、人工智能、电子信息或相关专业在读本科或研究生，985/211 或 QS 前 200 院校优先。\n- 具备快速学习能力、分析问题和解决问题能力，沟通表达良好，责任心强。\n- 能保证至少 6 个月全职实习，每周出勤不少于 4 天。\n\nPreferred Skills:\n- 有实际 LLM 应用开发、LangChain / LlamaIndex、Agent 开发或 Prompt 调优项目经验者优先。\n- 熟悉向量数据库，如 Milvus、Chroma、FAISS、Pinecone 的使用和原理者优先。\n- 有开源大模型如 Llama、ChatGLM、Qwen 等部署或微调经验者优先。\n\nRaw Text:\n岗位来源：BOSS直聘截图。招聘人：张女士，招聘HR。",
+    "filename": "batch10_momenta_agent_backend_intern.txt",
+    "source": "screenshot_batch_20260622_8"
+  },
+  {
+    "raw_text": "Title: AI Agent研发与效能优化实习生\nCompany: 百度\nLocation: 北京\nSalary: 250-400元/天\nDuration: 5天/周 3个月\nEducation: 本科\nWork Address: 北京朝阳区百度上海研发中心浦东新区纳贤路701号\n\nResponsibilities:\n- 利用AI智能体与自动化技术，改造传统人工产品体验运营流程，实现部门业务的全面数字化与无人化提效。\n- 参与众测数字人体检测式智能体代码开发，基于内部大模型API和Agent框架，开发能自动解析测试需求、模拟用户行为体验产品并自动生成测试报告的AI智能体。\n- 参与海量反馈聚类算法优化，提高Bug与体验痛点识别准确率和召回率，最终实现PRD需求卡片自动生成与流转。\n- 开发数字化效能工具，替代日常数据统计、信息搬运等机械性人工工作。\n- 撰写并维护相关工具与Agent技术文档。\n\nRequired Skills:\n- 本科及以上学历在读，计算机科学、软件工程、人工智能、数据科学等弱技术相关专业。\n- 具备扎实编程基础，熟悉Python，熟悉RESTful API调用、JSON数据处理及Git版本控制。\n- 深入理解LLM工作原理，有实际AI Agent或RAG项目开发经验。\n- 熟练使用LangChain、Dify、Coze、LlamaIndex等大模型应用开发框架。\n- 有直接调用OpenAI、Claude、DeepSeek等底层API开发应用经验。\n- 熟悉Claude Code或Codex等AI辅助编程工具，能利用AI快速跨语言学习、排查Bug并交付代码。\n- 每周至少实习4-5天，连续实习3个月以上。\n\nPreferred Skills:\n- 有AI Agent、RAG、自动化测试、反馈聚类、效能工具或AI Coding相关项目经验优先。\n\nRaw Text:\n来源：BOSS直聘截图。招聘方：夏女士，百度HR。",
+    "filename": "job_batch11_baidu_ai_agent_efficiency_intern.txt",
+    "source": "screenshot_batch_20260622_9"
+  },
+  {
+    "raw_text": "Title: 大模型/Agent 算法实习生\nCompany: 海底捞\nLocation: 北京\nSalary: 300-400元/天\nDuration: 5天/周 6个月\nEducation: 硕士\n\nResponsibilities:\n- 参与海底捞供应链智能化相关项目，重点支持大模型与Agent在需求分析、异常诊断、决策推荐、自然语言交互等场景的探索与落地。\n- 基于销量、订单、库存、门店运营等多源数据，参与构建面向供应链场景的智能问答、分析助手、决策辅助Agent等能力。\n- 参与Prompt设计、工具调用、知识检索、工作流编排、评测体系建设等大模型应用开发工作，持续优化效果与稳定性。\n- 协助完成数据处理、特征整理、实验设计、模型评估与结果分析，支持从原型验证到业务落地的全过程。\n- 参与Agent框架、RAG、自动化分析等方向探索，推动大模型能力在真实业务场景中的应用。\n- 持续跟踪大模型、Agent、RAG、多智能体、时序建模等前沿方向，参与技术调研、方案验证与最佳实践沉淀。\n\nRequired Skills:\n- 硕士及以上学历在读，计算机、人工智能、数学、统计学、软件工程等相关专业优先。\n- 对大模型LLM、Agent、RAG、多智能体、工具调用等方向有浓厚兴趣，有相关项目经验者优先。\n- 熟练使用Python，具备良好代码能力和工程习惯，熟悉Pandas、SQL等基础数据处理工具。\n- 熟悉至少一种常见大模型应用开发技术，如LangChain、LlamaIndex、OpenAI SDK、AutoGen、CrewAI等。\n- 有Prompt Engineering、知识库检索、工作流编排、模型评测或Agent设计实践经验者优先。\n- 具备较强问题拆解能力和学习能力，能快速理解业务需求并推进实验验证。\n- 有良好沟通与协作意识，能在指导下完成模块开发、实验分析和文档沉淀。\n\nPreferred Skills:\n- 有大模型应用、Agent、RAG、知识库问答、智能助手、多轮对话、工具调用、函数调用、Workflow编排、评测体系、供应链业务、技术博客、论文复现、竞赛经历或GitHub项目经验优先。\n\nRaw Text:\n来源：BOSS直聘截图。招聘方：宋振，海底捞算法负责人。",
+    "filename": "job_batch11_haidilao_llm_agent_algorithm_intern.txt",
+    "source": "screenshot_batch_20260622_9"
+  },
+  {
+    "raw_text": "Title: AI Agent 开发实习生招聘 - 理想空间质量部\nCompany: 理想汽车\nLocation: 北京\nSalary: 300-400元/天\nDuration: 4天/周 6个月\nEducation: 学历不限\n\nResponsibilities:\n- 参与理想空间交付产品的质量保证工作，通过AI赋能构建端到端质量无人化链路。\n- 将大模型和Agent能力落地到真实业务场景，创新实实在在的业务价值。\n- 设计和开发智能化质量检测Agent。\n- 构建自动化质量分析和问题定位系统。\n- 探索AI在质量保证领域的创新应用。\n\nRequired Skills:\n- 实习期至少6个月，每周可工作4天及以上。\n- 熟练掌握至少一门主流编程语言，如Python、Java、JavaScript、Go等，有良好代码习惯。\n- 本科及以上学历，计算机、软件工程、人工智能等相关专业优先。\n- 了解LLM原理及主流大模型使用方式。\n- 熟悉LangChain、AutoGen、CrewAI等Agent框架之一。\n- 理解Agent核心概念，如ReAct、Chain of Thought、Tool Use、Memory等。\n- 有Prompt Engineering经验，能设计和优化提示词。\n- 了解向量数据库如Pinecone、Weaviate、Chroma和RAG技术。\n- 熟悉API调用和集成，有工具函数开发经验优先。\n- 了解MySQL、PostgreSQL等数据库基本操作，熟悉消息队列Kafka者优先。\n\nPreferred Skills:\n- 有算法基础、搜索推荐存储效率经验、开源项目贡献、AI项目、Hackathon、技术博客、AI Coding工具实践或质量保证/自动化测试经验优先。\n\nRaw Text:\n来源：BOSS直聘截图。招聘方：仲鑫，理想汽车技术专家。",
+    "filename": "job_batch11_lixiang_ai_agent_dev_quality_intern.txt",
+    "source": "screenshot_batch_20260622_9"
+  },
+  {
+    "raw_text": "Title: Agent开发实习生\nCompany: 美团\nLocation: 北京\nSalary: 300-310元/天\nDuration: 4天/周 3个月\nEducation: 本科\nWork Address: 北京朝阳区望京恒电大厦BC座\n\nResponsibilities:\n- 参与AI自动化训练过程，开发训练场景下的Agent产品功能，提供一般用户也可使用的训练平台。\n- 参与训练平台后端系统设计与开发，构建稳定、可扩展的服务架构。\n- 参与技术规划、性能优化、故障排查，解决线上问题。\n\nRequired Skills:\n- 2027届本科及以上在读学生，计算机、软件工程、人工智能等相关专业。\n- 具备大模型LLM相关学习或项目经验，对Agent、RAG、Prompt工程有认知或实践经历。\n- 至少精通Java、C++、Python等一种编程语言，具备AI Coding实践经验。\n- 熟练使用各种后端中间件技术，如MySQL、Redis、RocketMQ等。\n- 对AI有高度热情，有较强自驱、学习、沟通能力。\n- 能保证每周至少4天，持续3个月以上实习时间。\n\nPreferred Skills:\n- 有自动化模型训练落地、业务建模、后端工程化或AI Agent平台开发经验优先。\n\nRaw Text:\n来源：BOSS直聘截图。招聘方：卢浩，美团视觉智能部工程师。",
+    "filename": "job_batch11_meituan_agent_dev_intern.txt",
+    "source": "screenshot_batch_20260622_9"
+  },
+  {
+    "raw_text": "Title: OPA-AI AGENT开发工程师-BJ\nCompany: Shopee\nLocation: 北京\nSalary: 400-450元/天\nDuration: 4天/周 3个月\nEducation: 本科\nWork Address: 北京海淀区启迪科技大厦-D座28F\n\nResponsibilities:\n- 探索基于大模型的智能化广告投放在业界的最佳实践。\n- 设计与研发AI Agent产品，为Shopee海外广告投放赋能，提升广告投放效率。\n\nRequired Skills:\n- 2026年9月以后的毕业生，本科及以上学历。\n- 良好代码能力，精通Python编程语言，了解C++/C/Java编程。\n- 良好数据结构与算法基础，有一定离在线系统开发实践经验。\n- 对大模型、AI Agent、RAG等前沿技术有一定了解，熟悉常用LangGraph、LangChain等开发框架及相关解决方案，有相关实践经验。\n- 较强责任感、良好沟通能力、出色学习能力和执行力。\n\nPreferred Skills:\n- 有广告投放、大模型应用、Agent产品、RAG、LangGraph、LangChain或工程化落地经验优先。\n\nRaw Text:\n来源：BOSS直聘截图。招聘方：古女士，Shopee招聘者。",
+    "filename": "job_batch11_shopee_opa_ai_agent_engineer_bj.txt",
+    "source": "screenshot_batch_20260622_9"
+  },
+  {
+    "raw_text": "Title: 微信 AI Agent 后台开发工程师\nCompany: 腾讯科技(北京)公司\nLocation: 北京\nSalary: 400-450元/天\nDuration: 5天/周 6个月\nEducation: 硕士\nWork Address: 北京海淀区腾讯科技(北京)有限公司\n\nResponsibilities:\n- 负责AI Agent构建、知识库生产以及AI应用开发，为微信生态AI赋能。\n- 设计和搭建Agent架构与工作流，优化推理效率，提升产品端体验。\n- 负责知识库稳定生产，根据业务迭代丰富知识库。\n- 持续跟踪AI发展趋势，尤其是大语言模型领域前沿进展，并应用于Agent AI研发。\n\nRequired Skills:\n- 计算机相关专业本科及以上学历，熟悉大模型应用技术栈。\n- 具备C++开发经验，熟悉MQ、Cache、DB、ES等常用中间件。\n- 了解LLM推理原理，具有多Agent架构相关开发经验者优先。\n- 具备记忆、RAG、上下文工程等相关技术经验。\n- 具备良好问题分析与解决能力，快速学习前沿技术，善于发现和解决问题，具有团队合作精神。\n\nPreferred Skills:\n- 有微信生态、知识库生产、AI应用、RAG、多Agent或C++后台开发经验优先。\n\nRaw Text:\n来源：BOSS直聘截图。招聘方：王洁然，腾讯科技(北京)公司招聘者。",
+    "filename": "job_batch11_tencent_wechat_ai_agent_backend_engineer.txt",
+    "source": "screenshot_batch_20260622_9"
+  },
+  {
+    "raw_text": "Title: 大模型算法实习生（Agent Memory方向）\nCompany: 小鹏汽车\nLocation: 北京\nSalary: 300-500元/天\nDuration: 4天/周 3个月\nEducation: 硕士\nWork Address: 北京海淀区互联网金融中心23\n\nResponsibilities:\n- 聚焦Agent Memory智能体长期记忆核心机制基础研究与前沿探索，提升LLM Agent在长期、复杂任务中的推理与泛化能力。\n- 探索多轮记忆机制及信息压缩相关技术，提升智能体在跨领域任务上的长程推理能力。\n- 探索长期记忆的巩固、遗忘、反思等更新机制，研究如何通过长期交互实现持续进化。\n- 研究agentic memory相关上下文工程，提升记忆系统能力边界。\n\nRequired Skills:\n- 计算机、人工智能、数学等相关专业硕士及以上在读。\n- 深刻理解Transformer架构及LLM原理，熟悉SFT、RLHF等相关技术细节。\n- 具备优秀编程能力和vibing coding能力，Python/PyTorch能力强，能快速复现顶会Paper代码并改进。\n- 科研能力突出，在顶级会议如NeurIPS、ICLR、ICML、ACL等有论文发表记录者优先。\n\nPreferred Skills:\n- 有Agent Memory、长期记忆、上下文工程、多轮对话、信息压缩或LLM Agent科研经验优先。\n\nRaw Text:\n来源：BOSS直聘截图。招聘方：汤炜，小鹏汽车高级算法专家。",
+    "filename": "job_batch11_xpeng_agent_memory_algorithm_intern.txt",
+    "source": "screenshot_batch_20260622_9"
+  },
+  {
+    "raw_text": "Title: Agent 模型算法实习生（可转正）\nCompany: 网易有道\nLocation: 北京\nSalary: 350-500元/天\nDuration: 4天/周 3个月\nEducation: 硕士\n\nResponsibilities:\n- 面向有道词典、词典笔、学习规划、小P老师等产品线，负责Agent能力整体方案与核心算法研发。\n- 负责任务分解、计划执行、反思循环等Agent能力建设。\n- 参与SLM持续预训练与指令微调，构建高效压缩与蒸馏方案，优化端侧低延迟推理效率。\n- 设计并实现Function/Tool Calling体系，包括工具编排与路由、参数填充、结果验证、调用链追踪与可观测性。\n- 基于PPO、GRPO、DPO等方法参与奖励建模，提升语义理解、工具使用成功率和内容生成质量。\n- 负责搜索与排序相关模型，如embedding、rerank、学习排序、点击/转化信号建模与评估。\n- 负责数据工程能力建设，包含数据构建、策略采样、合成与清洗、去重去噪、难例挖掘、失败案例回放及工具轨迹数据集构建。\n- 建立系统化评测体系，支持离线基准、端到端任务评测、A/B实验及线上指标监控。\n- 推动工程化落地，包括训练管线、分布式并行、推理服务化、弹性扩缩容、缓存与检索加速、成本/时延/稳定性优化。\n\nRequired Skills:\n- 硕士及以上学历，计算机、人工智能、机器学习等相关专业。\n- 精通Python，熟练使用PyTorch等深度学习框架，具备良好代码风格与工程习惯。\n- 具备LLM或SLM训练与微调经验，熟悉SFT、对齐、强化学习相关方法如PPO/GRPO/DPO。\n- 熟悉Agent体系与典型范式，如Plan-Execute、ReAct、工具调用、函数调用、记忆与检索增强。\n- 具备检索排序建模经验，熟悉BM25、向量检索、重排、学习排序与点击转化建模，以及离线/在线评估方法。\n- 具备扎实数据工程能力，能处理数据清洗、治理、标注与质量监控、样本采样、难例挖掘与反馈闭环。\n- 具备良好问题分解和实验设计能力，主动负责，抗压能力强，善于沟通协作。\n\nPreferred Skills:\n- 有论文、搜索算法、图像算法、大模型算法、自然语言处理算法、强化学习或Agent产品落地经验优先。\n\nRaw Text:\n来源：BOSS直聘截图。公司依据有道词典/词典笔/小P老师等产品线推断为网易有道。",
+    "filename": "job_batch11_youdao_agent_model_algorithm_intern.txt",
+    "source": "screenshot_batch_20260622_9"
+  },
+  {
+    "raw_text": "Title: 世界模型仿真平台开发实习生\nCompany: 中国电信股份有限公司上海分公司\nLocation: 北京\nSalary: 350-450元/天\nDuration: 5天/周 3个月\nEducation: 硕士\n\nResponsibilities:\n- 负责世界模型、三维仿真相关算法模型的服务化封装、工程适配与离线/线上部署，推动模型能力标准化、可落地、可复用。\n- 基于FastAPI构建模型推理服务与标准化接口，完成世界模型、三维生成类算法的后端工程封装，打通稳定可调用的服务能力。\n- 对接前端渲染及仿真平台，参与接口联调、业务逻辑迭代，支撑三维仿真、虚拟交互类场景的功能开发与上线迭代。\n- 负责模型推理服务异步接口开发、业务逻辑迭代与性能调优，保障服务低延迟、高响应、高稳定性。\n- 开展模型服务压测、日志排查、并发优化与稳定性迭代，持续提升仿真服务线上可用性与健壮性。\n- 协同算法团队跟进模型版本迭代，完成世界模型从实验环境到生产仿真服务的全流程适配、迁移与工程落地。\n- 参与仿真服务工程体系建设，沉淀通用可复用模块，保障整体服务体系统一、易维护、可长期迭代。\n\nRequired Skills:\n- 硕士及以上学历，熟练使用Python，具备扎实后端工程开发基础，编码规范、逻辑清晰。\n- 熟悉FastAPI/Flask等主流Python Web框架，有接口开发、后端服务、模型服务封装相关实践经验优先。\n- 掌握Python异步编程async/await，了解异步服务开发逻辑与使用场景。\n- 有AI模型工程化、推理服务部署、算法落地上线相关项目或实习经验优先。\n- 具备独立接口调试、问题定位、服务稳定性优化能力，了解Isaac仿真、具身智能、三维仿真业务逻辑者优先。\n- 可保障实习3个月及以上，每周4-5天出勤。\n\nPreferred Skills:\n- 了解JavaScript基础、有SparkJS三维仿真适配对接经验。\n- 熟练使用国内外主流AI开发Agent工具，如Claude Code、Gemini、通义灵码等。\n- 对世界模型、具身智能、三维仿真工程化方向有浓厚兴趣，愿意持续深耕迭代。\n\nRaw Text:\n来源：BOSS直聘截图。招聘方显示为“上海中国电信股份... HR”。",
+    "filename": "job_batch12_chinatelecom_world_model_sim_platform_intern.txt",
+    "source": "screenshot_batch_20260622_10"
+  },
+  {
+    "raw_text": "Title: AI Agent算法工程师\nCompany: 中国移动研究院\nLocation: 北京\nSalary: 200-250元/天\nDuration: 5天/周 3个月\nEducation: 硕士\n\nResponsibilities:\n- 负责大模型Agent算法研发工作，包括论文调研、论文复现、多智能体系统搭建等。\n- 支撑大模型在自动数据分析中的研究和优化，包括利用大模型进行表格数据分析时的bad case分析与agent调优、nl2sql相关开源项目复现与验证。\n- 鼓励在数据分析Agent规划、记忆、工具调用、上下文工程等方向进行研究与创新。\n\nRequired Skills:\n- 有机器学习、深度学习相关学习经验，对大模型Agent开发等相关领域有实践经验者优先。\n- 熟练使用Python、数据结构算法，熟悉Linux开发环境和Shell。\n- 熟悉常用Agent开发框架，如LangChain、LanRecat等，有Agent开发经验和多智能体Graph开源项目者优先。\n- 具备很强自我驱动与结果导向意识，具备创新能力、团队协作意识和能力。\n- 熟悉大模型前沿算法，并有丰富开发实践经验者优先；有Data Agent或NL2SQL搭建经验者优先。\n- 需要线下实习，北京本地学生优先。\n\nPreferred Skills:\n- 有多智能体系统、数据分析Agent、NL2SQL、论文复现或开源项目经验优先。\n\nRaw Text:\n来源：BOSS直聘截图。招聘方：畅冠光，中国移动研究院招聘者。",
+    "filename": "job_batch12_cmri_ai_agent_algorithm_engineer.txt",
+    "source": "screenshot_batch_20260622_10"
+  },
+  {
+    "raw_text": "Title: Agent算法实习生\nCompany: 高德地图\nLocation: 北京\nSalary: 400-500元/天\nDuration: 4天/周 3个月\nEducation: 硕士\nWork Address: 北京朝阳区高德地图总部\n\nResponsibilities:\n- 负责高德业务驱动的技术创新，聚焦多模态大模型Agent、agentic reasoning、memory mechanism、VLN、Geo-spatial VLM、3D/4D动态场景理解等前沿领域。\n- 产出高水平学术成果，推动Agent算法研究与业务应用结合。\n\nRequired Skills:\n- 计算机、电子信息工程、自动化控制、数学、信息安全等相关专业背景，硕士及以上学历。\n- 在深度学习领域有学术研究经历，具备多模态数据处理、自然语言处理、计算机视觉、大模型、推荐等一个或多个方向的研究和应用经验。\n- 在NeurIPS、ICML、ICLR、CVPR、KDD、AAAI等顶会或顶刊发表论文者优先。\n- 具备扎实Python编程基础，熟悉PyTorch。\n- 具备良好数据敏感性和逻辑推理能力，较好学习和沟通能力，对业界新技术敏感，具备熟练英文读写能力。\n\nPreferred Skills:\n- 有多模态大模型、Agent推理、VLN、Geo-spatial VLM、动态场景理解、论文发表或科研落地经验优先。\n\nRaw Text:\n来源：BOSS直聘截图。招聘方：丁瑞东，高德地图招聘者。",
+    "filename": "job_batch12_gaode_agent_algorithm_intern.txt",
+    "source": "screenshot_batch_20260622_10"
+  },
+  {
+    "raw_text": "Title: AI Agent研发实习生\nCompany: 京东科技集团\nLocation: 北京\nSalary: 400-500元/天\nDuration: 4天/周 3个月\nEducation: 本科\n\nResponsibilities:\n- 团队负责京东金融APP用户增长，聚焦京东生态内场、外场C端新用户获客，包括广告投放、营销、大促活动等。\n- 在大模型应用上探索AI+内容、AI+营销、AI+视频等业务场景。\n- 构建AI时代下新的业务交付形式，驱动服务效率提升，结合业务场景设计并推进系统迭代升级。\n- 进行AI平台产品研发，搭建Agent智能体管理平台，提供原子化AI组件能力与工具，通过可视化工作流构建开箱即用AI解决方案。\n- 负责C端AI Agent核心架构设计与日常迭代，优化RAG、workflow、工具、MCP等能力，为高并发多场景业务环境提供技术支撑。\n\nRequired Skills:\n- 计算机相关专业本科及以上学历，精通Python、Java、Web前端等至少一种编程语言。\n- 熟悉AI大模型应用开发，了解工具开发，具备AI工作流设计与系统开发经验。\n- 熟悉主流AI Agent开发框架，如Spring AI、LangChain、LangGraph等。\n- 掌握LLM、上下文工程、RAG、知识图谱等技术。\n- 有从0到1搭建AI Agent平台产品或应用经验者优先。\n- 符合京东价值观：客户为先、创新、拼搏、担当、感恩、诚信。\n\nPreferred Skills:\n- 有搜索、推荐、广告、音视频、Docker、MySQL、Redis、Java、Python或Agent平台工程经验优先。\n\nRaw Text:\n来源：BOSS直聘截图。招聘方：于建明，京东科技集团研发总监。",
+    "filename": "job_batch12_jd_ai_agent_rd_intern.txt",
+    "source": "screenshot_batch_20260622_10"
+  },
+  {
+    "raw_text": "Title: AI测试Agent开发工程师\nCompany: 快手\nLocation: 北京\nSalary: 250-350元/天\nDuration: 5天/周 3个月\nEducation: 本科\nWork Address: 北京海淀区万象灯火大厦2层\n\nResponsibilities:\n- 掌握服务端、移动端、Web端测试技能，能够独立完成跨端需求测试。\n- 熟练应用AI Coding工具，参与测试Agent开发，快速成长为测试Agent开发人才。\n\nRequired Skills:\n- 暑期实习岗位，仅接受2027届同学投递。\n- 熟悉常见Agent框架，有实际落地经验者优先。\n- 熟悉模型/提示词优化流程及方法，有实际落地经验者优先。\n- 人工智能专业，有图像处理或者NLP基础知识者优先。\n- 有AI Coding工具实战经验，能通过高质量Prompt引导AI生成可用代码。\n\nPreferred Skills:\n- 使用AI进行过测试用例生成、接口测试、Agent评测经验优先。\n- 有跨端测试、测试Agent、AI Coding、Prompt工程经验优先。\n\nRaw Text:\n来源：BOSS直聘截图。招聘方：李先生，快手招聘HR。",
+    "filename": "job_batch12_kuaishou_ai_test_agent_dev_engineer.txt",
+    "source": "screenshot_batch_20260622_10"
+  },
+  {
+    "raw_text": "Title: AI Agent 研发工程师实习岗\nCompany: 新东方\nLocation: 北京\nSalary: 200-250元/天\nDuration: 5天/周 6个月\nEducation: 本科\n\nResponsibilities:\n- 负责Agent技能体系Skillset架构设计，定义和实现学习场景下的原子技能，如分步拆解、苏格拉底式提问、知识点关联检索等。\n- 确保Agent能够根据教学进度，在不同Skill之间精准进行逻辑切换。\n- 基于LangGraph、Semantic Kernel或自研框架，设计具备高鲁棒性的任务流。\n- 解决Agent多步推理中的状态管理与技能冲突问题。\n- 协同算法团队，将Agent逻辑输出与表现层进行深度对齐，实现教学技能可视化。\n- 设计精细化记忆提取与存储技能，让Agent基于用户数字成长档案实现跨会话因材施教。\n\nRequired Skills:\n- 具备硬核Agent实战经验，理解Function Calling边界与瓶颈，精通ReAct、Plan-and-Execute等主流Agent设计模式。\n- 具备强逻辑抽象能力，能将复杂教学策略转化为可工程化Skill接口与Agent Workflow。\n- 熟练使用Cursor、Claude Code等工具进行对话式编程，追求从想法到Demo的快速交付。\n- 后端功底扎实，精通Python/Node.js，熟悉向量数据库Milvus/Pinecone与Redis缓存优化。\n\nPreferred Skills:\n- 曾为Semantic Kernel、LangChain等Agent框架贡献插件或核心代码优先。\n- 能够理解Embedding、Token Economy与推理延迟之间的权衡。\n- 有端侧Agent逻辑、WebRTC、数学/逻辑教育背景或数字人表现层经验优先。\n\nRaw Text:\n来源：BOSS直聘截图。招聘方：郭女士，新东方HR。",
+    "filename": "job_batch12_neworiental_ai_agent_rd_engineer_intern.txt",
+    "source": "screenshot_batch_20260622_10"
+  },
+  {
+    "raw_text": "Title: 飞书后端开发实习生（agent）\nCompany: 字节跳动\nLocation: 北京\nSalary: 480-500元/天\nDuration: 5天/周 6个月\nEducation: 本科\nWork Address: 北京海淀区学清嘉创大厦\n\nResponsibilities:\n- 参与飞书创新Agent产品的后端系统设计与开发，构建高性能、可扩展的服务架构。\n- 参与文档协作系统后端架构设计与实现，设计高效API接口，确保系统稳定性与安全性。\n- 持续优化系统性能，协助技术架构升级与服务器资源管理，构建高可用分布式系统支撑产品快速迭代。\n- 协助设计和实现AI能力调用框架，负责模型参数调优、提示词工程优化等，提升AI生成内容质量与相关性。\n\nRequired Skills:\n- 2027届本科及以上学历在读，计算机、人工智能等相关专业优先。\n- 熟悉LLM应用开发，熟练使用主流AI开发工具，如LangChain、LlamaIndex、OpenAI API、Claude API等。\n- 了解Prompt Engineering最佳实践和技巧。\n- 了解AI Agent系统设计，能够构建基于RAG的解决方案，掌握向量数据库使用方法。\n- 有成熟AI应用开发经验、GitHub贡献记录或个人技术项目经验优先。\n\nPreferred Skills:\n- 有Golang、Java、Spring Cloud、MySQL、Redis、Spring、Agent开发或飞书生态相关经验优先。\n\nRaw Text:\n来源：BOSS直聘截图。招聘方：皮雅婷，字节跳动招聘者。",
+    "filename": "job_batch13_bytedance_feishu_backend_agent_intern.txt",
+    "source": "screenshot_batch_20260622_11"
+  },
+  {
+    "raw_text": "Title: 智能体平台实习生（agent）\nCompany: 中电信人工智能公司\nLocation: 北京\nSalary: 250-260元/天\nDuration: 4天/周 4个月\nEducation: 硕士\nWork Address: 北京东城区中汇广场A座9层\n\nResponsibilities:\n- 参与大模型智能体相关技术研发工作，包括智能体平台、通用智能体策略研发及场景效果优化。\n- 参与高质量专利挖掘与撰写，实现技术成果知识产权保护。\n- 参与学术论文构思与创作，推动研究成果转化，提升团队影响力。\n- 追踪大模型智能体领域前沿动态，探索相关技术的创新优化及落地应用。\n\nRequired Skills:\n- 计算机、人工智能等相关专业研究生在读或应届毕业生。\n- 具备扎实技术基础，对大模型智能体原理与算法有充分理解。\n- 对人工智能前沿技术有浓厚热情，积极关注行业动态和最新研究成果。\n- 擅长技术材料写作，具备清晰逻辑思维和良好文字表达能力。\n\nPreferred Skills:\n- 有高质量论文与专利发表经历者优先。\n- 有对话系统、RAG、微调、LLM或智能体平台相关经验优先。\n\nRaw Text:\n来源：BOSS直聘截图。招聘方：王女士，中电信人工智能公司HR招聘专员。",
+    "filename": "job_batch13_ctai_agent_platform_intern.txt",
+    "source": "screenshot_batch_20260622_11"
+  },
+  {
+    "raw_text": "Title: Agent工程师\nCompany: 华为数字技术\nLocation: 北京\nSalary: 500-1000元/天\nDuration: 4天/周 2个月\nEducation: 硕士\nWork Address: 北京海淀区华为公司北京研究所（环保园）环保科技园\n\nResponsibilities:\n- 设计和实现Agent执行框架（Agent Runtime）。\n- 构建和优化多轮推理链、工具调用、任务拆解与规划等Agent能力。\n- 优化系统响应延迟、Token/推理开销、错误恢复与Fallback稳定性。\n- 将Agent能力接入操作系统、开发工具或自动化流程。\n\nRequired Skills:\n- 硕士或博士在读，计算机、AI、软件工程等相关专业。\n- 熟练掌握Python或JavaScript，具备良好工程能力。\n- 熟悉LLM基本原理，包括Prompt、Token、Inference等。\n\nPreferred Skills:\n- 做过Agent项目，如AutoGPT、LangChain、自研Agent等。\n- 做过RAG系统、知识库问答或AI工具链，如代码生成、自动化流程等。\n- 熟悉多Agent系统、Workflow编排、LLM推理优化、模型部署或后端系统经验。\n\nRaw Text:\n来源：BOSS直聘截图。招聘方：李杨，华为数字技术系统高级工程师。",
+    "filename": "job_batch13_huawei_digital_agent_engineer.txt",
+    "source": "screenshot_batch_20260622_11"
+  },
+  {
+    "raw_text": "Title: AI Agent开发工程师-27实习\nCompany: 华为云\nLocation: 北京\nSalary: 300-400元/天\nDuration: 5天/周 3个月\nEducation: 硕士\nWork Address: 北京海淀区华为北京研究所\n\nResponsibilities:\n- 探索和实践LLM、AI Agent等前沿AI技术在中间件领域的应用，包括智能运维、性能诊断、自动化调优等方向。\n- 参与中间件相关AI工具或平台的需求分析、架构设计、代码开发、单元测试、问题定位等工作。\n- 参与相关系统模块代码看护及重构，持续优化系统性能和稳定性。\n- 协助进行技术预研和知识分享，将AI领域学习和实践经验在团队内沉淀。\n\nRequired Skills:\n- 计算机、软件、通信、人工智能等相关专业本科及以上在读。\n- 热爱编程，基础扎实，熟悉掌握Python、Java、C++、Go等编程语言中的一种或数种，有良好编程习惯。\n- 具备独立工作能力和解决问题能力，善于沟通、乐于合作，对前沿AI技术有强烈好奇心和探索欲。\n- 对数据结构、算法有扎实理解。\n\nPreferred Skills:\n- 对Redis、Kafka、RocketMQ、RabbitMQ等主流中间件有了解或使用经验优先。\n- 对LLM、AI Agent、AIOps等相关技术有浓厚兴趣，有项目实践、论文阅读或开源贡献者优先。\n- 熟悉TCP/IP协议及网络编程，对分布式系统、高并发、高可用架构有理解优先。\n- 校内外软件编程大赛或开源社区经验优先。\n\nRaw Text:\n来源：BOSS直聘截图。招聘方：郑女士，华为云招聘专员。",
+    "filename": "job_batch13_huaweicloud_ai_agent_dev_engineer_27_intern.txt",
+    "source": "screenshot_batch_20260622_11"
+  },
+  {
+    "raw_text": "Title: AI应用开发实习生（北京）\nCompany: 360集团\nLocation: 北京\nSalary: 220-240元/天\nDuration: 5天/周 3个月\nEducation: 本科\nWork Address: 北京朝阳区360大厦B座北入口\n\nResponsibilities:\n- 参与构建检索增强生成RAG的智能应用系统，如知识问答机器人，优化全链路检索精度，包括向量检索、混合检索、重排序。\n- 通过提示词工程Prompt Engineering调整大模型输出，解决垂直领域业务问题。\n- 探索新的检索流程和方式，优化检索链路，提升准确性与可靠性。\n- 对接大模型API，如DeepSeek、通义千问，实现本地部署与功能集成。\n\nRequired Skills:\n- 计算机、AI、软件工程相关专业本科及以上学历。\n- 熟练使用Python，掌握Linux、Git及主流AI框架，如LangChain、LlamaIndex。\n- 熟悉主流数据库如MySQL、Redis、ElasticSearch。\n- 熟悉RAG技术原理及落地流程，包括知识库构建、检索优化、生成调优。\n- 具备Prompt Engineering经验，能针对性优化业务场景效果。\n\nPreferred Skills:\n- 有RAG项目经验或开源工具部署案例。\n- 熟悉向量数据库FAISS/Elasticsearch或知识图谱工具。\n- 持续实习4-6个月。\n\nRaw Text:\n来源：BOSS直聘截图。招聘方：郭女士，360集团HR。",
+    "filename": "job_batch14_360_ai_app_dev_rag_intern.txt",
+    "source": "screenshot_batch_20260622_12"
+  },
+  {
+    "raw_text": "Title: Agent Infra 开发工程师（春招实习）\nCompany: 阿里云\nLocation: 北京\nSalary: 400-500元/天\nDuration: 4天/周 3个月\nEducation: 硕士\nWork Address: 北京朝阳区阿里巴巴北京朝阳科技园C4\n\nResponsibilities:\n- 构建极致弹性的Agent运行时，深度参与下一代Agent运行时研发，攻克毫秒级冷启动、高密度MicroVM隔离及Scale-to-Zero等技术难题，确保基础设施能平滑承接Agent瞬时爆发动态负载。\n- 研发智能异构调度系统，深度参与万级节点规模的资源调度优化，利用数据智能驱动CPU/GPU资源最优分配，突破领域模型托管性价比极限，在异构环境下打造业界领先算力密度。\n- 构建AI原生应用平台，建设Agent全生命周期管理平台，提供卓越开发体验，驱动智能体应用在千行百业规模化落地。\n\nRequired Skills:\n- 熟悉Golang、Python、Docker、Kubernetes等基础设施与后端工程技术。\n- 具备计算机相关专业背景，中大型项目开发经验或系统架构设计经验。\n- 对Agent运行时、资源调度、云原生平台和AI原生应用平台有兴趣。\n\nPreferred Skills:\n- 有Golang服务端、系统架构、Kubernetes、MicroVM、异构调度或Agent Infra经验优先。\n\nRaw Text:\n来源：BOSS直聘截图。招聘方：黄刚，阿里云技术专家。",
+    "filename": "job_batch14_alibaba_cloud_agent_infra_engineer_intern.txt",
+    "source": "screenshot_batch_20260622_12"
+  },
+  {
+    "raw_text": "Title: AI Agent算法工程师\nCompany: 华为数字技术有限公司\nLocation: 北京\nSalary: 250-300元/天\nDuration: 4天/周 2个月\nEducation: 学历不限\nWork Address: 北京海淀区华为公司北京研究所（环保园）Q1\n\nResponsibilities:\n- 面向业界领先的企业级对话式智能助手，深入研究大模型在意图理解、任务规划与外部工具调用中的算法问题，提升Agent在复杂场景下的规划与Skill调用准确率。\n- 参与AI Agent系统设计与开发，研发Agent核心算法，如多轮意图识别、槽位抽取、对话状态跟踪、自动优化等，推动算法模块工程化落地。\n- 探索并落地MCP协议下的模型上下文扩展方法，如长上下文、结构化上下文压缩。\n- 参与多模块系统集成与优化，提升Agent智能化水平与运行稳定性。\n- 结合实际应用场景，完成算法迭代、测试验证与性能调优。\n\nRequired Skills:\n- 具备扎实算法与编程基础，熟悉常用数据结构与算法设计。\n- 熟练使用Python，有良好代码与实验管理习惯。\n- 熟悉深度学习、强化学习或大模型相关技术框架，具备AI模型开发经验者优先。\n- 对智能体Agent技术方向有深入理解，了解任务推理、记忆机制或工具调用等核心技术。\n- 具备良好问题分析与解决能力，能够独立完成模块设计与开发任务。\n\nPreferred Skills:\n- 有智能体、大模型算法、自然语言处理、算法工程化或竞赛论文经验优先。\n\nRaw Text:\n来源：BOSS直聘截图。招聘方：顾女士，华为数字技术有限公司招聘者。",
+    "filename": "job_batch14_huawei_digital_ai_agent_algorithm_engineer.txt",
+    "source": "screenshot_batch_20260622_12"
+  },
+  {
+    "raw_text": "Title: AI 应用开发实习生\nCompany: 快手\nLocation: 北京\nSalary: 350-450元/天\nDuration: 5天/周 3个月\nEducation: 本科\nWork Address: 北京海淀区万象灯火大厦1F\n\nResponsibilities:\n- 参与AI应用全栈开发，用于解决生产场景的一系列复杂问题，赋能业务，实现高ROI业务指标提升以及全流程提升产研效能，保障业务稳定性，改进系统性能。\n- 开发适用于生产场景的MultiAgent系统与Prompt工程，探索MultiAgent上下文工程最佳实践，解决MultiAgent应用于产品时遇到的挑战。\n- 探索前沿AI技术，包括多模态大模型、Agent架构设计、RAG技术优化、工具调用链路设计，并快速构建原型验证技术可行性。\n- 跟踪AI技术发展趋势，深度研究相关产品、开源项目、前沿论文，提炼核心技术要点并在团队中分享，推动技术创新应用。\n\nRequired Skills:\n- 本科及以上学历，计算机科学、软件工程、人工智能、数据科学等相关专业优先，每周可实习5天，能持续实习3个月及以上者优先。\n- 熟悉至少一种编程语言，如Java、Python等，具备一定编程基础，了解常见数据结构与算法，能独立完成代码编写与调试。\n- 熟悉AI产品的使用逻辑与应用场景，有AI工具使用经验，对AI技术有浓厚兴趣。\n- 了解Agent核心组件，如Chains、Agents、Memory，了解其使用场景与实现原理。\n- 了解Prompt Engineering基本原理与方法，能根据具体任务设计有效提示词，提升AI模型任务完成效果。\n\nPreferred Skills:\n- 有AI相关项目经验或互联网公司实习经历，特别是大模型应用、Agent开发、多模态应用等实践经验。\n- 有深度学习、机器学习相关科研和探索经历，或竞赛获奖经历。\n- 具备跨学科思维，能将AI技术与其他领域知识有效结合，产生创新应用思路。\n\nRaw Text:\n来源：BOSS直聘截图。招聘方：张先生，快手HR。",
+    "filename": "job_batch14_kuaishou_ai_app_dev_intern.txt",
+    "source": "screenshot_batch_20260622_12"
+  },
+  {
+    "raw_text": "Title: 【北斗实习】复杂Agent技术研究实习生\nCompany: 美团\nLocation: 北京\nSalary: 1000-2000元/天\nDuration: 5天/周 3个月\nEducation: 硕士\nWork Address: 北京朝阳区望京科创大厦A座望京东路4号\n\nResponsibilities:\n- DataAgent核心基建：攻坚复杂长周期任务调度架构，解决大规模数据流转下的上下文治理、长期记忆与状态流控难题。\n- BA场景工具链：构建高扩展性数据处理Skill体系与安全高效的代码执行沙盒，支持Agent智能调度高并发数据流处理工具。\n- 精准营销Agent：基于海量用户行为数据的宏观统计与微观推理，探索精细化需求理解与大小模型协同的高效系统设计。\n- Skill体系与模型优化：探索Skill表示、调度与自进化机制，推进Agentic RL、自适应推理等模型训练与调优工作。\n- 智能服务新范式：建立C端个人Agent与B端服务Agent的连接，研究智能体架构优化、推理成本控制与长期记忆提升。\n\nRequired Skills:\n- 有顶会论文经验，如ICML、AAAI、NeurIPS、ICLR、ACL、EMNLP等。\n- 具备复杂Agent、DataAgent、长期记忆、状态流控、Agentic RL或大规模数据处理相关研究能力。\n- 具备扎实算法、系统和工程能力，能够推进高难度技术问题落地。\n\nPreferred Skills:\n- 有复杂任务调度、数据分析Agent、Skill体系、强化学习或智能服务架构经验优先。\n\nRaw Text:\n来源：BOSS直聘截图。招聘方：郭女士，美团招聘经理。",
+    "filename": "job_batch14_meituan_complex_agent_research_intern.txt",
+    "source": "screenshot_batch_20260622_12"
+  },
+  {
+    "raw_text": "Title: 【Ace顶尖实习生】交互式进化审核Agent系统实习生\nCompany: 小红书\nLocation: 北京\nSalary: 1000-2000元/天\nDuration: 5天/周 3个月\nEducation: 博士\nWork Address: 北京朝阳区北京安贞环球中海\n\nResponsibilities:\n- 探索一种基于“教学-纠正”闭环的交互式进化审核Agent系统，突破传统审核模型对静态规则与大规模标注样本的依赖，实现规则-策略自动生成优化反馈闭环。\n- 在复杂、多变的国际化内容审核场景中，引入Policy Maker实时干预与Rule Set动态反馈，实现从规则驱动向智能进化的范式迁移。\n- 研究如何将抽象审核政策自动解析为可执行Agent策略链路。\n- 研究在跨语言、跨文化背景下构建具备自主学习能力的Agent基座。\n- 研究如何在极度稀疏的违规样本中利用小样本Few-shot实现风险域“0人审”冷启动。\n\nRequired Skills:\n- 非应届毕业生，硕士及以上在读，计算机、人工智能、软件工程等相关专业优先。\n- 优秀代码能力、数据结构和基础算法功底，熟悉Python等至少一门编程语言。\n- 熟悉大模型领域尤其是强化学习和关研究工作重算法，有大模型强化学习研发基础。\n- 在ICML、CVPR、NeurIPS、ACL等顶级会议或期刊发表论文者优先。\n- 具备良好沟通协作能力，责任心强，积极主动，能和团队一起探索新技术并推进技术进步。\n\nPreferred Skills:\n- 有memory、agentic RL、大模型算法、多模态算法、OpenClaw、风控算法或审核Agent经验优先。\n\nRaw Text:\n来源：BOSS直聘截图。招聘方：赵往伟，小红书大模型算法专家。",
+    "filename": "job_batch14_xiaohongshu_ace_interactive_agent_rl_intern.txt",
+    "source": "screenshot_batch_20260622_12"
+  },
+  {
+    "raw_text": "Title: ai agent 大模型算法工程师\nCompany: 小红书\nLocation: 北京\nSalary: 200-300元/天\nDuration: 4天/周 3个月\nEducation: 硕士\n\nResponsibilities:\n- 在搜索场景主导基于大模型的AI Agent全生命周期研发，包括通用型及垂直领域AI Agent架构设计、模型训练与评测。\n- 运用SFT、RL等Post-training训练方法，提升大模型在自主规划Planning、多步推理、RAG增强生成、工具调用、数据问答、文案生成等方面能力。\n- 跟踪LLM与Agent领域国际前沿技术动态，推动技术创新在业务场景中的落地应用，重点突破复杂推理、数据洞察、AI搜索、文案创作、图像连续编辑等方向。\n- 持续优化Agent算法与系统架构，构建端到端智能体评测体系，开发自动化评估工具与多维评价指标，提升Agent系统性能与效率，打造业内领先AI Agent技术方案。\n\nRequired Skills:\n- 计算机、人工智能、数学等相关专业硕士及以上学历。\n- 对大模型前沿技术充满热情，具备攻克复杂技术难题的能力，能够快速实现Paper-to-Code-to-Solution的技术转化。\n- 精通Python及PyTorch/TensorFlow等框架，具备Qwen、Llama、DeepSeek等模型二次开发经验者优先。\n- 深入理解Transformer架构、SFT/RL训练范式及Prompt工程，了解LangChain、AutoGen等Agent开发框架，有完整智能体系统搭建经验者优先。\n\nPreferred Skills:\n- 有算法论文、竞赛获奖、多模态、强化学习、自然语言处理或Agent系统经验优先。\n\nRaw Text:\n来源：BOSS直聘截图。招聘方：姚先生，小红书算法工程师。",
+    "filename": "job_batch14_xiaohongshu_ai_agent_llm_algorithm_engineer.txt",
+    "source": "screenshot_batch_20260622_12"
+  },
+  {
+    "raw_text": "Title: AI Agent 场景拓展实习生（Prompt方向）\nCompany: 智谱华章\nLocation: 北京\nSalary: 150-200元/天\nDuration: 4天/周 4个月\nEducation: 本科\n\nResponsibilities:\n- 参与AI Agent产品的场景化落地，从用户需求出发，拓展垂直领域应用场景，如办公提效、科研辅助、内容创作、企业服务等，设计并搭建可复用的Agent应用方案。\n- 基于大模型进行Prompt设计、优化与迭代，通过Prompt工程、Few-shot、思维链CoT等方式，提升Agent在垂直场景下的任务完成度与稳定性。\n- 参与工具调用、知识库挂载、多轮对话逻辑设计与测试，完善Agent任务执行链路，解决场景落地中的实际问题。\n- 进行场景案例测试与效果评估，搭建基础评测体系，收集用户反馈并持续优化Agent体验，沉淀可复用场景化Prompt模板与最佳实践。\n- 跟踪行业内Agent产品与应用场景前沿动态，参与竞品分析与创新方案预研，为产品迭代提供输入。\n\nRequired Skills:\n- 本科及以上学历在读，计算机、统计学、产品运营等相关专业优先，对大模型与AI Agent有浓厚兴趣。\n- 有丰富大模型使用经验，熟悉主流大模型，了解Prompt工程基本方法，有Prompt优化或AI工具使用经验者优先。\n- 逻辑清晰，有较强问题拆解能力，能从用户场景出发设计完整Agent任务流程与解决方案。\n- 学习能力强，能快速理解新的业务场景与工具，有较强自驱力和动手能力。\n- 具备良好沟通协作能力，能与产品、研发同事高效配合推进项目落地。\n- 期待可以携手实习12个月。\n\nPreferred Skills:\n- 有AI Agent相关项目经验，如搭建个人智能体或参与Agent应用开发。\n- 熟悉Python，能进行简单脚本编写或工具调用开发。\n- 了解RAG、多智能体协作等技术概念。\n\nRaw Text:\n来源：BOSS直聘截图。招聘方：田女士，智谱华章HRBP。",
+    "filename": "job_batch14_zhipu_ai_agent_scenario_prompt_intern.txt",
+    "source": "screenshot_batch_20260622_12"
+  },
+  {
+    "raw_text": "Title: 算法工程师-AI Agent\nCompany: 阿里巴巴集团\nLocation: 北京\nSalary: 400-800元/天\nDuration: 4天/周 3个月\nEducation: 本科\nWork Address: 北京朝阳区阿里巴巴·北京朝阳科技园C区\n\nResponsibilities:\n- 研发并优化Agent核心能力模块，包括自主规划Planning、多步推理Reasoning、工具调用Tool Use、长短期记忆Memory及RAG增强。\n- 应用强化学习RL、模仿学习、SFT及偏好对齐DPO/PPO技术，提升模型在复杂任务中的执行成功率与逻辑性。\n- 参与构建高性能、高可用Agent框架或Runtime系统，探索多智能体Multi-Agent协同与自我迭代学习范式。\n- 构建端到端智能体评测体系，通过数据驱动方式持续迭代算法，推动Agent在搜索、办公、创作或垂直行业场景落地。\n\nRequired Skills:\n- 研发并优化Agent核心能力模块，包括Planning、Reasoning、Tool Use、Memory、RAG等能力。\n- 熟悉C/C++、Java、Python等至少一种语言，具备扎实算法工程能力。\n- 熟悉深度学习、大模型算法、推荐算法或强化学习相关技术。\n- 有算法相关优秀论文、开源项目或竞赛获奖经历优先。\n\nPreferred Skills:\n- 有Agent Runtime、多Agent、RAG、RL、SFT、DPO/PPO、推荐算法或大模型工程化经验优先。\n\nRaw Text:\n来源：BOSS直聘截图。招聘方：李墨珩，阿里巴巴集团招聘者。",
+    "filename": "job_batch15_alibaba_algorithm_engineer_ai_agent.txt",
+    "source": "screenshot_batch_20260622_13"
+  },
+  {
+    "raw_text": "Title: LLM Agent基础架构实习生-TRAE\nCompany: 字节跳动\nLocation: 北京\nSalary: 450-500元/天\nDuration: 4天/周 4个月\nEducation: 本科\nWork Address: 北京海淀区盈都大厦D座\n\nResponsibilities:\n- ByteIntern：面向2027届毕业生，为符合岗位要求的同学提供转正机会。\n- 参与TRAE IDE后端系统研发，支持代码补全、代码生成、代码理解、任务执行等AI编程场景。\n- 参与大模型调用相关能力建设，包括模型接口接入、请求处理、流式返回、稳定性优化等基础工作。\n- 参与Coding Agent相关工程能力建设，帮助AI更好理解任务、调用工具、执行开发流程，并持续优化用户体验。\n- 参与系统性能和稳定性优化，关注低延迟、高并发、请求重试、错误处理、日志追踪等后端基础能力。\n- 与产品、前端、算法等同学协作，将AI能力落地到真实IDE场景中。\n\nRequired Skills:\n- 2027届本科及以上学历在读，计算机相关专业优先。\n- 具备扎实计算机科学基础和编程基础，熟悉Go、Java、Python、C++中至少一种语言。\n- 理解常见后端基础知识，如HTTP、数据库、缓存、消息队列、并发编程、日志与错误处理等。\n- 有良好工程习惯，代码清晰，重视可读性、可维护性和问题排查能力。\n- 对AI编程工具、开发者工具、IDE、代码生成等方向有兴趣，愿意学习新技术并主动探索。\n\nPreferred Skills:\n- 有Coding Agent、LLM Agent、IDE插件、代码生成、后端高并发或模型调用链路经验优先。\n\nRaw Text:\n来源：BOSS直聘截图。招聘方：董女士，字节跳动HR。",
+    "filename": "job_batch15_bytedance_trae_llm_agent_arch_intern.txt",
+    "source": "screenshot_batch_20260622_13"
+  },
+  {
+    "raw_text": "Title: Agent开发实习生 - AI生产力中台\nCompany: 快手\nLocation: 北京\nSalary: 350-400元/天\nDuration: 4天/周 3个月\nEducation: 本科\nWork Address: 北京海淀区万象灯火大厦A座\n\nResponsibilities:\n- 参与AI监控数字专家构建（Super Agent），支撑公司监控运维范式跨代升级。\n- 参与AI可观测方向建设，覆盖Agent、LLM、Skills、Prompt、RAG等环节全链路。\n- 参与系统架构治理工作，优化工程架构设计，深入参与公司各类基础设施的迭代优化。\n- 参与解决海量数据分布式处理、高效查询、数据一致性、准确性等方面技术难题与挑战。\n\nRequired Skills:\n- 2027届及以后毕业，本科及以上学历，计算机相关专业。\n- 了解常用Agent开发框架，有AI相关实践和经验者优先。\n- 掌握至少一门语言，如Java、Go等，熟悉常用中间件，计算机基础扎实。\n- 具备良好沟通能力和团队协作精神，有实际项目经验或互联网实习经历者优先。\n- 热爱互联网，对互联网产品和技术有浓厚兴趣，追求技术极致与创新，具备较强问题分析和解决能力。\n- 实习6个月及以上者优先。\n\nPreferred Skills:\n- 有AI可观测、Super Agent、监控运维、分布式系统、Java、MySQL、Spring或Agent中台经验优先。\n\nRaw Text:\n来源：BOSS直聘截图。招聘方：张女士，快手Recruiter。",
+    "filename": "job_batch15_kuaishou_ai_productivity_agent_dev_intern.txt",
+    "source": "screenshot_batch_20260622_13"
+  },
+  {
+    "raw_text": "Title: 【北斗实习】下一代Agent前沿研究实习生\nCompany: 美团\nLocation: 北京\nSalary: 1000-2000元/天\nDuration: 4天/周 2个月\nEducation: 硕士\nWork Address: 北京朝阳区望京科创大厦-A座A座\n\nResponsibilities:\n- 参与下一代Agent方向前沿研究，可根据个人背景和研究兴趣选择模型训练与推理、Skill体系、Agent框架优化、C端Agent产品等方向深入推进。\n- 通过Agentic RL、自适应推理等技术，让Agent具备复杂任务长程规划、动态工具调用和自我纠错能力。\n- 探索Skill体系建设、Skill表示、组织与调度机制，让能力像积木一样可组合、可进化，面对新任务不从零开始。\n- 优化Agent框架，攻克推理成本控制、上下文治理和长期记忆等核心难题，让Agent低成本规模化落地。\n- 用Agent重新定义人与信息连接方式，探索C端Agent社区等产品。\n\nRequired Skills:\n- 有好奇心，敢想敢做，学习能力强，能在复杂问题中深度思考和拆解。\n- 顶会论文经验者优先，如ACL、EMNLP、NeurIPS、ICLR、KDD等。\n- 有开源贡献或算法竞赛成果突出者优先。\n- 有OpenClaw、Claude Code深度使用经验与产出者优先。\n- 熟悉Agentic RL者优先。\n\nPreferred Skills:\n- 有下一代Agent、C端Agent、Skill体系、Agentic RL、长期记忆、推理优化或大模型研究经验优先。\n\nRaw Text:\n来源：BOSS直聘截图。招聘方：王先生，美团招聘专家。",
+    "filename": "job_batch15_meituan_next_gen_agent_research_intern.txt",
+    "source": "screenshot_batch_20260622_13"
+  },
+  {
+    "raw_text": "Title: 后端开发实习生-BJ\nCompany: Shopee\nLocation: 北京\nSalary: 400-450元/天\nDuration: 4天/周 3个月\nEducation: 本科\nWork Address: 北京海淀区启迪科技大厦-D座28F\n\nResponsibilities:\n- 负责地图海量POI数据生产流程设计和研发，建设完备的数据接入、存储、生产和发布机制。\n- 构建批流一体的数据生产机制，支持大规模数据索引的快速构建和更新，保障系统高可靠性。\n- 负责面向海量业务数据的数仓建设、实时计算、数据统计分析等工作，包括数据逻辑梳理、数据工具建设以及流程优化等。\n- 结合LLM，搭建Agent或Workflow实现数据生产平台智能化。\n\nRequired Skills:\n- 本科及以上学历，计算机、通信、数学相关专业。\n- 至少熟悉Java、Python两种开发语言。\n- 有较好计算机基础，掌握基础操作系统、网络知识，了解常见数据结构、算法和复杂度评估方法；熟悉MySQL等关系型数据库，熟练掌握SQL语法。\n- 熟练使用Hadoop、Hive、Spark、Flink等计算框架。\n- 良好团队协作精神，热爱技术，追求卓越，对数据敏感。\n- 具有强烈责任心、团队合作精神、较强逻辑思维和沟通能力。\n- 至少实习4个月以上。\n\nPreferred Skills:\n- 有LLM、Agent、Workflow、数据平台、数据生产或大数据工程经验优先。\n\nRaw Text:\n来源：BOSS直聘截图。招聘方：姚女士，Shopee招聘者。",
+    "filename": "job_batch15_shopee_backend_dev_intern_bj.txt",
+    "source": "screenshot_batch_20260622_13"
+  },
+  {
+    "raw_text": "Title: 大模型agent算法实习生\nCompany: 小红书\nLocation: 北京\nSalary: 300-450元/天\nDuration: 4天/周 3个月\nEducation: 本科\n\nResponsibilities:\n- 提升模型搜索意图判断能力，将复杂需求拆分为可执行搜索子目标，生成Query、选择检索源并控制搜索预算。\n- 设计可增长、可替换、可分层的Context架构，如对话摘要层、搜索证据层、推理草稿层、最终引用层。\n- 提升检索后处理与引用可信度，包括Snippet选优、去重、冲突检测与引用自检。\n- 降低模型幻觉，提高Evidence-Answer一致性。\n\nRequired Skills:\n- 对LLM检索、RAG、多轮对话、搜索策略或Context机制有兴趣。\n- 熟悉Python、大模型算法、自然语言处理或多模态算法优先。\n- 有搜索、推荐、广告、问答、RAG或Agent相关项目经验优先。\n\nPreferred Skills:\n- 有Prompt、RAG、Context Engineering、Query Generation、Evidence Answer或搜索系统经验优先。\n\nRaw Text:\n来源：BOSS直聘截图。招聘方：王女士，小红书HR。",
+    "filename": "job_batch15_xiaohongshu_llm_agent_algorithm_intern.txt",
+    "source": "screenshot_batch_20260622_13"
+  },
+  {
+    "raw_text": "Title: 大模型Agent研发实习生（自动科研方向）\nCompany: 智谱华章\nLocation: 北京\nSalary: 250-300元/天\nDuration: 5天/周 5个月\nEducation: 硕士\n\nResponsibilities:\n- 参与基于大模型LLM的Agent系统设计与研发，协助构建面向复杂任务的智能体基础能力。\n- 协助实现通用Agent工具体系，包括Tool/Skill抽象管理、多工具协同调用、Agent执行流程开发等。\n- 参与自动化科研、智能实验与评估、知识检索分析等Auto Research相关系统开发与落地。\n- 协助进行Prompt优化、Tool Calling能力迭代、大模型效果评估等工程化工作。\n- 跟踪前沿大模型与Agent技术，配合团队完成技术调研与方案落地。\n\nRequired Skills:\n- 985、211院校优先，专业不限，鼓励跨专业投递。\n- 学习能力强，对大模型、AI Agent、自动化科研有浓厚兴趣。\n- 具备基本编程基础，熟悉Python或任意一门主流编程语言。\n- 尽快到岗，实习3个月及以上，一周5天。\n- 岗位期待可携手实习12个月。\n\nPreferred Skills:\n- 接触使用过OpenClaw、AutoresearchClaw、Claude Code等工具。\n- 有Python项目、GitHub开源项目、技术博客或科研项目经验。\n- 有NLP、机器学习、AI for Science、自动化实验相关背景。\n- 具备论文阅读、复现或技术调研经验。\n\nRaw Text:\n来源：BOSS直聘截图。招聘方：田女士，智谱华章HRBP。",
+    "filename": "job_batch15_zhipu_llm_agent_autoresearch_intern.txt",
+    "source": "screenshot_batch_20260622_13"
+  },
+  {
+    "raw_text": "Title: 后端 Agent 开发实习生\nCompany: 持续低熵\nLocation: 北京\nSalary: 500-800元/天\nDuration: 4天/周 3个月\nEducation: 本科\nWork Address: 北京海淀区 epark（花园路社区）2号楼\n\nResponsibilities:\n- 参与 AirJelly 后端核心服务开发，使用 TypeScript + Node.js + Bun 构建高性能服务层。\n- 深入 AI Agent 系统开发：设计与实现 Tool Calling 框架、MCP Server / Client 协议、多模型调度与路由策略。\n- 构建 Proactive Mode 主动式 AI 后端引擎，包括上下文采集、事件处理管道、智能推理触发机制。\n- 设计与优化 AI 记忆系统：基于 LanceDB 向量数据库实现语义检索、记忆存储与召回策略。\n- 基于 Vercel AI SDK 实现流式推理、多轮对话编排、Agent 工具链调度。\n- 负责数据层架构：SQLite 数据库设计、迁移管理、Repository 模式开发。\n- 参与 Electron 主进程开发，设计安全可靠的 IPC 通信架构。\n- 参与开源社区建设，撰写技术文档，进行 Code Review。\n\nRequired Skills:\n- 熟悉 TypeScript + Node.js，了解异步编程、流式处理、事件驱动等后端范式。\n- 对 AI / LLM / Agent 方向有浓厚兴趣，了解 Prompt Engineering、Tool Calling、RAG、Embedding 等概念。\n- 有数据库开发经验，熟悉 SQL，了解 ORM 或 Repository 模式。\n- 有良好的工程素养：熟悉 Git 工作流、代码规范、模块化与分层架构思维。\n- 能独立阅读英文技术文档，学习能力强，主动性高。\n- 每周至少投入 4 天，实习期至少 3 个月。\n\nPreferred Skills:\n- 有 Electron 主进程或桌面端后端开发经验。\n- 使用过 Vercel AI SDK、LangChain、MCP 等 AI 工程框架。\n- 有向量数据库（LanceDB / Pinecone / Chroma 等）或 Embedding 模型使用经验。\n- 了解 Agent 架构设计，如 ReAct、Plan-and-Execute、Multi-Agent 等模式。\n- 有 SQLite / PostgreSQL 数据库设计与迁移管理经验。\n- 有开源项目贡献经历，或个人技术博客 / Side Project。\n- 熟练使用 AI 编程工具（Cursor / Claude Code / Copilot）进行日常开发。\n\nRaw Text:\n岗位来源：BOSS直聘截图。招聘人：黄柏特，招聘者。",
+    "filename": "batch2_chixudishang_backend_agent_dev_intern.txt",
+    "source": "screenshot_batch_20260621_2"
+  },
+  {
+    "raw_text": "Title: Agent工程师\nCompany: 湖南智悦云创科技\nLocation: 北京\nSalary: 300-500元/天\nDuration: 4天/周 3个月\nEducation: 硕士\n\nResponsibilities:\n- 主导 Agent 架构升级：承接 CTO 技术规划，将基于 LangChain 的单点提示词交互模式，重构为 LangGraph 驱动的可视化工作流，实现任务动态拆分与节点智能调度。\n- 落地人在回路机制：按 CTO 指导设计并实现静态/动态断点、状态保存（Checkpointer）与恢复功能，在关键节点触发用户反馈交互，既保障 AI 自主性，又守住决策安全性。\n- 构建性能优化体系：协同 CTO 搭建专属数据集与评测标准，从任务成功率、流程效率、用户反馈等维度量化 Agent 性能，用数据驱动系统迭代。\n\nRequired Skills:\n- 硕士及以上学历，人工智能、计算机相关专业优先；具备科研项目与工程落地双重经验者加分。\n- 精通 Python，深入理解 LangChain 与 LangGraph 框架，有从前者迁移至后者实操经验优先。\n- 熟悉 ReAct/CoT 等推理范式，能独立设计工具调用与记忆管理逻辑。\n- 工程能力扎实，能保障系统稳定运行；具备清晰算法逻辑，可通过优化推理链、Prompt 策略提升 Agent 决策准确性。\n- 掌握数据集构建方法，能设计科学的 Agent 样本评测方案，通过数据驱动系统迭代。\n\nPreferred Skills:\n- 发表过 NLP 领域会议论文，有学术深度且能碰撞技术创新。\n- 有企业级人在回路 AI Agent 系统搭建经验，能更快承接核心任务。\n- 熟悉对话系统、大模型评估或其他主流 Agent 框架。\n\nRaw Text:\n岗位标签：LangGraph、Agent、PyTorch、LangChain、MySQL、机器学习经验、架构设计经验、大语言模型、Prompt、Python。\n岗位亮点：直接向 CTO 汇报，实干型文化，表现优秀可获得长期合作机会。招聘人：余宣庆，总经理。",
+    "filename": "batch2_hunan_zhiyue_agent_engineer.txt",
+    "source": "screenshot_batch_20260621_2"
+  },
+  {
+    "raw_text": "Title: AI Agent开发工程师（实习）\nCompany: 灵灵有神\nLocation: 北京\nSalary: 300-600元/天\nDuration: 3天/周 3个月\nEducation: 本科\n\nResponsibilities:\n- 参与真实 AI Agent 产品从 0 到 1 的核心开发。\n- 接触 LLM Agent、Workflow、Tool Use、Evaluation、Automation 等前沿工程问题。\n- 和创始团队、技术负责人高密度协作，快速提升工程能力和产品判断。\n- 表现优秀可转长期实习或正式岗位。\n\nRequired Skills:\n- 本科或硕士在读，计算机、软件工程、人工智能、自动化、数学等方向优先。\n- 熟悉 Python，或熟悉 TypeScript / JavaScript。\n- 理解 API、数据库、异步任务、前后端协作、Git 工作流。\n- 对 LLM、AI Agent、工具调用、自动化执行、Workflow 系统有兴趣。\n- 不只想调 Prompt，愿意写业务逻辑、测试、文档、数据处理和异常处理。\n- 学习速度快，能主动查资料，能把不熟悉的问题拆开解决。\n- 能稳定实习 3 个月以上，每周至少 4 天，优先全勤线下。\n\nPreferred Skills:\n- 用过 LangGraph / LangChain / LlamaIndex / AutoGen / CrewAI 等 Agent 框架。\n- 做过 LLM 应用、RAG、Function Calling、模型评测或自动化工具。\n- 做过 Playwright、Selenium、Appium、ADB、浏览器插件或移动端自动化。\n- 熟悉 React、FastAPI、Node.js、PostgreSQL、Redis、Docker。\n- 有 GitHub 项目、开源贡献、黑客松、AI 产品 Demo 或真实上线项目。\n- 英文技术文档阅读能力强。\n\nRaw Text:\n岗位标签：Java、机器学习经验、LangGraph、LLM、React、Python。\n关键词：AI Agent / LLM / Python / TypeScript / LangGraph / FastAPI / React / PostgreSQL / Workflow / Tool Use / Browser Automation / Mobile Automation / Evaluation / Trace / Replay。\n岗位来源：BOSS直聘截图。招聘人：董先生，HR。",
+    "filename": "batch2_lingling_ai_agent_dev_engineer_intern.txt",
+    "source": "screenshot_batch_20260621_2"
+  },
+  {
+    "raw_text": "Title: agent工程师\nCompany: 灵形科技\nLocation: 北京\nSalary: 200-400元/天\nDuration: 4天/周 3个月\nEducation: 硕士\n\nResponsibilities:\n- 职位方向：上下文工程 / 记忆模型实习生。\n- 协助构建多轮对话的上下文管理机制，包括对话状态跟踪、指令解析等基础逻辑。\n- 参与开发用户长效记忆系统，如记忆提取、分类、存储与召回等功能。\n- 根据用户记忆和状态，为模型生成提示内容、角色设定和对话背景。\n- 协助搭建对话中间层服务，支持 Python / Java / Node.js 的接口开发和调试。\n- 完成简单的数据处理、测试验证、Prompt 模板编写等工作。\n\nRequired Skills:\n- 熟悉 Python，了解基本 NLP / LLM 技术；会 Java 或 Node.js 更佳。\n- 对对话系统、AI Agent、记忆模型或推荐系统方向感兴趣。\n- 理解 RAG、向量数据库、Prompt 工程等基础概念。\n- 能使用 Git、Linux、Docker，有工程化基础。\n- 每周可实习 3 天以上，可持续 2-3 个月。\n- 对数据结构有理解，能够处理各种样式数据的智能化。\n\nPreferred Skills:\n- 使用过 LangChain、LlamaIndex 或有对话系统相关项目经验。\n- 做过 embedding、向量检索、知识库、角色扮演类项目。\n- 有较好的逻辑能力、文档能力和自我驱动力。\n- 具备良好的代码规范、学习能力和团队沟通能力。\n- 熟练、规范使用国内外 AI 工具和 AI 编程工具。\n\nRaw Text:\n岗位来源：BOSS直聘截图。招聘人：贺雨鑫，招聘者。",
+    "filename": "batch2_lingxing_context_memory_intern.txt",
+    "source": "screenshot_batch_20260621_2"
+  },
+  {
+    "raw_text": "Title: Agent实习生\nCompany: 文思海辉\nLocation: 北京\nSalary: 300-500元/天\nDuration: 4天/周 3个月\nEducation: 硕士\nWork Address: 北京海淀区北三环中路44号院文教产业园F座5层\n\nResponsibilities:\n- 协助完成 Agent 相关技术的研发与优化。\n- 参与日常数据整理及基础分析任务。\n\nRequired Skills:\n- 计算机硕士或者有 Agent 经验的同学。\n- 熟练使用 LangGraph 或 React，研究过 Agent 相关方法。\n- 拥有良好的团队合作精神，能迅速融入团队。\n- 具备良好的学习能力，能够不断改进工作方法。\n\nPreferred Skills:\n- 有 LangGraph、React、Agent 相关项目或研究经验优先。\n- 有数据整理、基础分析或研发优化经验优先。\n\nRaw Text:\n岗位来源：BOSS直聘截图。招聘人：刘先生，技术专家。",
+    "filename": "batch2_pactera_agent_intern.txt",
+    "source": "screenshot_batch_20260621_2"
+  },
+  {
+    "raw_text": "Title: AI Agent开发实习生\nCompany: 清峙科技\nLocation: 北京\nSalary: 300-400元/天\nDuration: 3天/周 3个月\nEducation: 本科\nWork Address: 北京海淀区清华科技园\n\nResponsibilities:\n- 开发 AI 驱动的人工智能科学家（AI Scientist），探索 AI 自动科研的边界。\n- 用大模型技术加速知识发现过程，帮助研究人员提高工作效率。\n- 参与 AI 自动科研相关 Agent 框架、Context Engineering、工具调用及复杂任务规划。\n\nRequired Skills:\n- 深入理解并实践过 Agent 框架，如 LangChain、AutoGen 等。\n- 熟悉 Context Engineering、工具调用及复杂任务规划。\n- 熟练使用 Python 进行快速原型开发。\n- 强烈好奇心、自驱力，尝试通过上下文工程、Agent 编排等方式解决过技术方案不明确的新问题。\n- 能系统评估模型表现提升。\n\nPreferred Skills:\n- 有过独立复现 Paper、参与开源社区建设，或在 Kaggle 等比赛中获奖的经历。\n- 有 PyTorch、TensorFlow、Golang 或机器学习项目经验。\n- 有 GitHub / Hugging Face 开源项目发布经验优先。\n\nRaw Text:\n岗位标签：Golang、PyTorch、机器学习经验、Python、TensorFlow。\n公司介绍：清峙科技，清华大学孵化的 AI 独角兽公司，奇绩创坛投资，实习生人均 25 张 H800 GPU。\n预期实习产出：在 GitHub / Hugging Face 发布开源项目 1-2 项，发表 AI Scientist 与垂类研究领域论文。招聘人：王女士，产品负责人。",
+    "filename": "batch2_qingzhi_ai_agent_dev_intern.txt",
+    "source": "screenshot_batch_20260621_2"
+  },
+  {
+    "raw_text": "Title: AI Agent 实习工程师\nCompany: 新享宇创\nLocation: 北京\nSalary: 260-350元/天\nDuration: 5天/周 6个月\nEducation: 本科\n\nResponsibilities:\n- 基于 LangGraph / LangChain / DeepAgents / 原生 SDK，编写 Agentic AI，包括工具调用、状态管理、上下文工程、长程对话。\n- 建立数据与评测闭环：数据清洗、嵌入/索引、检索与路由策略、回归评测与 A/B Testing。\n- 开发维护服务端 API（FastAPI）与任务系统，定位性能瓶颈与稳定性问题。\n- 开发维护自动化测试脚本，定位并解决自然语言内容中的质量问题。\n- 基于 Tokio / Axum / SeaORM 实现高并发后端服务，覆盖向量检索、路由、计算、工具服务等。\n- 通过 PyO3 与 Python 模块互操作，沉淀关键路径的高性能组件。\n- 基于 Next.js 与 Vercel AI SDK 实现流式对话、可视化工具面板与人机协作界面。\n- 参与代码评审、编写技术文档与实验报告，沉淀最佳实践与复用模板。\n\nRequired Skills:\n- 985/211 硕士研究生，或 985 本科在读，人工智能、计算机科学、软件工程等相关专业优先，或具备同等实战能力。\n- 至少熟悉 Python、Rust、Next.js 中一项，并有意愿与能力快速补齐另外一到两项。\n- 了解 Agentic AI、RAG、Deep Research 基本原理和常用框架，如 LangChain、LangGraph、GraphRAG、DeepAgents。\n- 能用日志与最小化复现定位问题，具备基本单元测试和集成测试意识。\n- 主动沟通，善于复盘，乐于在代码评审中成长。\n\nPreferred Skills:\n- 熟练使用 Claude Code、Codex、Cursor、Augment Code 中至少 2 种工具，并能说出差异。\n- 做过基于 GPT / Gemini / Claude 原生 SDK 或 API 的开发项目，能解释 Tool Use / Function Call 原理和 Web Search / Web Fetch 工具场景。\n- 具备 GPT-5 Thinking / Pro、Gemini 2.5 Pro Deep Research、Manus Plus / Pro 等经验并能说出差异。\n\nRaw Text:\n岗位来源：BOSS直聘截图。办公地点靠近苏州桥，与人民大学、北京理工大学相邻。招聘人：李雯，人力资源。",
+    "filename": "batch2_xinxiangyuchuang_ai_agent_engineer_intern.txt",
+    "source": "screenshot_batch_20260621_2"
+  },
+  {
+    "raw_text": "Title: Agent开发工程师\nCompany: 言升智能\nLocation: 北京\nSalary: 200-400元/天\nDuration: 4天/周 4个月\nEducation: 本科\nWork Address: 北京海淀区清华科技园 b1\n\nResponsibilities:\n- 参与 Agent 核心能力落地：对话流程、函数调用、记忆体、RAG、任务分解与执行监控。\n- 端到端产品化：从原型到上线，快速验证并持续打磨体验与性能。\n- 与设计、产品协作，抽象通用能力（组件 / SDK / 服务）供团队复用。\n- 保障工程质量：可观测性、日志与埋点、测试与灰度、性能优化与成本治理。\n\nRequired Skills:\n- 对 AI 大模型 / Agent 生态有深入兴趣，了解常见范式，如工具调用、RAG、记忆、工作流编排。\n- 至少精通一个方向：前端方向 React / React-Native / TypeScript，或后端方向 Python（FastAPI / Flask）、异步与消息队列、向量检索 / 存储、容器化与 K8s。\n- 工程实践良好，有代码风格与测试意识，能把复杂需求拆解为清晰模块与接口。\n- 自驱与交付能力强，能快速产出演示版本，并基于数据与反馈迭代。\n\nPreferred Skills:\n- 熟悉 Elasticsearch、MySQL、Redis、Kafka、FastAPI、Flask、K8s 或容器化部署。\n- 有 Agent、RAG、Function Calling、记忆系统或工作流编排项目经验。\n- 有 React、Python 或 TypeScript 项目经验。\n\nRaw Text:\n岗位标签：Agent、Elasticsearch、MySQL、LLM、React、Python。\n岗位机会：参与从 0 到 1 的核心项目，竞争力薪酬，弹性办公，工程师友好文化。招聘人：赵女士，HR。",
+    "filename": "batch2_yansheng_agent_dev_engineer.txt",
+    "source": "screenshot_batch_20260621_2"
+  },
+  {
+    "raw_text": "Title: AI Agent算法工程师\nCompany: 上海基元律动科技\nLocation: 北京\nSalary: 600-800元/天\nDuration: 4天/周 6个月\nEducation: 硕士\n\nResponsibilities:\n- 负责 AI Agent 核心算法的设计、研发与迭代，包括智能体算法、模型压缩加速、Prompt Engineering、大模型记忆、AI 安全等方向，支持智能体的自主决策与高效执行。\n- 结合企业服务、智能办公、营销媒体等具体业务场景，优化算法性能、AI Agent 性能成本、任务完成率与泛化能力。\n- 跟踪 AI 领域前沿技术，包括大模型压缩加速、大模型微调、智能体架构等，将新技术、新方法快速落地到产品研发中。\n- 与产品、工程团队紧密协作，梳理业务需求，将算法方案转化为可落地的技术产品，解决实际业务中的核心技术难题。\n- 参与技术方案评审、代码优化与技术文档撰写，搭建规范的算法研发流程，提升团队研发效率。\n\nRequired Skills:\n- 在读学生，计算机、人工智能、电子通信、自动化等相关专业。\n- 精通至少一种编程语言，如 Python 或 Rust。\n- 熟悉 PyTorch 等深度学习框架，具备扎实的算法基础，包括深度学习、强化学习、自然语言处理等。\n- 熟悉大模型原理与应用，有 AI Agent、大模型、模型压缩加速相关经验者优先。\n- 具备较强的问题解决能力、逻辑思维能力与创新意识，能快速响应业务需求，独立完成算法设计与落地。\n- 热爱 AI 技术，对 AI Agent 领域有浓厚兴趣，愿意在初创环境中快速成长，具备良好的沟通协作能力与抗压能力。\n- 每周实习 4 天，实习周期 6 个月，硕士在读。\n\nPreferred Skills:\n- 发表过算法相关优秀论文。\n- 参加算法相关竞赛并获奖。\n- 有优秀开源项目经历。\n- 有自然语言处理算法、大模型算法、模型加速或性能优化经验。\n\nRaw Text:\n岗位标签：发表算法相关优秀论文、深度学习、算法工程化经验、自然语言处理算法、大模型算法、参加算法相关竞赛/获奖、优秀开源项目经历、Python、模型加速/性能优化。\n岗位来源：BOSS直聘截图。招聘人：韩凯，技术专家。",
+    "filename": "batch3_jiyuanlv_ai_agent_algorithm_engineer.txt",
+    "source": "screenshot_batch_20260622_1"
+  },
+  {
+    "raw_text": "Title: AI 研发实习生\nCompany: 深圳市展查壹国际会展\nLocation: 北京\nSalary: 250-400元/天\nDuration: 5天/周 3个月\nEducation: 本科\n\nResponsibilities:\n- 负责 AI 产品工程开发、AI 编程工程落地、产品快速迭代与工程化交付。\n- 使用 Cursor、Codex 等主流 AI IDE 工具，完成 AI 产品工程代码编写、功能开发与实现。\n- 持续探索新型 AI 开发提效技巧，落地到实际开发流程，提升个人与团队开发速度。\n- 负责产品开发中的 bug 修复、问题排查、接口调试与基础性能优化。\n\nRequired Skills:\n- 熟练使用 Cursor、Codex 等 AI 辅助编程工具，有实际工程开发使用经验。\n- 具备 GitHub 开源项目筛选、评估、二次开发与落地实战经验。\n- 掌握基础软件开发能力，熟悉前端或后端工程开发即可。\n- 了解 Agent 系统、AI 产品工程化流程者优先，无算法要求。\n- 每周实习 5 天，实习周期 3 个月，本科在读。\n- 线下办公，不接受居家办公。\n\nPreferred Skills:\n- 有黑客松、快速项目开发、短期产品落地经验者优先。\n- 有 JavaScript、Python、前端或后端工程项目经验优先。\n- 有 AI 产品工程化、AI IDE、开源项目二次开发经验优先。\n\nRaw Text:\n岗位标签：不接受居家办公、JavaScript、计算机/软件工程相关专业、Python。\n福利与成长：表现优异者可获得校招正式 Offer；实习结束可沉淀完整 AI 项目作品集；资深产研专家一对一带教；公司提供 Codex、Kimi 系列等付费账号；团队提供定期复盘与活动日。\n岗位来源：BOSS直聘截图。招聘人：张弘毅，产研负责人。",
+    "filename": "batch3_zhancha_ai_rd_intern.txt",
+    "source": "screenshot_batch_20260622_1"
+  },
+  {
+    "raw_text": "Title: Agent开发实习生\nCompany: 北京灵榈秩序科技\nLocation: 北京\nSalary: 200-400元/天\nDuration: 5天/周 3个月\nEducation: 本科\nWork Address: 北京海淀区清华同方科技广场五层\n\nResponsibilities:\n- 作为实习生参与开发任务与数据产品研发任务。\n- 完成交办的开发任务与数据产品研发任务。\n- 参与 AI Workflow、Multi-agent System 的搭建及维护。\n- 对现有项目进行维护，配合使用 Docker 部署项目，并对技术架构进行迭代与改进。\n\nRequired Skills:\n- 本科二至三年级优先，认真负责，沟通能力强，学习能力强，工作意愿高。\n- 能接受偶尔的高强度工作。\n- 有开发过大模型 Benchmark 经验者优先。\n- 关注前沿 AI 行业动态，了解基本的数据知识，了解模型预训练、后训练常识者优先。\n- 能够熟练使用常见 Agent 工具，如 Claude Code、Codex、Cursor 等，能够设计合适的 Skills 辅助优化工作流程。\n- 了解 AI Workflow、Multi-agent System 的搭建及维护，能够从 0 到 1 Vibe Coding 较为完善的项目并维护。\n- 熟悉 Python，了解 React / Vue、FastAPI / Node.js 全栈开发知识、架构设计知识。\n- 了解本地单节点数据库，如 DuckDB 与云存储知识，有相关实践经验优先。\n- 了解运维常识，能够使用 Docker 部署项目，能够敏捷响应客户需求。\n\nPreferred Skills:\n- 有 Claude Code、Codex、Cursor、AI Workflow、Multi-agent System、DuckDB、Docker 经验优先。\n- 有数据产品、Benchmark、大模型项目或 Agent 工具链经验优先。\n\nRaw Text:\n公司规模小、扁平化，专人带教，提升 AI 时代认知与技能。\n岗位来源：BOSS直聘截图。招聘人：苏宇轩，CEO。",
+    "filename": "batch4_linglv_order_agent_dev_intern.txt",
+    "source": "screenshot_batch_20260622_2"
+  },
+  {
+    "raw_text": "Title: 大模型算法\nCompany: 栖宇科技\nLocation: 北京\nSalary: 300-500元/天\nDuration: 4天/周 3个月\nEducation: 本科\nWork Address: 北京海淀区清华同方科技大厦8层0804\n\nResponsibilities:\n- 参与自研通用多智能体框架的核心基础设施建设，让 AI Agent 能安全、可控地进入物理项目空间。\n- 设计 Agent 工作空间，包括 LLM 友好的文件交互接口、操作预览、回滚与版本追踪，防止 AI 误操作破坏数据。\n- 解决多个 Agent 同时工作时的冲突问题，包括文件锁、变更通知、自动合并等。\n- 设计安全沙箱、最小权限模型、路径级访问控制和全量审计日志，确保每个 Agent 只能看到该看的、动到该动的。\n- 参与通用多智能体框架 Agent Infra 建设，服务芯片 EDA 场景。\n\nRequired Skills:\n- 计算机、软件相关专业，有 Agent / MCP / Function Calling 相关项目经验。\n- 具备扎实的编程能力，熟悉 Python 或 Go。\n- 熟悉文件系统、并发控制、权限模型。\n- 对 LLM 应用有实际体感，理解为什么 Agent 会幻觉以及如何防止破坏数据。\n- 能线下实习，每周至少 4 天，至少 3 个月。\n\nPreferred Skills:\n- 有多智能体系统、Agent Infra、MCP、Function Calling 或 Agentic EDA 经验优先。\n- 有代码直接服务芯片 EDA 场景、文件系统、安全沙箱、权限控制经验优先。\n- 有开源项目、工程化基础设施或算法系统经验优先。\n\nRaw Text:\n岗位标签：agent、agentic eda。\n公司：栖宇科技，清华团队，Agentic EDA，刚完成百万美金级融资。\n岗位来源：BOSS直聘截图。招聘人：汪嘉成，招聘者。",
+    "filename": "batch4_qiyu_large_model_algorithm_agent_infra.txt",
+    "source": "screenshot_batch_20260622_2"
+  },
+  {
+    "raw_text": "Title: AI Agent 后端与算法实习生\nCompany: 北京三灵零一科技\nLocation: 北京\nSalary: 300-400元/天\nDuration: 4天/周 2个月\nEducation: 本科\nWork Address: 北京海淀区清华大学五道口金融学院\n\nResponsibilities:\n- 参与基于开源 Agent 框架的 AI 客户信息背调 Agent 后端开发，负责接口设计与优化。\n- 根据产品需求设计并实现信息抽取、数据分析和知识推理算法，支持多模态数据处理。\n- 与前端协作完成系统联调，保障 Agent 的稳定性和性能。\n- 参与产品方案讨论，撰写相关技术文档。\n\nRequired Skills:\n- 熟练掌握 Python，熟悉机器学习或深度学习框架，如 PyTorch、TensorFlow。\n- 了解大模型调优与部署。\n- 熟悉至少一种主流服务端框架，如 Django、FastAPI 或 Flask，具备基本数据库使用经验。\n- 具备良好的算法基础，熟悉自然语言处理技术优先。\n- 拥有快速学习能力，积极主动，责任心强，能够适应高强度学习与实践。\n\nPreferred Skills:\n- 有 AI Agent 后端、算法、信息抽取、知识推理、多模态数据处理经验优先。\n- 熟悉 PyTorch、TensorFlow、大模型部署或自然语言处理优先。\n\nRaw Text:\n岗位来源：BOSS直聘截图。招聘人：陈昱东，Founder。",
+    "filename": "batch4_sanlinglingyi_ai_agent_backend_algorithm_intern.txt",
+    "source": "screenshot_batch_20260622_2"
+  },
+  {
+    "raw_text": "Title: AI应用后端开发实习生-财经业务\nCompany: 今日头条\nLocation: 北京\nSalary: 400-800元/天\nDuration: 4天/周 3个月\nEducation: 本科\nWork Address: 北京海淀区 e世界财富中心C座7层\n\nResponsibilities:\n- 参与设计、开发和演进基于 AI 的金融业务架构方案。\n- 参与财经金融业务相关 Agent 应用设计和实现，确保运行稳定性和高效性。\n- 根据应用场景需求，优化并提升 Agent 效果，包括 Prompt、RAG 等优化工作。\n- 持续追踪 AI Agent 领域最新技术趋势和研究成果，将前沿技术整合进产品中。\n\nRequired Skills:\n- 2027 届本科及以上学历在读，计算机、人工智能、自动化、数学相关专业优先。\n- 精通 Go、Python、C++ 等一种或多种编程语言，具备扎实的编程技能和算法设计能力。\n- 有 AI 应用相关开发经验，了解 LLM 架构，熟悉 PE 工程、AI Agent、LangChain、RAG、Memory 等优先。\n- 创新意识强，乐于探索新的 AI 技术与应用场景，主动关注 AI 领域最新动态。\n- 具备较强学习能力、主观能动性及团队协作意识。\n\nPreferred Skills:\n- 有金融业务、AI 应用后端、Agent 应用、RAG 或 Prompt 优化经验优先。\n- 熟悉 Go、Python、C++、LLM、LangChain、Memory 或金融科技业务优先。\n\nRaw Text:\n岗位来源：BOSS直聘截图。招聘人：胡先生，资深开发工程师。ByteIntern 面向 2027 届毕业生，符合要求可提供转正机会。",
+    "filename": "batch4_toutiao_ai_backend_finance_intern.txt",
+    "source": "screenshot_batch_20260622_2"
+  },
+  {
+    "raw_text": "Title: Python 实习生-agent应用\nCompany: 吾道智擎\nLocation: 北京\nSalary: 150-250元/天\nDuration: 5天/周 3个月\nEducation: 本科\nWork Address: 北京海淀区搜狐网络大厦7楼\n\nResponsibilities:\n- 负责探索大模型应用的设计、开发与测评，具备较强场景 sense 和代码能力。\n- 负责智能营销业务场景需求开发，包括提示词优化、智能审核、知识库问答、智能 Agent 构建等方向。\n- 调研行业动态和优秀实践，收集相关信息，输出调研洞察，将技术应用到实际业务场景。\n- 思路清晰，做事认真严谨，能够较好撰写相关项目文档。\n\nRequired Skills:\n- 计算机类全日制本科及以上学历，对 AI 和后端开发兴趣浓厚。\n- 掌握 Python 及数据分析基础，具备良好的 Python 编程能力。\n- 了解 Linux 基本操作，熟悉大模型基础应用，如 API 调用、提示词优化。\n- 有实际调优经验优先。\n- 具备良好沟通、协作和解决问题能力，能够与团队成员密切合作。\n- 每周到岗工作至少 5 天，实习至少 3 个月，全职实习者优先。\n\nPreferred Skills:\n- 有 AI Agent、知识库问答、智能审核、智能营销、大模型应用测评经验优先。\n- 有 Python、数据分析、Linux、Prompt 优化、API 调用项目经验优先。\n\nRaw Text:\n岗位标签：Agent、Python。\n岗位来源：BOSS直聘截图。招聘人：刘雨蒙，人力总监。",
+    "filename": "batch4_wudao_python_agent_app_intern.txt",
+    "source": "screenshot_batch_20260622_2"
+  },
+  {
+    "raw_text": "Title: agent\nCompany: 深圳安逻芯科技\nLocation: 北京\nSalary: 300-500元/天\nDuration: 4天/周 3个月\nEducation: 硕士\nWork Address: 北京海淀区中关村国际创新大厦1\n\nResponsibilities:\n- 参与智能 Agent 系统的设计与开发，支持多场景下的自动化任务执行与交互。\n- 构建基于人工智能的决策逻辑与响应机制，提升 Agent 在多样化环境中的适应能力。\n- 实现 Agent 与外部平台或工具的对接，完成信息同步、指令传递与协同操作。\n- 持续优化 Agent 的运行效率、稳定性及用户体验，推动技术成果的产品化落地。\n\nRequired Skills:\n- 具备良好的编程基础，熟悉主流开发语言，掌握常用算法与数据结构。\n- 了解人工智能相关技术体系，对智能系统或自动化流程有基本认知。\n- 具有较强的逻辑思维和独立解决问题能力，能高效完成模块开发与调试。\n- 具备良好的沟通协作能力，能够跨团队推进项目进展。\n- 每周实习 4 天，实习周期 3 个月，硕士在读。\n\nPreferred Skills:\n- 熟悉 Golang、C++、Python、PyTorch、TensorFlow、Docker、Pandas、MySQL、Redis 或 Linux 开发部署。\n- 有 Agent 系统、自动化流程、工具对接或工程化落地经验优先。\n\nRaw Text:\n岗位标签：Golang、C++、PyTorch、Docker、Pandas、MySQL、Redis、Linux开发部署经验、Python、TensorFlow。\n岗位来源：BOSS直聘截图。招聘人：赵先生，招聘者。",
+    "filename": "batch5_anluoxin_agent.txt",
+    "source": "screenshot_batch_20260622_3"
+  },
+  {
+    "raw_text": "Title: 大模型算法\nCompany: 词元汇智\nLocation: 北京\nSalary: 200-300元/天\nDuration: 4天/周 12个月\nEducation: 本科\nWork Address: 北京海淀区AI原点社区C座403\n\nResponsibilities:\n- 参与基于大模型的 Agent 架构设计与实现，包括工具调度（ReAct 框架）和工作流引擎开发。\n- 构建检索增强生成 RAG 系统，优化知识库检索精度与响应效率。\n- 开发多智能体协作平台，支持复杂业务场景的自动化决策。\n- 探索大模型微调技术，如 LoRA / P-Tuning，提升特定领域任务表现。\n- 设计强化学习与人类反馈（RLHF）训练策略，优化智能体决策逻辑。\n- 构建行业级评测基准 Benchmark，量化智能体性能指标。\n- 开发轻量化部署方案，如 FastAPI / Flask，支持国产化信创环境适配。\n- 构建全链路数据处理工具，涵盖数据清洗、向量化存储与隐私计算。\n- 参与企业级 AI 产品落地，对接金融、医疗等真实业务需求。\n\nRequired Skills:\n- 985 / 211 高校计算机、人工智能相关专业硕士或优秀本科生。\n- 每周至少全职到岗 3 天，实习周期 6 个月以上。\n- 熟练掌握 PyTorch / TensorFlow 框架，深入理解 Transformer 架构。\n- 熟悉大模型技术栈，包括 LangChain / LlamaIndex 等编排框架，Milvus / Pinecone 等向量数据库。\n- 具备至少一项实战经验：参与过大模型训练或微调项目，或开发过 RAG 系统或 Agent 应用。\n\nPreferred Skills:\n- 在 NeurIPS / ICML / ACL 等顶会发表过相关论文。\n- 熟悉分布式训练，如 Megatron-LM / DeepSpeed，或推理加速技术，如 vLLM / TensorRT。\n- 有全栈开发能力，如 React + FastAPI，或云原生部署经验，如 Docker / K8s。\n\nRaw Text:\n岗位来源：BOSS直聘截图。招聘人：王勇，创始人。",
+    "filename": "batch5_ciyuanhuizhi_large_model_algorithm.txt",
+    "source": "screenshot_batch_20260622_3"
+  },
+  {
+    "raw_text": "Title: AI Agent开发工程师/算法工程师\nCompany: 深圳多泽教育\nLocation: 北京\nSalary: 250-300元/天\nDuration: 4天/周 3个月\nEducation: 本科\nWork Address: 北京朝阳区北京市朝阳区东苇路9号\n\nResponsibilities:\n- 负责设计、开发与优化 AI Agent 的核心架构与系统，包括任务规划、对话管理、记忆模块、工具调用等关键组件。\n- 深入应用 LangChain、LangGraph、AutoGen 等主流 Agent 框架或自研框架，构建高效的智能体工作流，持续迭代性能。\n- 集成并优化各类大语言模型和多模态模型能力，通过 Prompt Engineering、RAG 等技术提升 Agent 的推理与执行效果。\n- 与产品经理、前端工程师等角色紧密合作，深入理解业务需求，将技术方案转化为稳定落地的产品功能。\n\nRequired Skills:\n- 熟练掌握 Python 等至少一门编程语言，具备良好的编程习惯和扎实的计算机基础。\n- 熟悉常见 Agent 开发框架，如 LangChain、AutoGen、LlamaIndex 等。\n- 理解 AI Agent 的核心技术思想，如 ReAct、CoT、多智能体协作等。\n- 具备机器学习或深度学习基础，有自然语言处理相关项目经验者优先。\n- 拥有大模型 API 集成、提示词优化、RAG 系统构建应用的实际经验。\n- 具备优秀的学习能力和主动性，能够快速跟进 AI 领域前沿技术。\n- 拥有良好的沟通能力和团队协作精神，能清晰地分析和解决问题。\n\nPreferred Skills:\n- 有完整个人 AI Agent 项目经验或在 GitHub 等平台有相关开源贡献。\n- 熟悉大模型微调（Fine-tuning）技术或分布式训练框架，如 PyTorch。\n- 有大模型算法、自然语言处理算法、强化学习或 Agent 框架项目经验优先。\n\nRaw Text:\n岗位标签：Agent、大模型算法、自然语言处理算法、强化学习、Python。\n岗位来源：BOSS直聘截图。招聘人：曹女士，招聘主管。",
+    "filename": "batch5_duoze_ai_agent_dev_algorithm_engineer.txt",
+    "source": "screenshot_batch_20260622_3"
+  },
+  {
+    "raw_text": "Title: 大模型智能体agent程序员实习生\nCompany: 个如科技\nLocation: 北京\nSalary: 150-300元/天\nDuration: 4天/周 3个月\nEducation: 本科\n\nResponsibilities:\n- 参与 B2C 智能体创业公司个人助理产品相关开发与落地。\n- 参与大模型智能体产品的技术研发、产品验证与早期业务探索。\n- 在创业团队中配合推进个人财务自由目标相关智能体产品建设。\n\nRequired Skills:\n- 有创业激情，有创业意愿。\n- 崇尚个人奋斗，愿意为了早日实现个人财富自由进行拼搏。\n- 对 B2C 智能体创业公司持有极度的狂热和信仰。\n- 敬畏法律法规，有契约精神。\n- 每周实习 4 天，实习周期 3 个月，本科在读。\n\nPreferred Skills:\n- 对大模型智能体、MCP 产品、个人助理类 AI 产品感兴趣。\n- 有创业项目、个人 AI 应用或智能体产品实践经验优先。\n\nRaw Text:\n公司介绍：个如科技是一家 B2C 智能体创业公司，目标建设全球领先的大模型智能体形态个人助理。公司 2024 年初开始技术研发，计划 2025 年发布 MCP 产品。\n团队来自北京大学、清华大学、中国科学院大学、南京大学、纽约大学、北京航空航天大学、中国农业大学等。\n岗位来源：BOSS直聘截图。招聘人：贺铮，董事长。",
+    "filename": "batch5_geru_large_model_agent_programmer_intern.txt",
+    "source": "screenshot_batch_20260622_3"
+  },
+  {
+    "raw_text": "Title: AI 应用开发工程师实习生\nCompany: 北京格林比特科技\nLocation: 北京\nSalary: 500-1000元/天\nDuration: 3天/周 6个月\nEducation: 本科\nWork Address: 北京朝阳区金辉大厦608\n\nResponsibilities:\n- 参与 AI 应用开发、Python Web 服务开发与 AI Agent 相关工程实现。\n- 参与 AI 效率工具、GPT-4 / Claude 相关应用开发与集成。\n- 与团队协作完成 AI 技术应用开发、接口集成与产品落地。\n\nRequired Skills:\n- 就读于 985 或 211 院校，计算机科学或相关领域本科在读（大三及以上）或研究生在读。\n- 扎实的 Python 编程基础，熟悉 Python 的高级特性。\n- 了解常用 Python Web 框架，如 Flask、FastAPI 等。\n- 对 AI Agent 开发和大语言模型应用开发有基本了解。\n- 具备良好的算法设计和问题解决能力。\n- 熟悉 Git 版本控制系统。\n- 具备创新思维，能够提出新颖想法，同时做事踏实可靠。\n- 良好的团队协作精神和沟通能力。\n- 具备优秀的道德品质，工作中体现诚信和责任感。\n- 实习期间每周能保证至少 3 天全职工作时间，实习办公地点为北京。\n\nPreferred Skills:\n- 熟悉常见 AI 开发框架，如 PyTorch、TensorFlow 等。\n- 有 Agent 框架，如 Dify、LangChain、LangGraph 等实际应用经验。\n- 对 RAG 技术有了解或使用经验。\n- 有 API 开发和集成经验。\n- 熟悉 Context Engineering 等 LLM 相关技术。\n- 熟悉 Ollama、vLLM 或其他本地大语言模型部署方案。\n- 参与过开源项目或有个人技术博客。\n- 优秀的英语沟通能力。\n\nRaw Text:\n岗位来源：BOSS直聘截图。招聘人：杨浩进，CEO。\n公司提供有竞争力的实习薪酬、国际化团队机会、AI 技术应用开发经验、职业发展和学习机会。",
+    "filename": "batch5_greenbit_ai_app_dev_engineer_intern.txt",
+    "source": "screenshot_batch_20260622_3"
+  },
+  {
+    "raw_text": "Title: 后端工程实习生｜Agent系统\nCompany: 北京集树科技有限公司\nLocation: 北京\nSalary: 500-600元/天\nDuration: 3天/周 6个月\nEducation: 本科\nWork Address: 北京市海淀区成府路150号\n\nResponsibilities:\n- 在资深研发工程师指导下，独立负责一个完整子模块从设计、开发、测试、上线到最终影响真实用户的全流程。\n- 真正参与前沿 AI 产品定义，而不仅仅写代码，这是多数大厂实习难以提供的机会。\n- 独立负责一个完整后端子模块的迭代流程，如智能引导、对话记忆、MultiAgent 等。\n- 设计清晰的内部 / 外部 API，编写可读代码，覆盖单元测试与技术文档。\n- 参与 Code Review，共同解决性能瓶颈与线上问题。\n- 接触真实生产环境，学习并动手做自动测试、服务部署、指标埋点等工作。\n- 可跨栈学习前端、产品、设计等相关方向，根据节奏和兴趣在真实项目中拓展技能边界。\n\nRequired Skills:\n- 本科及硕士在读，计算机科学或 EE 方向，如软件工程等。\n- 具备编程能力，热爱软件开发，熟悉 Python。\n- 有过完整个人课程、比赛项目，能跑通即可，无需完美。\n- 对大模型及智能对话产品有兴趣，愿意主动思考与尝试。\n- 实习周期 3-6 个月，每周到公司 3 天，其余时间可远程协作。\n\nPreferred Skills:\n- 用过 OpenAI、通义、DeepSeek、Claude 等大模型 API，做过完整 Demo。\n- 有开源贡献、Hackathon 获奖或团队项目经验。\n- 熟悉 LangChain、OpenManus 等现代技术栈。\n- 喜欢使用 AI 工具，如娱乐、创作、开发、写作等。\n\nRaw Text:\n岗位福利：基础 550 元/天起，根据能力与贡献上浮；一对一导师机制；弹性工作时间；餐补和报销；表现好毕业后有全职机会。\n岗位来源：BOSS直聘截图。招聘人：李怡凡，业务助理。",
+    "filename": "batch5_jishu_backend_agent_system_intern.txt",
+    "source": "screenshot_batch_20260622_3"
+  },
+  {
+    "raw_text": "Title: AI Agent开发工程师\nCompany: 生橙视觉\nLocation: 北京\nSalary: 200-400元/天\nDuration: 3天/周 1个月\nEducation: 本科\nWork Address: 北京朝阳区万科时代中心·望京wework\n\nResponsibilities:\n- 参与 AI Agent 系统的设计与开发，包括多轮对话、任务规划、工具调用等核心模块。\n- 基于现有大语言模型，如 OpenAI、Claude、Gemini 等，开发智能应用，构建 Prompt 链路、插件接口与上下文管理。\n- 协助构建和维护前后端一体的 Agent 应用，如 Web 端产品、API 服务、小工具等。\n- 跟进 Agent 相关技术发展，调研并引入优秀开源框架，如 LangChain、LlamaIndex、AutoGen 等。\n- 与产品、设计协作，推动 AI 产品从原型到上线。\n\nRequired Skills:\n- 计算机、人工智能、软件工程等相关专业在读本科或研究生。\n- 熟悉主流编程语言，如 Python（优先）、JavaScript / TypeScript 等。\n- 了解一种以上 AI Agent 框架，如 LangChain、AutoGen、CrewAI 等，或具备快速学习能力。\n- 有一定 Web 开发经验或兴趣，了解前后端基本原理与开发流程。\n- 对大模型生态有基本理解，熟悉主流 API 调用方式及其能力边界。\n- 具备良好的工程意识、代码习惯与团队协作能力。\n- 每周可实习 3 天及以上，能持续 3 个月以上优先。\n\nPreferred Skills:\n- 熟悉 C++、Django、MySQL、Redis、Linux 开发部署、Python 或 Flask。\n- 有架构设计经验、Web 产品开发经验或 Agent 应用开发经验优先。\n\nRaw Text:\n岗位标签：C++、Django、MySQL、Redis、架构设计经验、Linux开发部署经验、Python、Flask。\n岗位来源：BOSS直聘截图。招聘人：陶艺夫，创始人&CEO。",
+    "filename": "batch5_shengcheng_ai_agent_dev_engineer.txt",
+    "source": "screenshot_batch_20260622_3"
+  },
+  {
+    "raw_text": "Title: AI Agent 开发工程师（暑期实习）\nCompany: 哆咔互娱(DECA)\nLocation: 北京\nSalary: 240-300元/天\nDuration: 5天/周 3个月\nEducation: 本科\nWork Address: 北京朝阳区绿地中心B座（启阳路）12F\n\nResponsibilities:\n- 负责 Capsule-OS 平台的功能开发与维护，将 AI 技术能力转化为业务可用功能。\n- 参与上云方案设计与实施，保障系统安全性与合规性。\n- 开发资产管理统一分发系统，支持工具版本管理与全公司复用。\n- 快速响应业务需求，如多入口接入、飞书 Bot 集成等。\n- 优化系统架构，提升平台稳定性与用户体验，熟悉 Agent Harness 相关技术和方法论。\n\nRequired Skills:\n- 理解 Agent 架构，熟悉 Agent 工作原理、工具链编排、上下文管理等核心概念。\n- 具备产品思维，能理解业务痛点，将技术能力转化为用户可用功能。\n- 具备 3 年以上相关开发经验，或有完整 Agent 项目经验。\n- 每周实习 5 天，实习周期 3 个月，本科在读。\n\nPreferred Skills:\n- 有基于真实需求场景的 Agent 项目经验，个人项目也可。\n- 有 Claude API / LLM 应用开发经验。\n- 有各类 Agent 框架的 Skill 和插件部署与集成经验。\n- 有 Docker 容器化部署经验。\n\nRaw Text:\n公司介绍：Capsule-OS 是服务游戏收购与运营的垂类 Agent 操作系统，已构建 25,000+ 行代码平台，包括三层渐进式记忆、Lightning-OS 资产管理框架、A2UI 动态表单等核心技术。\n岗位来源：BOSS直聘截图。招聘人：庞女士，HRBP。",
+    "filename": "batch6_deca_ai_agent_dev_engineer_summer_intern.txt",
+    "source": "screenshot_batch_20260622_4"
+  },
+  {
+    "raw_text": "Title: AI Agent 开发实习生\nCompany: 极群科技\nLocation: 北京\nSalary: 400-500元/天\nDuration: 5天/周 3个月\nEducation: 本科\n\nResponsibilities:\n- 参与团队内部复杂 Agent 设计、开发与评估，重点提升 Agent 长程任务处理能力、规划能力、记忆能力和降低幻觉能力。\n- 参与团队内部知识库的设计、开发与评估。\n- 参与面向全球用户的 AI 即时通讯产品研发。\n\nRequired Skills:\n- 具备良好的思维逻辑能力、数学基础、工程思维与系统思维。\n- 对 LLM、常见 Agent 有认知。\n- 熟练使用市面常见的 Coding Agent。\n- 具备数据品味，能从体验和评估中洞察产品缺口。\n- 能北京线下实习，每周 5 天，实习周期 3 个月。\n\nPreferred Skills:\n- 对 Codex / Claude Code 有底层探索。\n- 熟悉 LLM 机制可解释性。\n- 熟悉 LLM Persona。\n- 手搓过 Agent 框架。\n- 熟悉 Agentic Search。\n- 熟悉 Context / Harness Engineering。\n- 发表过 AI 顶会论文。\n- 高 Star GitHub 开源项目作者或维护者。\n- 有其他出色项目经验。\n\nRaw Text:\n岗位标签：AI agent、即时通讯。\n公司介绍：极群科技正在打造面向全球用户的 AI 即时通讯产品，小而精的初创团队，清华背景，已获顶级投资机构融资。\n岗位来源：BOSS直聘截图。招聘人：戴先生，HR。",
+    "filename": "batch6_jiqun_ai_agent_dev_intern.txt",
+    "source": "screenshot_batch_20260622_4"
+  },
+  {
+    "raw_text": "Title: agent\nCompany: 蓝色脉动\nLocation: 北京\nSalary: 300-310元/天\nDuration: 4天/周 6个月\nEducation: 本科\nWork Address: 北京海淀区中关村东升科技园北领地B-2号楼D101A\n\nResponsibilities:\n- 参与 Agent 架构（如 Multi-Agent、ReAct 等）的基础调研与实验，协助探索大模型在 Agent 场景下的能力边界。\n- 配合团队完成 Agent 应用原型开发，参与 Function Call、提示工程等模块的落地实践。\n- 协助优化智能助手 Agent 的基础功能，支持用户咨询、解决方案辅助等场景的测试与迭代。\n- 参与技术文档、示例代码的整理，辅助完成 Agent 相关技术方案的落地验证。\n\nRequired Skills:\n- 掌握 Python 编程基础，了解 Linux 开发环境。\n- 对 LangGraph、LlamaIndex 等大模型应用框架有初步认知。\n- 对大模型、Agent 技术有兴趣，了解提示工程、检索增强生成 RAG 等基础概念。\n- 具备基本的技术沟通能力，能配合团队完成任务，有较强学习意愿和问题解决能力。\n- 计算机、人工智能、数据科学等相关专业，本科及以上学历，26/27 届在读，有 AI 项目或竞赛经验者优先。\n\nPreferred Skills:\n- 有 Multi-Agent、ReAct、Function Call、RAG、LangGraph、LlamaIndex 或智能助手项目经验优先。\n- 有 AI 项目、竞赛、示例代码整理或技术方案验证经验优先。\n\nRaw Text:\n岗位来源：BOSS直聘截图。招聘人：徐彤，HRBP人事主管。",
+    "filename": "batch6_lansemaidong_agent.txt",
+    "source": "screenshot_batch_20260622_4"
+  },
+  {
+    "raw_text": "Title: Agent工程开发实习生\nCompany: 深圳市揽岳智能科技\nLocation: 北京\nSalary: 400-800元/天\nDuration: 4天/周 3个月\nEducation: 硕士\nWork Address: 北京海淀区领航科技大厦15层\n\nResponsibilities:\n- 参与开发各种垂直 Agent 应用，包括 GUI Agent、数字人 Agent、陪伴 Agent、办公效率 Agent 等，打造 Agent Matrix 产品矩阵。\n- 参与 Agent Infra 开发，包括 Agent 开发、部署、观测的全生命周期基建，支撑 Agent Matrix 产品稳定交付。\n\nRequired Skills:\n- 计算机、自动化、人工智能等相关专业，硕士或优秀本科在读。\n- 具备 Python 编码能力，扎实的代码开发经验，熟悉 Git。\n- 熟悉 Gemini、Qwen、GPT 等大模型能力边界，有 Prompt / Context Engineering 经验。\n- 熟悉主流 Agent 框架优先，如 LangChain、Claude Agent SDK 等。\n- 有 Agent 应用落地经验优先，或深入理解开源复杂 Agent 应用，如 Claude Code、OpenCode 等。\n\nPreferred Skills:\n- 有 GUI Agent、数字人 Agent、办公效率 Agent 或 Agent Matrix 相关产品经验优先。\n- 有 Agent Infra、Agent 观测、部署、生命周期管理相关经验优先。\n\nRaw Text:\n岗位来源：BOSS直聘截图。招聘人：牛永鑫，HR。",
+    "filename": "batch6_lanyue_agent_engineering_dev_intern.txt",
+    "source": "screenshot_batch_20260622_4"
+  },
+  {
+    "raw_text": "Title: AI Agent算法工程师\nCompany: 清鹏智能\nLocation: 北京\nSalary: 200-400元/天\nDuration: 3天/周 3个月\nEducation: 本科\nWork Address: 北京海淀区清华同方科技广场D座西楼20层\n\nResponsibilities:\n- 负责电力量化交易相关预测及策略全流程 Agent 技术研发及迭代。\n- 负责 Agent 相关工具开发，技术驱动不断优化 Agent 开发效率及落地效果。\n- 密切跟踪领域最新发展，将新技术和方法应用到项目中。\n\nRequired Skills:\n- 人工智能、计算机、数学等相关专业全日制本科、硕士或博士。\n- 深厚的机器学习和深度学习理论知识，理解主流大模型算法原理，具备模型和 Agent 层面的算法开发能力。\n- 具备扎实的编程能力，熟练使用 Python 等编程语言。\n- 自驱力强，对 AI 发展有强烈兴趣，具备良好的协作能力和沟通能力。\n- 每周实习 3 天，实习周期 3 个月，本科在读。\n\nPreferred Skills:\n- 有 Agent 工具开发、量化交易、策略预测、大模型算法或深度学习项目经验优先。\n- 有电力交易智能化、时间序列预测或工程化落地经验优先。\n\nRaw Text:\n岗位来源：BOSS直聘截图。招聘人：张国祯，CTO。",
+    "filename": "batch6_qingpeng_ai_agent_algorithm_engineer.txt",
+    "source": "screenshot_batch_20260622_4"
+  },
+  {
+    "raw_text": "Title: Agent 开发实习生\nCompany: 北京思格海野智能科技\nLocation: 北京\nSalary: 400-700元/天\nDuration: 5天/周 6个月\nEducation: 本科\nWork Address: 北京朝阳区大望京中心A\n\nResponsibilities:\n- 参与 Agent 产品研发和落地，接触 LLM 应用工程、Agent 架构、评估体系和可观测性等核心问题。\n- 与产品、算法、工程团队协作，理解 AI 产品从想法到上线的完整过程。\n- 在高密度实践中提升工程能力、问题拆解能力和 AI 应用开发能力。\n\nRequired Skills:\n- 本科或研究生，计算机、软件工程、人工智能、数据科学等相关专业在读。\n- 编程基础扎实，至少熟练掌握一门编程语言：Python / Go / Node.js / Java / TypeScript 等。\n- 具备良好的计算机基础，对数据结构、算法、网络、操作系统、数据库等有系统理解。\n- 具备基本后端开发能力，理解 API、数据库、异步任务、日志、错误处理、测试等常见工程概念。\n- 有 LLM / Agent 相关项目实践，能够清楚说明项目目标、技术方案、核心实现、效果验证和遇到的问题。\n- 对 LLM / Agent 应用开发有良好理解，能结合项目说明技术选择、工程取舍和改进思路。\n- 能阅读技术文档并基于文档、示例和实验快速完成工程实现。\n- 代码习惯良好，重视可读性、可维护性和可调试性。\n- 能有效使用 AI 辅助开发工具，并能判断、修改和验证 AI 生成代码的质量。\n- 具备较好的问题拆解能力，能将相对模糊的问题拆成可执行、可验证的开发任务。\n\nPreferred Skills:\n- 有 AI 应用、智能助手、自动化工作流、开发者工具、内部效率工具等相关项目经验。\n- 熟悉主流 LLM / Agent 应用开发工具或工程框架。\n- 对 Agent 效果评估、稳定性优化、工程可观测性、复杂任务拆解等方向有实践或深入学习。\n- 有后端服务、全栈产品、开发者工具、内部平台、自动化脚本等实际项目经验。\n- 熟悉数据库、缓存、消息队列、容器化、CI/CD 等常见工程工具。\n- 有开源项目贡献、技术博客、个人项目、竞赛经历或长期维护的代码作品。\n- 有一定产品 sense，能从用户目标和业务价值出发判断功能是否真正有价值。\n\nRaw Text:\n岗位来源：BOSS直聘截图。招聘人：富女士，HR。",
+    "filename": "batch6_sigehaiye_agent_dev_intern.txt",
+    "source": "screenshot_batch_20260622_4"
+  },
+  {
+    "raw_text": "Title: Agent 研发实习生\nCompany: 算栈未来(上海)\nLocation: 北京\nSalary: 1000-1050元/天\nDuration: 4天/周 4个月\nEducation: 学历不限\nWork Address: 北京海淀区启迪科技大厦B座1层\n\nResponsibilities:\n- 参与基于大模型的 Agent 系统开发，包括任务规划、工具调用、记忆管理、反思与自修正机制等核心模块的设计与实现。\n- 参与多 Agent 协作系统的搭建与调试，熟悉 OpenClaw、Claude Code 等主流方案。\n- 负责 Prompt Engineering 及 RAG 系统的构建与迭代优化。\n- 集成外部工具能力，如搜索、数据库、API、工作流等，实现 Agent 的自动化决策与执行链路。\n- 协助优化 Agent 的推理效率、调用成本及运行稳定性。\n\nRequired Skills:\n- 在读本科或硕士，计算机、人工智能等相关专业优先。\n- 熟练掌握 Python 或 TypeScript 至少一种语言，有实际项目经验。\n- 了解 LLM 基本原理，有调用大模型 API 的实际经验，如 OpenAI / Anthropic / Google 等。\n- 了解 RAG 架构或向量数据库者优先。\n- 具备很强的自驱力与问题拆解能力。\n\nPreferred Skills:\n- 有 OpenClaw、Claude Code、Prompt Engineering、RAG 或多 Agent 协作项目经验优先。\n- 有 Agent 工具集成、自动化决策链路或外部 API 集成经验优先。\n\nRaw Text:\n岗位来源：BOSS直聘截图。招聘人：王思婷，HRBP。",
+    "filename": "batch6_suanzhan_agent_rd_intern.txt",
+    "source": "screenshot_batch_20260622_4"
+  },
+  {
+    "raw_text": "Title: 研发实习生（智能体系系统方向）\nCompany: 北京万象智维科技\nLocation: 北京\nSalary: 300-600元/天\nDuration: 5天/周 6个月\nEducation: 本科\nWork Address: 北京海淀区东升大厦AB座2层\n\nResponsibilities:\n- 参与端侧（Mobile）与本地服务（Desktop / Server）协同的个人智能助手软件设计与开发。\n- 构建接入真实世界的软件生态，解决多设备消息触达、记忆与个性化、应用自动化控制、权限风控边界及插件生态扩展性问题。\n\nRequired Skills:\n- 计算机或相关专业，研究生学历优先，实习期不少于 3 个月。\n- 有系统编程或 AI 工具开发经验；有长连接服务、跨端同步、复杂工具链项目经验优先。\n- 熟悉 Agent 基础；熟悉 A2A、MCP、Skills 等技术概念。\n- 对稳定性和体验有强责任心，愿意为指标提升持续迭代。\n- 每周实习 5 天，实习周期 6 个月，本科在读。\n\nPreferred Skills:\n- 有移动端、本地服务、跨端同步、应用自动化控制或插件生态经验优先。\n- 熟悉 Agent、A2A、MCP、Skills、智能助手软件或系统编程优先。\n\nRaw Text:\n岗位来源：BOSS直聘截图。招聘人：姜女士，招聘者。",
+    "filename": "batch6_wanxiang_research_intern_intelligent_system.txt",
+    "source": "screenshot_batch_20260622_4"
+  },
+  {
+    "raw_text": "Title: 具身智能agent开发实习生\nCompany: 维他动力\nLocation: 北京\nSalary: 400-500元/天\nDuration: 5天/周 4个月\nEducation: 学历不限\n\nResponsibilities:\n- 在资深工程师一对一指导下，深度参与具身智能核心系统研发，亲手打造能在真实物理世界运行的机器人大脑。\n- 参与物理世界 Agent OS 的开发与调试，协助实现自然语言指令语义解析、空间推理、任务规划与失败恢复模块。\n- 参与人机共融交互协议设计与验证，实现自然语言歧义消解、执行过程意图澄清、人类介入时的优雅交接逻辑。\n- 参与持续进化智能体的原型开发，探索从人类演示中学习技能、利用知识生成新行为的方法，优化 Agent Runtime 执行效率。\n- 参与长期记忆系统实验与迭代，设计情境化记忆存储与检索机制，让机器人能够会话记住用户偏好。\n\nRequired Skills:\n- 对智能有好奇心和追求，不惧 demo 能跑就行的敷衍代码。\n- 敢于承认不知道，但不是假装什么都懂。\n- 对 Agent 工作原理有强烈探索欲，愿意深入思考智能到底是什么。\n- 学习能力强，敢于挑战未知。\n- 计算机、自动化、机器人、数学等相关专业，本科及以上在读。\n- 有扎实编程基础，如 Python / C++，了解基本数据结构和算法。\n- 会主动使用 AI 工具提升效率，能用 AI 写代码、跑实验、分析日志，并独立判断结果正确性。\n- 做事严谨，会考虑边界情况和安全问题。\n\nPreferred Skills:\n- 能说出一个 Agent 系统完整工作流程及其可能问题。\n- 有为了解决一个问题一周内学会新技术并做出原型的经历。\n- 自己动手做过任何形式的 AI Agent 项目。\n- 有运动控制、机器人、嵌入式或硬件相关项目经验。\n- 对记忆和交互有思考，理解长期记忆不只是向量库。\n\nRaw Text:\n岗位来源：BOSS直聘截图。招聘人：迪先生，招聘经理。",
+    "filename": "batch6_weita_embodied_agent_dev_intern.txt",
+    "source": "screenshot_batch_20260622_4"
+  },
+  {
+    "raw_text": "Title: AI Agent研发实习生\nCompany: 北京焱宏科技有限公司\nLocation: 北京\nSalary: 200-300元/天\nDuration: 4天/周 6个月\nEducation: 本科\nWork Address: 北京东城区epark（夕照寺社区）\n\nResponsibilities:\n- 参与 AI Agent 平台开发，聚焦意图识别、上下文理解与记忆管理模块，将 LLM、RAG 或对话式 AI 技术落地到实际场景。\n- 深入理解用户需求和业务痛点，能够结合 AI 技术设计优化方案，提升服务效率与用户体验。\n- 具备 MVP 思维，能够快速构建原型、测试假设，并根据反馈迭代优化技术方案。\n- 与产品、业务及其他技术团队密切协作，参与方案讨论与实施，推动项目落地。\n\nRequired Skills:\n- 国内外高校计算机科学、人工智能、电子工程或相关专业 2027 年应届毕业生。\n- 具备扎实编程能力，有个人项目或实践经验，有对话式机器人、语音交互或 AI Agent 开发经验优先。\n- 对 AI 技术、LLM、对话 AI、知识增强系统等前沿技术充满热情，具备快速学习和探索能力。\n- 优秀的沟通能力和团队协作精神，能够与多角色高效协同。\n- 每周实习 4 天，实习周期 6 个月，本科在读。\n\nPreferred Skills:\n- 有 Agent、MVP、LLM、RAG、意图识别、上下文理解或记忆管理项目经验优先。\n- 有 AI 产品研发、对话机器人或语音交互经验优先。\n\nRaw Text:\n岗位标签：Agent、MVP、LLM。\n岗位来源：BOSS直聘截图。招聘人：孙文丽，HRD。",
+    "filename": "batch6_yanhong_ai_agent_rd_intern.txt",
+    "source": "screenshot_batch_20260622_4"
+  },
+  {
+    "raw_text": "Title: AI Agent开发-实习生\nCompany: 东易日盛科技\nLocation: 北京\nSalary: 300-330元/天\nDuration: 5天/周 3个月\nEducation: 本科\nWork Address: 北京朝阳区东易日盛集团北京数装总店7层\n\nResponsibilities:\n- 协助完成 AI Agent 的功能开发与调试，包括 Prompt 设计、工具链集成、状态管理等模块。\n- 参与 RAG 系统搭建与数据处理流程优化，提升检索效率与问答质量。\n- 协助搭建和维护 Agent 的后端服务，使用 Flask、FastAPI 等框架进行接口开发。\n- 支持向量数据库（Pinecone / Weaviate）的数据导入与索引优化。\n- 跟进 AI Agent 相关技术动态，撰写技术总结报告或协助撰写文档。\n- 参与团队内部技术讨论，提出改进建议。\n\nRequired Skills:\n- 计算机、人工智能、软件工程等相关专业在读学生。\n- 熟悉 Python 编程语言，具备一定算法与数据结构基础。\n- 了解大模型基本概念，如 LLM、Prompt Engineering、RAG，对 AI Agent 有一定兴趣。\n- 熟悉至少一种 Agent 框架，如 LangChain、LangGraph、AutoGen 者优先。\n- 了解 Docker、Linux 基本操作，能独立运行简单项目。\n- 具备良好的沟通能力和团队协作意识，责任心强，乐于学习。\n- 每周实习 5 天，实习周期 3 个月，本科在读。\n\nPreferred Skills:\n- 有个人 AI 项目，如基于 ChatGPT 的智能助手、自动问答机器人等。\n- 熟悉 GPT、Qwen、LLaMA 等主流模型 API 调用。\n- 了解强化学习、意图识别、多轮对话等技术者优先。\n\nRaw Text:\n岗位标签：Java、Django、MySQL、架构设计经验、Python。\n岗位备注：只考虑北理工、北航、北邮的计算机专业。\n岗位来源：BOSS直聘截图。招聘人：李婷，人事经理HRD。",
+    "filename": "batch7_dongyirisheng_ai_agent_dev_intern.txt",
+    "source": "screenshot_batch_20260622_5"
+  },
+  {
+    "raw_text": "Title: AI Agent 智能体工程师（实习）\nCompany: 启明合心\nLocation: 北京\nSalary: 250-400元/天\nDuration: 5天/周 3个月\nEducation: 本科\nWork Address: 北京海淀区京东科技大厦2\n\nResponsibilities:\n- 面向教育场景的 AI 智能体，参与 AI 智能体相关的研发和设计。\n- 熟悉 AI Coding 相关任务，可以将复杂的知识问题转化成编程问题，让用户可以理解。\n- 开发和维护高质量的代码库，保证项目质量和进度。\n- 与团队成员紧密合作，解决技术难题。\n- 参与 AI 智能体的应用开发，提升系统性能。\n- 熟悉 SVG 开源项目，AI Coding 更佳。\n\nRequired Skills:\n- 具备扎实的编程技能，熟悉 Python 等主流编程语言。\n- 对 AI 技术有深入理解和实践经验，能够独立处理相关研发工作。\n- 具有良好的分析和问题解决能力，能快速定位并处理技术难题。\n- 良好的团队合作精神和沟通能力，能够高效协作完成项目开发。\n- 对新技术有持续学习意愿，能够跟进最新 AI 技术发展。\n- 每周实习 5 天，实习周期 3 个月，本科在读。\n\nPreferred Skills:\n- 熟悉 AI Coding、SVG 开源项目或教育智能体项目优先。\n- 有 Python、AI Agent、知识问答或代码库工程经验优先。\n\nRaw Text:\n岗位来源：BOSS直聘截图。招聘人：王一萌，COO。",
+    "filename": "batch7_qiminghexin_ai_agent_engineer_intern.txt",
+    "source": "screenshot_batch_20260622_5"
+  },
+  {
+    "raw_text": "Title: 大模型/Agent方向研发实习生\nCompany: 盛大网络集团\nLocation: 北京\nSalary: 300-400元/天\nDuration: 4天/周 3个月\nEducation: 本科\nWork Address: 北京海淀区启迪科技大厦C座C座\n\nResponsibilities:\n- 参与大模型或 Agent 方向研发，支持模型推理性能优化、部署，确保服务稳定与高效。\n- 参与前沿大模型、Agent、Prompt Engineering、RAG 等技术的研究与应用。\n- 支持模型工程化、性能优化和实际业务落地。\n\nRequired Skills:\n- 计算机科学、人工智能、软件工程、生物信息或相关专业的在读硕士或博士研究生。\n- 精通 Python，熟悉至少一种主流深度学习框架，如 PyTorch。\n- 熟悉 Transformer、BERT、GPT 等主流大模型基本原理。\n- 有大模型 LLM 相关项目经验，包括但不限于模型微调、Prompt Engineering、RAG 等。\n- 对 LangChain、LlamaIndex 等 Agent 开发框架有了解或实践经验者优先。\n- 具备优秀的分析问题和解决问题能力，以及快速学习和实现能力。\n- 具备良好的沟通能力和团队协作精神。\n\nPreferred Skills:\n- 对健康医疗领域有浓厚兴趣，或有相关交叉学科背景。\n- 在顶级会议或期刊，如 NeurIPS、ICML、ICLR、ACL、EMNLP、CVPR 等发表过相关论文。\n- 有 ACM / ICPC、Kaggle 等国内外知名编程或算法竞赛获奖经历。\n- 熟悉分布式训练、模型量化、推理加速等技术。\n\nRaw Text:\n岗位来源：BOSS直聘截图。招聘人：杨先生，招聘经理。",
+    "filename": "batch7_shengda_large_model_agent_research_intern.txt",
+    "source": "screenshot_batch_20260622_5"
+  },
+  {
+    "raw_text": "Title: Agent工程师\nCompany: 北京未名花开科技\nLocation: 北京\nSalary: 200-400元/天\nDuration: 5天/周 6个月\nEducation: 本科\nWork Address: 北京海淀区大恒科技大厦北座8层8016\n\nResponsibilities:\n- 参与 Agent 系统的开发与优化，提升智能体交互能力。\n- 协同团队完成算法模型的设计与实现。\n- 持续跟进前沿技术，推动产品功能迭代。\n\nRequired Skills:\n- 具备良好的逻辑思维能力和问题解决能力。\n- 有较强学习能力，能快速掌握新技术。\n- 具备良好的沟通能力，能与团队高效协作。\n- 每周实习 5 天，实习周期 6 个月，本科在读。\n\nPreferred Skills:\n- 有图像算法、大模型算法、自然语言处理算法、多模态算法或算法工程化经验优先。\n- 有 Python、Agent 系统或智能体交互相关项目经验优先。\n\nRaw Text:\n岗位标签：发表算法相关优秀论文、图像算法、大模型算法、自然语言处理算法、多模态算法、算法工程化经验、Python。\n项目由微软研究院大佬带领，期望实习 6 月以上。\n岗位来源：BOSS直聘截图。招聘人：申林鹏，招聘者。",
+    "filename": "batch7_weiminghuakai_agent_engineer.txt",
+    "source": "screenshot_batch_20260622_5"
+  },
+  {
+    "raw_text": "Title: ai agent工程师\nCompany: 元空智能\nLocation: 北京\nSalary: 200-250元/天\nDuration: 4天/周 3个月\nEducation: 本科\n\nResponsibilities:\n- 负责 AI Agent 系统的设计、开发与优化，构建具备自主决策能力的智能体框架。\n- 基于 Harness 框架开发复杂任务处理流程，实现多步骤推理与工具调用。\n- 开发维护 Skills 架构，优化 Agent 的任务分解与执行机制。\n- 设计与实现 Tool Function 模块，集成外部 API、数据库等工具资源。\n- 构建并优化基于 LLM 的对话系统，实现记忆管理、知识检索等核心功能。\n- 参与 AI Agent 的认知架构开发，包括规划、反思、自我优化等模块。\n- 跟踪最新 AI Agent 技术进展，如 AutoGPT、BabyAGI 等，进行技术验证与落地。\n\nRequired Skills:\n- 本科及以上学历，计算机科学、人工智能、自然语言处理相关专业。\n- 具备 AI Agent 开发、复杂 LLM 应用开发或认知架构 / 自主智能体研发等至少一个领域的项目经验。\n- 精通 LangChain / LangGraph 框架开发，熟悉 Chain / Pipeline 构建。\n- 深入理解 ReAct、MRKL 等 Agent 架构范式。\n- 掌握 Tool Function 开发模式，有 API 集成或工具扩展经验。\n- 熟悉 MCP、ToT 等规划控制方法。\n- 具备向量数据库、RAG 系统开发经验。\n\nPreferred Skills:\n- 有真实落地 AI Agent 项目经验优先。\n- 了解多模态信息处理与工具调用。\n- 有分布式 Agent 系统开发经验优先。\n\nRaw Text:\n岗位标签：机器学习、自然语言处理算法、算法工程化经验、Python。\n岗位来源：BOSS直聘截图。招聘人：宁鲲鹏，招聘者。",
+    "filename": "batch7_yuankong_ai_agent_engineer.txt",
+    "source": "screenshot_batch_20260622_5"
+  },
+  {
+    "raw_text": "Title: AI算法工程师实习生-Agentic AI\nCompany: 越伴动力\nLocation: 北京\nSalary: 800-1000元/天\nDuration: 5天/周 3个月\nEducation: 硕士\nWork Address: 北京朝阳区国航大厦裙楼2G\n\nResponsibilities:\n- 参与基于大模型的家庭陪伴机器人决策系统开发。\n- 熟练搭建并优化各类 Agent / Multi-Agent 系统。\n- 跟踪并复现最新 Agent / 大模型等相关前沿技术。\n\nRequired Skills:\n- 硕士及以上学历，计算机科学、统计学、自动化等相关专业，特别优秀者学历要求可放宽至本科。\n- 具备大模型相关项目实践经验，参与过复杂 Agent 架构搭建或大模型微调。\n- 熟练使用 Python / PyTorch 等工具，习惯并善于在工作流中使用 AI Coding。\n- 具备良好的团队合作精神与沟通能力，能在跨职能团队中高效工作。\n\nPreferred Skills:\n- 具有微调大模型的实操经验，在该方向上有研究或实际应用经历。\n- 在 AI 领域发表过高水平期刊或会议论文。\n- 有将大模型应用于机器人系统的经验，能够结合机器人需求及时对大模型进行特定优化。\n\nRaw Text:\n岗位来源：BOSS直聘截图。招聘人：高雅，HR。",
+    "filename": "batch7_yueban_agentic_ai_algorithm_engineer_intern.txt",
+    "source": "screenshot_batch_20260622_5"
+  },
+  {
+    "raw_text": "Title: AI Agent应用开发\nCompany: 北京智模科技有限公司\nLocation: 北京\nSalary: 280-350元/天\nDuration: 4天/周 6个月\nEducation: 本科\n\nResponsibilities:\n- 协助设计并构建 AI 智能体评测体系，从业务场景出发制定针对性评估标准，为后续产品调优提供数据支持和改进建议。\n- 参与构建 AI 智能体的整体架构，与团队共同探讨技术实现方案，确保架构具备高扩展性与优秀响应性能。\n- 基于业务场景和行业前沿技术研究，参与产品形态设计和特性规划，探索创新应用方向，推动产品原型化及迭代更新。\n\nRequired Skills:\n- 计算机科学、人工智能、软件工程等相关专业在读本科生或研究生。\n- 对 LLM / Agent 技术和应用有了解和实际使用经验。\n- 善于分析业务需求，具备一定系统设计与问题解决能力。\n- 有参与相关课题或项目经验者优先，智能体系统、微服务架构或数据分析相关经验者优先。\n- 每周实习 4 天，实习周期 6 个月，本科在读。\n\nPreferred Skills:\n- 发表算法相关优秀论文、机器学习、深度学习、大模型算法、自然语言处理算法、强化学习或算法工程化经验优先。\n- 有优秀开源项目经历或智能体评测体系项目经验优先。\n\nRaw Text:\n岗位标签：发表算法相关优秀论文、机器学习、深度学习、大模型算法、自然语言处理算法、算法工程化经验、强化学习、优秀开源项目经历、Python。\n岗位来源：BOSS直聘截图。招聘人：王友帮，技术负责人。",
+    "filename": "batch7_zhimo_ai_agent_app_dev.txt",
+    "source": "screenshot_batch_20260622_5"
+  },
+  {
+    "raw_text": "Title: AI agent实习生\nCompany: 超天才\nLocation: 北京\nSalary: 240-400元/天\nDuration: 4天/周 3个月\nEducation: 硕士\nWork Address: 北京海淀区金隅嘉华大厦A座802\n\nResponsibilities:\n- 深入研究 Codex、Claude Code 等 Agentic 编码工具的架构与设计思路，包括 Agent Loop、上下文记忆管理、工具系统、权限与沙箱模型等。\n- 参与 Skill / 能力模块体系设计与编写，把常见任务封装成结构化、可复用的 Skill，并持续打磨触发准确率与执行效果。\n- 参与 Sub-agent 编排机制设计与实现，在主 Agent 中拆解任务、调度子 Agent 并行或串行协作，回收与整合结果。\n- 以 Agentic 方式解决真实问题，设计任务拆解、工具调用、观察和反思的执行循环，封装标准化工具接口。\n- 参与 Prompt / 策略工程，结合 ReAct、Plan-and-Act、CodeAct 等推理框架迭代提示词与编排逻辑。\n- 搭建与维护评测体系，定义任务集、自动化打分、回归测试，用数据判断改动是否提升。\n- 跟踪 AI Agent、LLM、Harness 工程等前沿动态，完成技术原型验证并配合产品转化为可执行技术方案。\n\nRequired Skills:\n- 本科及以上在读，计算机、人工智能、软件工程等相关专业。\n- 扎实的 Python 编程能力，具备良好数据结构与算法基础，熟悉 Linux 开发环境，能写出清晰、健壮、可维护的代码。\n- 对 LLM / Agent 有真实动手经验，课程项目、个人项目、复现或 Hack 均可。\n- 了解主流 LLM API 调用方式，理解 Prompt Engineering、Function Calling、MCP 的基本原理。\n- 具备较强的定义问题与解决问题能力，能拆解路径、设计方案并落地验证。\n- 主动、自驱、沟通清晰，学习能力强，能快速上手新技术与新工具。\n\nPreferred Skills:\n- 实际用过 Codex、Claude Code、Cursor 等 Agentic 工具，了解 Skill、Sub-agent、MCP 等机制。\n- 熟悉 LangChain、LlamaIndex、AutoGen、CrewAI、LangGraph 等至少一种主流 Agent 框架。\n- 了解 ReAct、Plan-and-Act、CodeAct 等推理框架，做过任务调度、多 Agent 编排或状态机设计。\n- GitHub 上有可展示项目或参与过开源。\n\nRaw Text:\n岗位来源：BOSS直聘截图。招聘人：田女士，项目经理。",
+    "filename": "batch8_chaotiancai_ai_agent_intern.txt",
+    "source": "screenshot_batch_20260622_6"
+  },
+  {
+    "raw_text": "Title: agent开发工程师\nCompany: 飞渡科技股份有限公司\nLocation: 北京\nSalary: 300-600元/天\nDuration: 5天/周 3个月\nEducation: 本科\nWork Address: 北京海淀区时代网络大厦3楼\n\nResponsibilities:\n- 基于 Agent 框架经验，如熟悉 LangChain、AutoGPT 或类似框架，快速搭建多步骤推理流程。\n- 处理多模态任务，既要处理文本（政策法规），又要处理图像（地块图、卫星图），最好有 Vision Model 集成经验。\n- 开发 Agent Application，结合实际需求自行搭建 MCP Server、Skills，有系统集成经验者优先。\n\nRequired Skills:\n- 熟悉 Python、SQL、自然语言处理算法、大模型算法、图像算法或融合感知算法。\n- 熟悉 Agent 框架，如 LangChain、AutoGPT 或类似框架。\n- 具备多模态处理经验，能处理文本和图像任务。\n- 有 Agent Application、MCP Server、Skills 或系统集成经验优先。\n- 每周实习 5 天，实习周期 3 个月，本科在读。\n\nPreferred Skills:\n- 有 Vision Model、多模态、SLAM、图像算法、自然语言处理或算法工程化经验优先。\n- 有 MCP Server、Skills、Agent 应用或系统集成经验优先。\n\nRaw Text:\n岗位标签：图像算法、大模型算法、自然语言处理算法、算法工程化经验、融合感知算法、SLAM算法、Python、SQL。\n岗位来源：BOSS直聘截图。招聘人：张宇，飞渡人工智能研究院。",
+    "filename": "batch8_feidu_agent_dev_engineer.txt",
+    "source": "screenshot_batch_20260622_6"
+  },
+  {
+    "raw_text": "Title: Agent开发工程师实习生\nCompany: 加和科技\nLocation: 北京\nSalary: 200-400元/天\nDuration: 5天/周 6个月\nEducation: 本科\nWork Address: 北京朝阳区住程广场B座17层AB1\n\nResponsibilities:\n- 参与多智能体系统（Multi-Agent System）的核心模块开发，实现任务规划、工具调用、记忆管理等功能。\n- 参与公司自研 Agent 框架的工程化落地与性能优化。\n- 基于 LLM 开发实际业务场景，如数据分析、自动化办公，调试 Prompt 并优化链路稳定性。\n- 探索 Long Context、RAG 等技术在长程任务中的最佳实践。\n\nRequired Skills:\n- 工程能力扎实，熟练掌握 Python 或 Java / Go，代码风格良好，熟悉常见数据结构与算法。\n- Web 开发基础扎实，熟悉 HTTP 协议，了解 FastAPI / Flask 等常用 Web 框架，能独立开发后端接口。\n- AI 认知清晰，理解 Transformer 基本原理，熟悉主流 LLM（GPT-4、Claude 等）的特点与 API 使用方法。\n- 每周实习 5 天，实习周期 6 个月，本科在读。\n\nPreferred Skills:\n- 有实际 AI / LLM 应用开发经验，而非仅停留在 Demo 阶段。\n- 熟悉 LangChain、AutoGPT、Semantic Kernel 等至少一种 Agent 开发框架或库。\n- 有 RAG、向量数据库、检索优化相关开发经验。\n- 参与过 AI 相关开源项目或在技术社区有产出。\n- 具备全栈开发能力，能独立完成从前端到后端再到 AI 模型的完整 Demo。\n\nRaw Text:\n岗位标签：Golang、AI应用开发、Python、Multi-Agent。\n岗位来源：BOSS直聘截图。招聘人：李诗芸，HR。",
+    "filename": "batch8_jiahe_agent_dev_engineer_intern.txt",
+    "source": "screenshot_batch_20260622_6"
+  },
+  {
+    "raw_text": "Title: AI agent算法实习生\nCompany: 九坤投资\nLocation: 北京\nSalary: 600-1200元/天\nDuration: 4天/周 3个月\nEducation: 硕士\nWork Address: 北京海淀区泰尔大厦22层\n\nResponsibilities:\n- 从业务场景出发，识别 AI Agent 能发挥价值的关键方向，探索可行技术路径与实现机制。\n- 结合主流大模型能力，构建具备任务感知、信息处理与多轮交互能力的智能体系统。\n- 负责模型选型与优化，提升其在具体场景下的适应性与稳定性。\n- 推动系统在真实环境中的集成与落地，评估效果并持续演进技术方案。\n- 沉淀通用方法论与工程架构，支持后续能力在更多场景中的扩展。\n\nRequired Skills:\n- 计算机、人工智能、自动化、电子信息、统计学、数学等相关专业，2027/2028 届硕士及以上在校生。\n- 熟悉大语言模型、多模态大模型相关算法原理。\n- 了解 AI Agent、RAG 全链路优化、Prompt Engineering 等技术者优先。\n- 对前沿 AI 技术充满热情，具备良好逻辑思维、问题解决能力与团队协作意识。\n\nPreferred Skills:\n- 有 AI Agent、RAG、大模型选型优化、多模态模型、金融量化或智能体系统落地经验优先。\n- 有模型稳定性评估、工程架构沉淀或场景化 AI 应用经验优先。\n\nRaw Text:\n岗位来源：BOSS直聘截图。招聘人：郑女士，招聘经理。",
+    "filename": "batch8_jiukun_ai_agent_algorithm_intern.txt",
+    "source": "screenshot_batch_20260622_6"
+  },
+  {
+    "raw_text": "Title: AI Agent实习生\nCompany: 北京全质科技\nLocation: 北京\nSalary: 200-350元/天\nDuration: 1天/周 3个月\nEducation: 学历不限\nWork Address: 北京海淀区学院路街道西土城社区13栋2单元203室\n\nResponsibilities:\n- 深入理解 AI 模型逻辑，研究其在工业领域应用中的性能。\n- 根据既定测试用例和评估标准，对 AI 模型（如 DeepSeek、计算机视觉等）的输出结果进行校验与评估。\n- 选择合适的 Agent 路线和方式，进行 AI Agent 训练。\n- 在实习过程中思考并优化现有流程、标准或工具，提出建设性意见。\n\nRequired Skills:\n- 在读学生，计算机科学、人工智能、数据科学、电子信息、机械工程或相关专业优先。\n- 对人工智能、机器学习有浓厚兴趣和一定了解。\n- 具备良好的沟通能力和团队协作精神。\n- 具备主动学习和解决问题能力，有好奇心和批判性思维。\n\nPreferred Skills:\n- 有 AI 模型评估、AI Agent 训练、工业 AI 或流程优化经验优先。\n- 有 DeepSeek、计算机视觉或测试评估项目经验优先。\n\nRaw Text:\n公司介绍：北京全质科技致力于推动 AI 在制造型企业应用，也有咨询和培训业务板块。公司网站：www.quanquality.com。\n岗位来源：BOSS直聘截图。招聘人：鞠峰，总经理。",
+    "filename": "batch8_quanzhi_ai_agent_intern.txt",
+    "source": "screenshot_batch_20260622_6"
+  },
+  {
+    "raw_text": "Title: AI Agent 开发实习生（Intern）\nCompany: 北京哇嘟峰科技\nLocation: 北京\nSalary: 500-550元/天\nDuration: 4天/周 3个月\nEducation: 本科\nWork Address: 北京海淀区东升大厦C座三层301单元\n\nResponsibilities:\n- 深度参与公司 AI Native 化，亲身参与 AI 从工具到基础设施的落地过程，积累真实 Agent 工程实践经验。\n- 参与 Agent 工程研发，接触最新大模型、Agent 框架、MCP、RAG、可观测性等方向，并在真实业务场景中验证。\n- 开发的 Agent 和内部工具会直接服务研发、产品、算法等团队，形成可见、反馈及时的项目。\n- 在导师指导下快速反馈、持续成长。\n\nRequired Skills:\n- 对 AI Agent 和开发者工具有真实兴趣，愿意理解 Agent 如何拆解任务、调用工具、管理上下文并落地到真实工作流。\n- 良好的工程基础和动手能力，熟悉 Python，并至少了解 Go、Java 或 TypeScript 中的一门语言。\n- 能独立跑通脚本、调用 API、阅读文档和示例项目，快速做出可运行原型。\n- 了解 RAG、Prompt Engineering、Function Calling、Tool Use 等基础概念，有相关课程项目、个人 Demo、开源实践或实习经历优先。\n- 能主动查看日志、拆解链路、定位原因并推动迭代，解决 Agent 效果不稳定、工具调用失败、检索结果不准等问题。\n- 能把技术方案、实验结果和问题定位过程讲清楚，能与研发、产品、算法同学对齐需求。\n- 主动性与自驱力强，能自己找问题、定方向、推进落地。\n\nPreferred Skills:\n- 了解 LangChain、LangGraph、Dify、n8n、ADK 等 Agent / Workflow 开发框架。\n- 了解 RAG、Prompt Engineering、Function Calling、Tool Use、MCP 等 LLM 应用开发基础概念。\n- 接触过 LlamaIndex、Haystack 等 RAG 框架，了解文档切分、Embedding、向量检索、重排序等流程。\n- 了解 Milvus、Qdrant、FAISS 等向量数据库，或接触过 BGE、OpenAI Embedding 等模型。\n- 了解 LangSmith、LangFuse 等 LLM 应用观测与调试工具。\n- 有 CLI 工具、VS Code 插件、自动化脚本、开源 AI 项目或个人 AI 工具开发经验。\n- 了解 GitHub Actions、GitLab CI 等 CI/CD 基础流程。\n\nRaw Text:\n岗位来源：BOSS直聘截图。招聘人：王佳琪，招聘经理。",
+    "filename": "batch8_wadufeng_ai_agent_dev_intern.txt",
+    "source": "screenshot_batch_20260622_6"
+  },
+  {
+    "raw_text": "Title: AI Agent算法实习\nCompany: 上海曦望芯科智能科技\nLocation: 北京\nSalary: 300-450元/天\nDuration: 4天/周 4个月\nEducation: 硕士\nWork Address: 北京海淀区丽金智地中心10层\n\nResponsibilities:\n- 在曦望 GPU 下实现主流 AI Agent 场景落地，将前沿大语言模型能力落到两大核心场景：OpenClaw 与 Coding Agent。\n- 设计并实现 Agent 核心决策机制，包括任务规划、工具选择、多步推理、Human-in-the-loop 策略。\n- 协助团队构建完整 Agent 评测体系，定义评估体系，如工具调用准确率、端到端任务完成率、成本消耗、运行时长等，设计符合用户场景的 Benchmark 测试。\n- 研究并落地 Agent 能力提升方案，包括记忆模块、上下文管理模块、Sub-agent 调度模块等。\n- 设计多 Agent 协作架构与调度策略，支持复杂任务的分解、分配与结果整合。\n- 分析 Agent 失败模式，定位根因并驱动针对性优化。\n- 跟踪前沿研究及产品方案，如 Claude Agent SDK、AgentSkills、OpenClaw、GUI-Agent 等，快速验证新方法并推动工程落地。\n\nRequired Skills:\n- 计算机 / AI 相关专业，985 本科或硕士在读。\n- 兼具算法思维与工程能力，既能读论文发现方法，也能写高质量生产代码。\n- 精通 Python，熟悉 Go / Rust / TypeScript 中至少一门。\n- 深入理解 LLM 推理与训练机制，熟悉 Transformer 架构和后训练流程。\n\nPreferred Skills:\n- 有过推理加速落地经验，熟悉主流 MoE 模型结构。\n- 熟悉计算机体系结构，了解 GPU / CPU 算法性能分析。\n- 在顶级会议（NeurIPS、ICRA、IROS、ACL、EMNLP 等）发表过论文，或有知名开源项目贡献者经验。\n\nRaw Text:\n岗位来源：BOSS直聘截图。招聘人：陈先生，软件研发高级总监。",
+    "filename": "batch8_xiwang_ai_agent_algorithm_intern.txt",
+    "source": "screenshot_batch_20260622_6"
+  },
+  {
+    "raw_text": "Title: AI Agent应用开发实习生\nCompany: 一径科技\nLocation: 北京\nSalary: 200-300元/天\nDuration: 5天/周 3个月\nEducation: 硕士\nWork Address: 北京海淀区融科融智·蜂巢工场东区\n\nResponsibilities:\n- 负责调研国内外主流 AI Agent 及各类提升工作效率的 AI 应用。\n- 结合公司需求，负责 AI Agent 实施及相关应用开发，推进 AI 应用 / Agent 的本地化部署、配置调试及二次适配开发。\n- 结合公司需要，进行 AI Agent 本地知识库构建、提示词工程建设，以及大模型部署和推理加速等。\n- 跟踪 AI 领域前沿技术与工具动态，定期输出行业调研简报。\n\nRequired Skills:\n- 计算机科学与技术、人工智能、软件工程、信息管理等相关专业，985/211 本科及以上学历，有 AI 应用调研、部署或相关技术支持等项目经验。\n- 熟悉 AI Agent、大语言模型（LLM）、RPA 等主流 AI 工具的工作原理与应用场景，有 AI 应用本地化部署、系统集成相关经验优先。\n- 具备较强的调研分析能力与技术敏感度，能够快速洞察 AI 技术的商业价值，独立完成调研方案设计、数据收集与报告撰写。\n- 掌握基础编程技能，如 Python，了解常见服务器环境配置、数据库操作及 API 接口开发，能解决 AI 应用部署过程中的基础技术问题。\n- 具备良好的沟通协调能力、跨部门协作意识及用户服务意识，工作积极主动，有较强问题解决能力与文档撰写能力。\n- 能保证三个月及以上实习期，每周二至周五 5 天在岗。\n\nPreferred Skills:\n- 有 AI Agent 本地部署、本地知识库、RPA、LLM 应用、模型部署或推理加速经验优先。\n- 有 AI 应用调研、行业研究、数据收集或技术报告经验优先。\n\nRaw Text:\n岗位来源：BOSS直聘截图。招聘人：魏雅君，人力资源经理。",
+    "filename": "batch8_yijing_ai_agent_app_dev_intern.txt",
+    "source": "screenshot_batch_20260622_6"
+  },
+  {
+    "raw_text": "Title: Agent算法实习生\nCompany: 智源人工智能研究院\nLocation: 北京\nSalary: 330-380元/天\nDuration: 4天/周 4个月\nEducation: 硕士\nWork Address: 北京海淀区北京智源人工智能研究院\n\nResponsibilities:\n- 参与基于 LLM 的 Agent 智能体系统设计与开发，包括记忆机制、自我反思、多 Agent 协助等核心模块。\n- 协助工程师开发并测试不同 Prompt 策略或微调方案，通过消融实验寻找 Token 消耗与任务成功率的最优平衡点。\n- 建立科学评测体系，从各种维度协助评估智能体回复效果。\n- 与产品经理、算法工程师协作，将 Agent 能力落地到实际业务场景，收集反馈并持续迭代。\n- 调研并复现最新 Agent 相关论文，如推理增强、长文本压缩、多智能体协同等。\n\nRequired Skills:\n- 计算机科学、人工智能、软件工程或相关专业本科 / 硕士在读。\n- 熟悉 Agent 架构，如 OpenClaw、OpenCode、Hermes 等。\n- 熟悉深度学习基础，深入理解 Transformer 架构，对 LLM 解码过程和 Prompt Engineering 有直观感受。\n- 编程基础扎实，熟练掌握 Python，熟悉 Rust、Golang 等加分。\n\nPreferred Skills:\n- 在 GitHub 上有 Agent 相关开源项目贡献或个人技术博客。\n- 发表过 Agent 相关论文或参加过 Kaggle / 天池等竞赛。\n\nRaw Text:\n岗位来源：BOSS直聘截图。招聘人：葛女士，HR。",
+    "filename": "batch9_baai_agent_algorithm_intern.txt",
+    "source": "screenshot_batch_20260622_7"
+  },
+  {
+    "raw_text": "Title: Harness 工程师实习生\nCompany: 车来了\nLocation: 北京\nSalary: 300-500元/天\nDuration: 4天/周 3个月\nEducation: 本科\n\nResponsibilities:\n- 参与构建让 AI 自己写代码、自己验证的系统，将传统静态软件改造为会自我改进的 Agentic Loop。\n- 为每个 Agent 编写能力工具，如读代码、跑测试、查数据归类，并保证工具可用。\n- 搭建小闭环，让 Agent 能自动判断工具是否用对、结果是否正确。\n- 为 Agent 流程加上可观测性，帮助团队看清每一步在做什么、哪里出错。\n- 将产出投入真实业务使用，而不是只停留在 Demo。\n\nRequired Skills:\n- 已经在使用 AI 干活，熟悉 Cursor、Claude Code、Codex，或自己调 API 做过项目。\n- 有 Builder 心态，能自己想要什么并做出工具或小东西。\n- 学得快、不怕没人带，遇到不会的问题会自查、自记、自试。\n- 真正做过能用的东西，如小项目、上线工具或黑客松作品。\n- 愿意把 AI 当作默认工具，而不是需要慢慢适应的新东西。\n\nPreferred Skills:\n- 有 GitHub / 开源贡献 / 个人项目 / 技术博客。\n- 已经拿 Agent 做过真实事，如自动化、小工具、改造工作流。\n- 自学某个方向并做到能拿出手的深度。\n- 黑客松、竞赛，或任何能证明把东西做出来的作品。\n- 编程基本功扎实，任一门语言写得顺，懂点数据结构和系统。\n\nRaw Text:\n岗位标签：Django、MySQL、Python。\n岗位来源：BOSS直聘截图。招聘人：樊启明，招聘专家。",
+    "filename": "batch9_chelaile_harness_engineer_intern.txt",
+    "source": "screenshot_batch_20260622_7"
+  },
+  {
+    "raw_text": "Title: 大模型应用开发工程师（日常实习）\nCompany: 宽德投资\nLocation: 北京\nSalary: 600-800元/天\nDuration: 4天/周 2个月\nEducation: 本科\nWork Address: 北京海淀区鼎好DH3-A座704-705\n\nResponsibilities:\n- 参与大模型研发阶段，结合 AI Agent、RAG、MCP 等技术手段，实现大模型落地应用。\n- 参与模型周边工具生态建设，将数据库操作、联网搜索、代码执行、内部工具链调用等能力集成至模型内。\n- 配合其他业务部门进行智能体等工具的最佳应用实践。\n- 设计高性能、可扩展的 AI 应用服务架构，确保生产环境高可用、低延迟。\n\nRequired Skills:\n- 扎实的编程能力，熟悉 Python 或 C++。\n- 对实现前沿 AI 解决方案充满热情，具备自驱力与团队协作精神，能适应快节奏挑战。\n- 熟悉主流大语言模型基本原理，掌握智能体开发基本框架。\n- 掌握敏捷开发流程，熟悉容器化部署运维。\n- 每周实习 4 天，实习周期 2 个月，本科在读。\n\nPreferred Skills:\n- 有 AI Agent、RAG、MCP、大模型工具生态或软件平台建设经验优先。\n- 有数据库操作、联网搜索、代码执行、内部工具调用集成经验优先。\n\nRaw Text:\n岗位标签：C++、Python。\n岗位来源：BOSS直聘截图。招聘人：黄敏，HRM。",
+    "filename": "batch9_kuande_large_model_app_dev_engineer_intern.txt",
+    "source": "screenshot_batch_20260622_7"
+  },
+  {
+    "raw_text": "Title: AI 实习生\nCompany: 万界数据\nLocation: 北京\nSalary: 300-350元/天\nDuration: 7天/周 3个月\nEducation: 本科\n\nResponsibilities:\n- 参与 AI Native 产品从 0 到 1 的建设过程。\n- 接触最前沿 AI Agent 技术体系，参与 AI 工具链、知识库和工作流等方向实践。\n- 与热爱 AI 的工程师团队一起工作，参与真实项目落地。\n\nRequired Skills:\n- 是 AI 的重度爱好者。\n- 是 Vibe Coding 的深度实践者。\n- 有 OpenClaw、Hermes Agent、Claude Code、Codex 等 Agent 工具的重度使用经验。\n- 对 Skill、Tool Calling、Workflow、Memory、Context Engineering 有一定理解。\n- 对 Harness Engineering、Context Engineering 有实际实践经验。\n- 熟悉 Python、TypeScript、Go 中至少一门语言。\n- 有强烈的技术探索欲与自驱力，喜欢折腾新技术并愿意持续学习。\n\nPreferred Skills:\n- 能独立开发 Skill。\n- 能独立搭建知识库系统。\n- 有 RAG / Memory / Workflow 实践经验。\n- 有 AI 开源项目经验。\n- 有 AI 方面相关开源项目或者参与过知名开源项目。\n- 有个人 AI 项目、实验项目或技术博客。\n- 对 AI Native 产品有自己的理解和想法。\n\nRaw Text:\n岗位来源：BOSS直聘截图。招聘人：张永泉，招聘者。",
+    "filename": "batch9_wanjie_ai_intern.txt",
+    "source": "screenshot_batch_20260622_7"
+  },
+  {
+    "raw_text": "Title: agent算法实习生\nCompany: 原力金智\nLocation: 北京\nSalary: 250-300元/天\nDuration: 5天/周 6个月\nEducation: 硕士\n\nResponsibilities:\n- 参与 Agent 算法的设计与开发，协助完成相关技术实现。\n- 根据项目需求进行数据处理、模型训练与效果优化。\n\nRequired Skills:\n- 对算法领域有浓厚兴趣，具备扎实的编程基础。\n- 拥有良好的团队合作精神，能迅速融入团队。\n- 具备良好的学习能力，能够不断改进工作方法。\n- 每周实习 5 天，实习周期 6 个月，硕士在读。\n\nPreferred Skills:\n- 有深度学习、大模型算法、自然语言处理、多模态算法或算法工程化经验优先。\n- 有算法相关竞赛获奖或优秀开源项目经历优先。\n- 熟悉 Python。\n\nRaw Text:\n岗位标签：深度学习、大模型算法、自然语言处理算法、多模态算法、算法工程化经验、参加算法相关竞赛/获奖、优秀开源项目经历、Python。\n岗位来源：BOSS直聘截图。招聘人：唐博，招聘者。",
+    "filename": "batch9_yuanlijinzhi_agent_algorithm_intern.txt",
+    "source": "screenshot_batch_20260622_7"
+  },
+  {
+    "raw_text": "Title: AI Agent开发实习生\nCompany: 东易天正\nLocation: 北京\nSalary: 280-330元/天\nDuration: 4天/周 6个月\nEducation: 本科\nWork Address: 北京朝阳区电子城·IT产业园海纳大厦\n\nResponsibilities:\n- 协助完成 AI Agent 的功能开发与调试，包括 Prompt 设计、工具链集成、状态管理等模块。\n- 参与 RAG 系统搭建与数据处理流程优化，提升检索效率与问答质量。\n- 协助搭建和维护 Agent 的后端服务，使用 Flask、FastAPI 等框架进行接口开发。\n- 支持向量数据库（Pinecone / Weaviate）的数据导入与索引优化。\n- 跟进 AI Agent 相关技术动态，撰写技术总结报告或协助撰写文档。\n- 参与团队内部技术讨论，提出改进建议。\n\nRequired Skills:\n- 计算机、人工智能、软件工程等相关专业在读学生。\n- 熟悉 Python 编程语言，具备一定的算法与数据结构基础。\n- 了解大模型基本概念，如 LLM、Prompt Engineering、RAG，对 AI Agent 有一定兴趣。\n- 了解 Docker、Linux 基本操作，能独立运行简单项目。\n- 具备良好的沟通能力和团队协作意识，责任心强，乐于学习。\n\nPreferred Skills:\n- 在京 985 或 211 大学计算机、软件或人工智能专业优先。\n- 有个人 AI 项目，如基于 ChatGPT 的智能助手、自动问答机器人等。\n- 熟悉至少一种 Agent 框架，如 LangChain、LangGraph、AutoGen 者优先。\n- 熟悉 GPT、Qwen、LLaMA 等主流模型 API 调用。\n- 了解强化学习、意图识别、多轮对话等技术者优先。\n\nRaw Text:\n岗位来源：BOSS直聘截图。招聘人：宗女士。",
+    "filename": "beijing_dongyi_tianzheng_ai_agent_dev_intern.txt",
+    "source": "screenshot_batch_20260621"
+  },
+  {
+    "raw_text": "Title: 后端工程师（agent）\nCompany: 北京今日宜休科技\nLocation: 北京\nSalary: 200-400元/天\nDuration: 4天/周 3个月\nEducation: 高中\nWork Address: 北京海淀区海国瑞业科技园\n\nResponsibilities:\n- 参与睡眠健康 AI Agent Harness 的设计、开发和验证，包括任务编排、工具调用、上下文管理、多轮对话、沙盒等能力。\n- 优化 Prompt、Skill 的云端自进化，提升 Agent 在开放任务中的能力上限。\n- 参与 Agent 能力评测，包括任务成功率、执行效率、幻觉控制、工具调用准确率等指标建设。\n- 跟进 LLM、Agent 框架等方向的新技术，完成原型验证、需求拆解、问题定位和效果迭代。\n\nRequired Skills:\n- 本科及以上，2027/2028 届在校生，计算机、人工智能、软件工程、自动化、数据科学等相关专业优先。\n- 熟悉至少一门编程语言，如 Python、JavaScript/TypeScript、Java、Go 等，具备基础工程开发能力。\n- 了解大模型 API 基本使用方式，对 AI Agent Harness 有强烈兴趣及实践经验，深入调试过 OpenClaw、Hermes 等 Agent 产品。\n- 具备良好的问题拆解能力、学习能力和沟通协作能力，能主动推进实验和总结结果。\n\nPreferred Skills:\n- 有开源项目、技术博客、比赛项目或个人 AI 应用作品优先。\n- 有前后端全栈开发经验，能独立完成简单 Demo 或内部工具。\n- 关注 AI Agent 最新进展，对模型能力边界、工具使用、评测体系有自己的理解。\n\nRaw Text:\n岗位来源：BOSS直聘截图。招聘人：黄先鸿。",
+    "filename": "beijing_jinri_yixiu_backend_agent_engineer.txt",
+    "source": "screenshot_batch_20260621"
+  },
+  {
+    "raw_text": "Title: AI Agent开发实习生\nCompany: 北京莫测未来科技\nLocation: 北京\nSalary: 200-300元/天\nDuration: 4天/周 3个月\nEducation: 本科\nWork Address: 北京清华科技园（启迪科技大厦）附近\n\nResponsibilities:\n- 参与专门针对硬件开发场景的 AI Agent 架构设计与代码实现，主要使用 Python，处理复杂上下文管理、长期记忆、工具调用、多智能体通讯等。\n- 深入研究并接入最新 Code Agent 能力（如 Claude Code、Codex 等），将其转化为 Agent 的核心能力模块，实现从代码生成到自动纠错的闭环。\n- 协助团队将基于 Claude Code/Codex 的日常 Vibe Coding 经验沉淀、转化为系统化、自动化的 Agent 基础设施。\n\nRequired Skills:\n- 编程底盘扎实，熟练掌握 Python，具有良好的代码品味和工程习惯。\n- 深度使用过 AI 编码工具（如 Claude Code/Codex），了解底层逻辑；有使用 LangChain、AutoGen 或从零手搓 Agent 核心网关（Gateway）的经验。\n- 学习与抽象能力强，能够快速理解陌生业务流，并将复杂工程问题抽象为 AI Agent 可执行的任务分解。\n\nPreferred Skills:\n- 了解基本硬件知识，如 STM32、Arduino 者加分。\n- 有 Code Agent、LangChain、AutoGen、Agent Gateway 相关项目经验优先。\n\nRaw Text:\n岗位来源：BOSS直聘截图。招聘人：李女士，HRBP。",
+    "filename": "beijing_moce_future_ai_agent_dev_intern.txt",
+    "source": "screenshot_batch_20260621"
+  },
+  {
+    "raw_text": "Title: Agent开发实习生\nCompany: 万德一博科技\nLocation: 北京\nSalary: 200-400元/天\nDuration: 4天/周 3个月以上\nEducation: 本科\nWork Address: 北京，只接受线下办公\n\nResponsibilities:\n- 参与 AI Agent 核心链路的设计与优化，包括任务规划、工具调用、多步推理等环节。\n- 负责 Prompt Engineering，设计、调试和迭代 LLM 的提示词策略。\n- 参与 Agent 框架搭建，包括 Multi-Agent 协作、记忆机制、技能编排等模块。\n- 对 LLM 输出进行评估与质量优化，建立评测体系。\n- 跟进前沿技术动态，调研并落地适合业务场景的新方法。\n\nRequired Skills:\n- 本科及以上在读，计算机、人工智能、数学等相关专业，具备扎实的理论基础。\n- 熟悉 Python，具备良好的编程能力。\n- 熟悉 Vibe Coding，能够高效应用 Claude Code、Cursor 等主流 AI 编程工具进行高质量代码交付。\n- 对 LLM 与 Agent 系统架构有深入理解，熟悉 Agent、OpenClaw、Skill、Memory 等关键技术及实际应用场景。\n- 了解大语言模型（LLM）的基本原理和使用方式。\n- 有较强的学习能力和自驱力，能快速上手新技术。\n- 每周至少投入 4 天，实习周期 3 个月以上。\n\nPreferred Skills:\n- 有 LLM 应用开发经验，如 LangChain、LlamaIndex、AutoGen 等框架。\n- 有 RAG、Function Calling、Agent 相关项目经验。\n- 有参与过 AI 相关竞赛或发表过相关论文。\n- 熟悉 Prompt Engineering 的常用技巧和最佳实践。\n\nRaw Text:\n岗位来源：BOSS直聘截图。招聘人：马先生。",
+    "filename": "beijing_wandeyibo_agent_dev_intern.txt",
+    "source": "screenshot_batch_20260621"
+  },
+  {
+    "raw_text": "Title: agent应用开发实习生\nCompany: 银河驿站\nLocation: 北京\nSalary: 300-500元/天\nDuration: 4天/周 3个月\nEducation: 本科\nWork Address: 北京海淀区 epark（花园路社区）保密\n\nResponsibilities:\n- 参与 Agent 应用的设计与开发，协助完成相关技术实现。\n- 根据团队需求进行功能模块的编码、测试与优化。\n\nRequired Skills:\n- 善于沟通，按时完成上级交给的工作。\n- 拥有良好的团队合作精神，能迅速融入团队。\n- 具备良好的学习能力，能够不断改进工作方法。\n\nPreferred Skills:\n- 有 Agent 应用开发、功能模块编码、测试优化经验优先。\n\nRaw Text:\n岗位来源：BOSS直聘截图。招聘人：熊重庆。",
+    "filename": "beijing_yinhe_agent_app_dev_intern.txt",
+    "source": "screenshot_batch_20260621"
+  },
+  {
+    "raw_text": "Title: AI Agent开发实习生\nCompany: 元能链\nLocation: 北京\nSalary: 300-350元/天\nDuration: 4天/周 3个月\nEducation: 硕士\nWork Address: 北京海淀区双清大厦B座\n\nResponsibilities:\n- 参与 AI Agent 的设计、开发与调试，包括对话流程、工具调用（Tool Use）、多步推理等核心能力。\n- 编写和优化 Agent 的 Prompt 工程，提升任务完成率和对话质量。\n- 参与 Skills 层的开发，编写 SKILL.md 及配套 CLI 工具。\n- 协助搭建和维护 AI 系统。\n- 跟踪 AI Agent 领域前沿技术，进行竞品调研与技术选型建议。\n\nRequired Skills:\n- 熟悉至少一门编程语言，Go、Python、TypeScript 优先。\n- 了解 LLM 基本原理，有 Prompt Engineering 或 Agent 开发经验者优先。\n- 自驱力强，对 AI 产品有热情，能够独立探索和解决问题。\n\nPreferred Skills:\n- 了解 RAG、Function Calling、ReAct 等 Agent 架构模式者加分。\n- 有实际使用 OpenAI、Anthropic 或国产大模型 API 的经验者优先。\n- 有 Tool Use、多步推理、Skills/CLI 工具相关经验优先。\n\nRaw Text:\n岗位来源：BOSS直聘截图。招聘人：耿炎，用人经理。",
+    "filename": "beijing_yuannenglian_ai_agent_dev_intern.txt",
+    "source": "screenshot_batch_20260621"
+  }
+]

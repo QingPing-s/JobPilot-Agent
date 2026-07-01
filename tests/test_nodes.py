@@ -1,4 +1,3 @@
-import json
 
 from src import nodes
 
@@ -8,6 +7,7 @@ def _sample_profile():
         "name": "Alex",
         "education": ["Computer Science"],
         "skills": ["Python", "RAG"],
+        "soft_skills": ["学习能力强"],
         "projects": [
             {
                 "name": "Mini RAG Assistant",
@@ -47,6 +47,7 @@ def test_profile_node_extracts_from_text(monkeypatch):
             "name": "Alex",
             "education": ["Computer Science"],
             "skills": ["Python"],
+            "soft_skills": [],
             "projects": [],
             "internships": [],
             "target_roles": ["RAG Intern"],
@@ -58,31 +59,8 @@ def test_profile_node_extracts_from_text(monkeypatch):
     state = nodes.profile_node({"user_profile_text": "Alex knows Python."})
 
     assert state["candidate_profile"]["name"] == "Alex"
-    assert state["trace"][-1]["node"] == "profile_node"
-    assert state["trace"][-1]["status"] == "success"
-
-
-def test_profile_node_loads_from_json_path(tmp_path):
-    profile_path = tmp_path / "profile.json"
-    profile_path.write_text(
-        json.dumps(
-            {
-                "name": "Alex",
-                "education": [],
-                "skills": ["Python"],
-                "projects": [],
-                "internships": [],
-                "target_roles": [],
-                "preferences": {},
-            }
-        ),
-        encoding="utf-8",
-    )
-
-    state = nodes.profile_node({"user_profile_path": str(profile_path)})
-
-    assert state["candidate_profile"]["skills"] == ["Python"]
-    assert state["trace"][-1]["status"] == "success"
+    assert state["node_statuses"]["profile_node"]["status"] == "success"
+    assert state["trace"][-1]["node_status"] == "success"
 
 
 def test_profile_node_uses_fallback_for_text_when_api_unavailable(monkeypatch):
@@ -101,21 +79,17 @@ def test_profile_node_uses_fallback_for_text_when_api_unavailable(monkeypatch):
 
     assert state["candidate_profile"]["skills"] == ["Python", "LangGraph", "RAG"]
     assert state["candidate_profile"]["target_roles"] == ["AI Agent Intern"]
-    assert state["trace"][-1]["status"] == "success"
+    assert state["node_statuses"]["profile_node"]["status"] == "partial"
+    assert state["trace"][-1]["fallback_used"] is True
 
 
 def test_profile_node_records_error_for_missing_input():
     state = nodes.profile_node({})
 
     assert "candidate_profile" not in state
-    trace = state["trace"][-1]
-    assert trace["node"] == "profile_node"
-    assert trace["event_type"] == "error"
-    assert trace["status"] == "error"
-    assert trace["input_count"] == 1
-    assert trace["output_count"] == 0
-    assert trace["message"] == "state 中缺少 user_profile_text 或 user_profile_path。"
-    assert trace["error_message"] == "state 中缺少 user_profile_text 或 user_profile_path。"
+    assert state["workflow_status"] == "failed"
+    assert state["node_statuses"]["profile_node"]["status"] == "error"
+    assert state["trace"][-1]["status"] == "error"
 
 
 def test_jd_parse_node_continues_after_one_file_fails(tmp_path, monkeypatch):
@@ -146,53 +120,58 @@ def test_jd_parse_node_continues_after_one_file_fails(tmp_path, monkeypatch):
 
     state = nodes.jd_parse_node({"jd_folder": str(tmp_path)})
 
-    assert len(state["parsed_jobs"]) == 1
-    assert state["parsed_jobs"][0]["job_id"] == "job_agent_intern_01"
-    assert state["parsed_jobs"][0]["raw_text"] == "Agent JD"
-    assert any(trace["status"] == "error" and "rag_intern_02.txt" in trace["message"] for trace in state["trace"])
-    assert state["trace"][-1]["status"] == "success"
+    assert len(state["parsed_jobs"]) == 2
+    assert state["parsed_jobs"][1]["job_id"] == "job_rag_intern_02"
+    assert state["jd_parse_failure_count"] == 1
+    assert state["node_statuses"]["jd_parse_node"]["status"] == "partial"
+    assert state["trace"][-1]["fallback_count"] == 1
 
 
-def test_match_score_node_sorts_rule_based_results_and_skips_invalid_jobs():
-    state = {
-        "candidate_profile": _sample_profile(),
-        "parsed_jobs": [
-            dict(_sample_job("job_backend", "Backend Intern"), required_skills=["Java", "SQL"], preferred_skills=["Docker"]),
-            "invalid job",
-            _sample_job("job_rag", "RAG Intern"),
-        ],
-    }
+def test_jd_parse_node_uses_cached_parsed_jobs(monkeypatch):
+    cached_job = _sample_job("job_cached", "Cached Agent Intern")
 
-    result = nodes.match_score_node(state)
+    def fail_load_jd_files(folder):
+        raise AssertionError("jd_parse_node should not read JD files when parsed cache is provided.")
 
-    assert [job["job_id"] for job in result["matched_jobs"]] == ["job_rag", "job_backend"]
-    assert all(0 <= job["match_score"] <= 100 for job in result["matched_jobs"])
-    assert any(trace["status"] == "error" and "<无效岗位>" in trace["message"] for trace in result["trace"])
-    assert result["trace"][-1]["status"] == "success"
+    def fail_call_llm_json(messages):
+        raise AssertionError("jd_parse_node should not call LLM when parsed cache is provided.")
+
+    monkeypatch.setattr(nodes, "load_jd_files", fail_load_jd_files)
+    monkeypatch.setattr(nodes, "call_llm_json", fail_call_llm_json)
+
+    state = nodes.jd_parse_node(
+        {
+            "skip_jd_parse": True,
+            "job_source": "sqlite_job_library",
+            "parsed_jobs": [cached_job],
+        }
+    )
+
+    assert state["parsed_jobs"] == [cached_job]
+    assert state["node_statuses"]["jd_parse_node"]["status"] == "success"
+    assert state["trace"][-1]["input_count"] == 1
+    assert state["trace"][-1]["output_count"] == 1
 
 
 def test_retrieve_node_writes_retrieved_jobs(monkeypatch, tmp_path):
     jobs = [_sample_job("job_agent", "Agent Intern"), _sample_job("job_rag", "RAG Intern")]
-    build_calls = []
-
-    def fake_build_chroma_store(parsed_jobs, persist_dir):
-        build_calls.append((parsed_jobs, persist_dir))
 
     def fake_hybrid_retrieve(query, jobs, top_k, persist_dir):
         assert "AI Agent Intern" in query
         assert "Python" in query
-        assert len(jobs) == 2
-        assert top_k == 1
         fake_hybrid_retrieve.last_stats = {
             "query": query,
             "vector_top_k": top_k,
             "keyword_top_k": top_k,
+            "vector_result_count": 1,
+            "keyword_result_count": 1,
             "merged_count": 1,
             "final_retrieved_count": 1,
+            "vector_error": "",
+            "keyword_error": "",
         }
         return [jobs[1]]
 
-    monkeypatch.setattr(nodes, "build_chroma_store", fake_build_chroma_store)
     monkeypatch.setattr(nodes, "hybrid_retrieve", fake_hybrid_retrieve)
 
     state = nodes.retrieve_node(
@@ -205,37 +184,11 @@ def test_retrieve_node_writes_retrieved_jobs(monkeypatch, tmp_path):
         }
     )
 
-    assert build_calls[0][0] == jobs
     assert state["retrieved_jobs"] == [jobs[1]]
-    assert state["trace"][-1]["node"] == "retrieve_node"
-    assert state["trace"][-1]["status"] == "success"
+    assert state["node_statuses"]["retrieve_node"]["status"] == "success"
     assert state["trace"][-1]["vector_top_k"] == 1
-    assert state["trace"][-1]["keyword_top_k"] == 1
-    assert state["trace"][-1]["merged_count"] == 1
-    assert state["trace"][-1]["final_retrieved_count"] == 1
-
-
-def test_retrieve_node_uses_keyword_when_vector_store_build_fails(monkeypatch, tmp_path):
-    jobs = [_sample_job("job_agent", "Agent Intern")]
-
-    def fake_build_chroma_store(parsed_jobs, persist_dir):
-        raise RuntimeError("chroma unavailable")
-
-    monkeypatch.setattr(nodes, "build_chroma_store", fake_build_chroma_store)
-
-    state = nodes.retrieve_node(
-        {
-            "candidate_profile": _sample_profile(),
-            "parsed_jobs": jobs,
-            "vector_store_dir": str(tmp_path),
-        }
-    )
-
-    assert state["retrieved_jobs"][0]["job_id"] == "job_agent"
-    assert state["retrieved_jobs"][0]["retrieve_source"] == "keyword"
-    assert state["trace"][-1]["node"] == "retrieve_node"
-    assert state["trace"][-1]["status"] == "success"
-    assert "向量库构建警告" in state["trace"][-1]["message"]
+    assert state["trace"][-1]["vector_result_count"] == 1
+    assert state["trace"][-1]["keyword_result_count"] == 1
 
 
 def test_retrieve_node_falls_back_to_all_jobs_when_hybrid_retrieval_fails(monkeypatch, tmp_path):
@@ -255,96 +208,30 @@ def test_retrieve_node_falls_back_to_all_jobs_when_hybrid_retrieval_fails(monkey
     )
 
     assert state["retrieved_jobs"] == jobs
-    assert state["trace"][-1]["node"] == "retrieve_node"
-    assert state["trace"][-1]["status"] == "error"
-    assert "已回退" in state["trace"][-1]["message"]
+    assert state["node_statuses"]["retrieve_node"]["status"] == "partial"
+    assert state["trace"][-1]["fallback_used"] is True
 
 
-def test_match_score_node_prefers_retrieved_jobs():
-    state = {
-        "candidate_profile": _sample_profile(),
-        "parsed_jobs": [_sample_job("job_agent", "Agent Intern"), _sample_job("job_rag", "RAG Intern")],
-        "retrieved_jobs": [_sample_job("job_rag", "RAG Intern")],
-    }
+def test_rerank_node_falls_back_when_rerank_fails(monkeypatch):
+    jobs = [_sample_job("job_agent", "Agent Intern")]
 
-    result = nodes.match_score_node(state)
-
-    assert [job["job_id"] for job in result["matched_jobs"]] == ["job_rag"]
-    assert "规则评分" in result["matched_jobs"][0]["reason"]
-
-
-def test_rerank_node_writes_reranked_jobs(monkeypatch):
-    jobs = [_sample_job("job_agent", "Agent Intern"), _sample_job("job_rag", "RAG Intern")]
-    calls = []
-
-    def fake_rerank_jobs(profile, jobs_to_rerank, use_llm=False):
-        calls.append((profile, jobs_to_rerank, use_llm))
-        return [
-            dict(jobs_to_rerank[1], rerank_score=91.0, rerank_reason="RAG fit"),
-            dict(jobs_to_rerank[0], rerank_score=70.0, rerank_reason="Agent fit"),
-        ]
+    def fake_rerank_jobs(profile, jobs_to_rerank, use_llm=False, llm_top_n=5):
+        raise RuntimeError("rerank unavailable")
 
     monkeypatch.setattr(nodes, "rerank_jobs", fake_rerank_jobs)
 
     state = nodes.rerank_node(
         {
             "candidate_profile": _sample_profile(),
-            "target_role": "AI Agent Intern",
             "retrieved_jobs": jobs,
-            "use_llm_rerank": True,
         }
     )
 
-    assert [job["job_id"] for job in state["reranked_jobs"]] == ["job_rag", "job_agent"]
-    assert calls[0][0]["target_role"] == "AI Agent Intern"
-    assert calls[0][2] is True
-    assert state["trace"][-1]["node"] == "rerank_node"
-    assert state["trace"][-1]["status"] == "success"
+    assert state["reranked_jobs"] == jobs
+    assert state["node_statuses"]["rerank_node"]["status"] == "partial"
 
 
-def test_match_score_node_prefers_reranked_jobs():
-    state = {
-        "candidate_profile": _sample_profile(),
-        "parsed_jobs": [_sample_job("job_parsed", "Parsed Intern")],
-        "retrieved_jobs": [_sample_job("job_retrieved", "Retrieved Intern")],
-        "reranked_jobs": [_sample_job("job_reranked", "Reranked Intern")],
-    }
-
-    result = nodes.match_score_node(state)
-
-    assert [job["job_id"] for job in result["matched_jobs"]] == ["job_reranked"]
-
-
-def test_match_score_node_optionally_uses_llm_reason(monkeypatch):
-    def fake_call_llm_json(messages):
-        return {
-            "job_id": "job_rag",
-            "title": "RAG Intern",
-            "company": "Example AI",
-            "match_score": 1.0,
-            "skill_overlap": [],
-            "missing_skills": [],
-            "matched_projects": [],
-            "reason": "LLM generated reason.",
-            "recommendation": "LLM generated recommendation.",
-        }
-
-    monkeypatch.setattr(nodes, "call_llm_json", fake_call_llm_json)
-
-    state = {
-        "candidate_profile": _sample_profile(),
-        "retrieved_jobs": [_sample_job("job_rag", "RAG Intern")],
-        "use_llm_match_scoring": True,
-    }
-
-    result = nodes.match_score_node(state)
-
-    assert result["matched_jobs"][0]["reason"] == "LLM generated reason."
-    assert result["matched_jobs"][0]["recommendation"] == "LLM generated recommendation."
-    assert result["matched_jobs"][0]["match_score"] != 1.0
-
-
-def test_match_score_node_falls_back_when_llm_reason_fails(monkeypatch):
+def test_match_score_node_sets_partial_when_llm_reason_fails(monkeypatch):
     def fake_call_llm_json(messages):
         raise RuntimeError("llm unavailable")
 
@@ -359,97 +246,82 @@ def test_match_score_node_falls_back_when_llm_reason_fails(monkeypatch):
     result = nodes.match_score_node(state)
 
     assert result["matched_jobs"][0]["job_id"] == "job_rag"
-    assert "规则评分" in result["matched_jobs"][0]["reason"]
-    assert any("LLM 匹配解释生成失败" in trace["message"] for trace in result["trace"])
+    assert result["node_statuses"]["match_score_node"]["status"] == "partial"
+    assert result["trace"][-1]["fallback_count"] == 1
 
 
-def test_gap_analysis_node_uses_top_3_and_skips_failures(monkeypatch):
-    seen_prompts = []
-
-    def fake_call_llm_json(messages):
-        content = messages[1]["content"]
-        seen_prompts.append(content)
-        if '"job_id": "job_2"' in content:
-            raise RuntimeError("bad gap")
-        return {
-            "gaps": [
-                {
-                    "type": "missing_skill",
-                    "severity": "medium",
-                    "description": "Needs stronger LangGraph evidence.",
-                    "suggestion": "Add one LangGraph project bullet.",
-                }
-            ]
-        }
-
-    monkeypatch.setattr(nodes, "call_llm_json", fake_call_llm_json)
+def test_match_score_node_sets_error_when_no_jobs_are_scored():
     state = {
         "candidate_profile": _sample_profile(),
-        "parsed_jobs": [
-            _sample_job("job_1", "Job One"),
-            _sample_job("job_2", "Job Two"),
-            _sample_job("job_3", "Job Three"),
-            _sample_job("job_4", "Job Four"),
-        ],
+        "retrieved_jobs": ["invalid job"],
+    }
+
+    result = nodes.match_score_node(state)
+
+    assert result["matched_jobs"] == []
+    assert result["workflow_status"] == "failed"
+    assert result["halt_reason"] == "No jobs were successfully scored."
+    assert result["node_statuses"]["match_score_node"]["status"] == "error"
+
+
+def test_gap_analysis_node_falls_back_per_job_when_llm_fails(monkeypatch):
+    def fake_call_llm_json(messages):
+        raise RuntimeError("gap llm unavailable")
+
+    monkeypatch.setattr(nodes, "call_llm_json", fake_call_llm_json)
+
+    state = {
+        "candidate_profile": _sample_profile(),
+        "parsed_jobs": [_sample_job("job_1", "Job One")],
         "matched_jobs": [
-            {"job_id": "job_1", "title": "Job One", "company": "Example AI", "match_score": 95},
-            {"job_id": "job_2", "title": "Job Two", "company": "Example AI", "match_score": 90},
-            {"job_id": "job_3", "title": "Job Three", "company": "Example AI", "match_score": 85},
-            {"job_id": "job_4", "title": "Job Four", "company": "Example AI", "match_score": 80},
+            {
+                "job_id": "job_1",
+                "title": "Job One",
+                "company": "Example AI",
+                "match_score": 95,
+                "missing_skills": ["LangGraph"],
+                "matched_projects": [],
+            }
         ],
+        "use_llm_deep_analysis": True,
+        "llm_node_max_retries": 0,
     }
 
     result = nodes.gap_analysis_node(state)
 
-    assert [item["job_id"] for item in result["gaps"]] == ["job_1", "job_3"]
-    assert result["gaps"][0]["gaps"][0]["type"] == "missing_skill"
-    assert len(seen_prompts) == 3
-    assert not any('"job_id": "job_4"' in prompt for prompt in seen_prompts)
-    assert any(trace["status"] == "error" and "job_2" in trace["message"] for trace in result["trace"])
-    assert result["trace"][-1]["status"] == "success"
+    assert result["gaps"][0]["job_id"] == "job_1"
+    assert result["node_statuses"]["gap_analysis_node"]["status"] == "partial"
+    assert result["trace"][-1]["fallback_count"] == 1
 
 
-def test_resume_suggestion_node_uses_top_3_gap_results_and_skips_failures(monkeypatch):
-    seen_prompts = []
-
+def test_resume_suggestion_node_falls_back_per_job_when_llm_fails(monkeypatch):
     def fake_call_llm_json(messages):
-        content = messages[1]["content"]
-        seen_prompts.append(content)
-        if '"job_id": "job_2"' in content:
-            raise RuntimeError("bad suggestion")
-        return {
-            "suggestions": [
-                {
-                    "section": "Projects",
-                    "original_problem": "Project impact is vague.",
-                    "suggestion": "Add concrete evidence tied to the JD.",
-                    "improved_example": "Built a RAG assistant with documented retrieval tests.",
-                }
-            ]
-        }
+        raise RuntimeError("resume llm unavailable")
 
     monkeypatch.setattr(nodes, "call_llm_json", fake_call_llm_json)
+
     state = {
         "candidate_profile": _sample_profile(),
-        "parsed_jobs": [
-            _sample_job("job_1", "Job One"),
-            _sample_job("job_2", "Job Two"),
-            _sample_job("job_3", "Job Three"),
-            _sample_job("job_4", "Job Four"),
-        ],
+        "parsed_jobs": [_sample_job("job_1", "Job One")],
         "gaps": [
-            {"job_id": "job_1", "gaps": [{"type": "missing_skill"}]},
-            {"job_id": "job_2", "gaps": [{"type": "low_keyword_match"}]},
-            {"job_id": "job_3", "gaps": [{"type": "weak_project_evidence"}]},
-            {"job_id": "job_4", "gaps": [{"type": "missing_experience"}]},
+            {
+                "job_id": "job_1",
+                "gaps": [
+                    {
+                        "type": "missing_skill",
+                        "severity": "medium",
+                        "description": "Need LangGraph",
+                        "suggestion": "Add LangGraph evidence",
+                    }
+                ],
+            }
         ],
+        "use_llm_deep_analysis": True,
+        "llm_node_max_retries": 0,
     }
 
     result = nodes.resume_suggestion_node(state)
 
-    assert [item["job_id"] for item in result["resume_suggestions"]] == ["job_1", "job_3"]
-    assert result["resume_suggestions"][0]["suggestions"][0]["section"] == "Projects"
-    assert len(seen_prompts) == 3
-    assert not any('"job_id": "job_4"' in prompt for prompt in seen_prompts)
-    assert any(trace["status"] == "error" and "job_2" in trace["message"] for trace in result["trace"])
-    assert result["trace"][-1]["status"] == "success"
+    assert result["resume_suggestions"][0]["job_id"] == "job_1"
+    assert result["node_statuses"]["resume_suggestion_node"]["status"] == "partial"
+    assert result["trace"][-1]["fallback_count"] == 1

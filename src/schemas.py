@@ -21,6 +21,10 @@ class CandidateProfile(BaseModel):
     name: Optional[str] = Field(default=None, description="Candidate name, if available.")
     education: List[str] = Field(default_factory=list, description="Education background entries.")
     skills: List[str] = Field(default_factory=list, description="Candidate skills and keywords.")
+    soft_skills: List[str] = Field(
+        default_factory=list,
+        description="Soft skills and work traits, such as self-drive, learning ability, communication, and problem decomposition.",
+    )
     projects: List[ProjectExperience] = Field(default_factory=list, description="Candidate project experiences.")
     internships: List[str] = Field(default_factory=list, description="Internship or work experience summaries.")
     target_roles: List[str] = Field(default_factory=list, description="Target internship roles.")
@@ -73,10 +77,3 @@ class ResumeSuggestion(BaseModel):
     original_problem: str = Field(..., description="Problem found in the current resume content.")
     suggestion: str = Field(..., description="Specific rewrite or improvement suggestion.")
     improved_example: str = Field(..., description="Example improved resume wording.")
-
-
-class CoverLetterDraft(BaseModel):
-    job_id: str = Field(..., description="Target job identifier.")
-    company: str = Field(..., description="Target company name.")
-    title: str = Field(..., description="Target job title.")
-    body: str = Field(..., description="Draft cover letter body.")

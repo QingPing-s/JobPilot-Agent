@@ -2,45 +2,60 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
+import statistics
 import sys
+import time
 from pathlib import Path
 from typing import Any
-
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
-from src.reranker import rerank_jobs
-from src.retriever import build_chroma_store, hybrid_retrieve
+from src.job_recorder import extract_job_record
+from src.reranker import rule_based_rerank
+from src.retriever import (
+    build_chroma_store,
+    hybrid_retrieve,
+    retrieve_jobs,
+    simple_bm25_retrieve,
+)
 from src.schemas import MatchResult
 from src.scorer import compute_rule_based_match
-from src.tools import generate_job_id, load_jd_files, load_user_profile, save_markdown
-
+from src.tools import load_jd_files, load_user_profile, save_markdown
 
 EVAL_DIR = ROOT_DIR / "eval"
 DEFAULT_CASES_PATH = EVAL_DIR / "eval_cases.json"
 DEFAULT_REPORT_PATH = EVAL_DIR / "metrics_report.md"
 DEFAULT_PROFILE_PATH = ROOT_DIR / "data" / "user_profile.json"
+DEFAULT_SEED_PATH = ROOT_DIR / "data" / "job_seed.json"
 DEFAULT_JD_FOLDER = ROOT_DIR / "data" / "sample_jds"
 DEFAULT_VECTOR_STORE = ROOT_DIR / "data" / "vector_store" / "eval"
+BASELINE_NAMES = (
+    "keyword",
+    "vector",
+    "hybrid_union",
+    "hybrid_rrf",
+    "hybrid_rrf_rerank",
+)
 QUERY_SKILL_MARKERS = {
     "LangGraph": ["langgraph"],
-    "ChromaDB": ["chromadb"],
+    "LangChain": ["langchain"],
+    "ChromaDB": ["chromadb", "chroma"],
     "DeepSeek API": ["deepseek"],
     "FastAPI": ["fastapi"],
-    "Pydantic": ["pydantic"],
     "Python": ["python"],
-    "RAG": ["rag", "检索增强", "文档问答", "document qa", "retrieval"],
+    "RAG": ["rag", "检索增强", "文档问答", "retrieval"],
     "LLM": ["llm", "大模型"],
-    "API integration": ["api"],
     "Prompt Engineering": ["prompt", "提示词"],
-    "Structured Outputs": ["structured output", "结构化输出"],
-    "Tool Calling": ["tool calling", "工具调用"],
-    "Evaluation": ["evaluation", "评测", "评估"],
-    "Embeddings": ["embedding", "embeddings", "向量表示"],
-    "Vector Databases": ["vector database", "vector databases", "向量数据库"],
-    "Pytest": ["pytest", "测试"],
+    "Tool Calling": ["tool calling", "function calling", "工具调用"],
+    "Multi-Agent": ["multi-agent", "多智能体"],
+    "Agent Memory": ["memory", "记忆"],
+    "PyTorch": ["pytorch"],
+    "Docker": ["docker"],
+    "Kubernetes": ["kubernetes", "k8s"],
+    "SQL": ["sql", "mysql", "postgresql"],
 }
 
 
@@ -48,92 +63,56 @@ def _as_list(value: Any) -> list:
     return value if isinstance(value, list) else []
 
 
-def _read_cases(path: Path) -> list[dict]:
-    return json.loads(path.read_text(encoding="utf-8"))
+def _read_cases(path: Path) -> list[dict[str, Any]]:
+    data = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(data, list):
+        raise ValueError("eval_cases.json 必须是 JSON 数组。")
+    return [case for case in data if isinstance(case, dict)]
 
 
-def _section_lines(raw_text: str, section_name: str) -> list[str]:
-    lines = raw_text.splitlines()
-    capture = False
-    items = []
-    for line in lines:
-        stripped = line.strip()
-        if not stripped:
-            continue
-        if stripped.endswith(":") and not stripped.startswith("-"):
-            capture = stripped[:-1].lower() == section_name.lower()
-            continue
-        if capture and stripped.startswith("-"):
-            items.append(stripped.lstrip("-").strip())
-    return items
+def _record_to_job(raw_text: str, filename: str, source: str) -> dict[str, Any]:
+    record = extract_job_record(raw_text, filename=filename, source=source)
+    return {
+        "job_id": record["job_id"],
+        "title": record["title"],
+        "company": record["company"],
+        "location": record.get("location"),
+        "employment_type": "实习",
+        "salary": record.get("salary"),
+        "responsibilities": _as_list(record.get("responsibilities")),
+        "required_skills": _as_list(record.get("required_skills")),
+        "preferred_skills": _as_list(record.get("preferred_skills")),
+        "education_requirement": record.get("education"),
+        "experience_requirement": record.get("duration"),
+        "source_url": None,
+        "raw_text": raw_text,
+    }
 
 
-def _extract_title(raw_text: str, fallback: str) -> str:
-    for line in raw_text.splitlines():
-        if line.lower().startswith("title:"):
-            return line.split(":", 1)[1].strip()
-    return fallback
+def _load_jobs(seed_path: Path, jd_folder: Path) -> list[dict[str, Any]]:
+    jobs: list[dict[str, Any]] = []
+    if seed_path.exists():
+        seed = json.loads(seed_path.read_text(encoding="utf-8"))
+        if isinstance(seed, list):
+            for index, item in enumerate(seed, start=1):
+                if not isinstance(item, dict):
+                    continue
+                raw_text = str(item.get("raw_text") or "").strip()
+                if not raw_text:
+                    continue
+                filename = str(item.get("filename") or f"seed_{index:03d}.txt")
+                jobs.append(_record_to_job(raw_text, filename, str(item.get("source") or "seed")))
+    if jobs:
+        return jobs
 
-
-def _extract_skills(lines: list[str]) -> list[str]:
-    text = " ".join(lines).lower()
-    skills = []
-    checks = [
-        ("LangGraph", "langgraph"),
-        ("ChromaDB", "chromadb"),
-        ("DeepSeek API", "deepseek"),
-        ("FastAPI", "fastapi"),
-        ("Pydantic", "pydantic"),
-        ("Python", "python"),
-        ("RAG", "rag"),
-        ("LLM", "llm"),
-        ("API integration", "api"),
-        ("Prompt Engineering", "prompt"),
-        ("Structured Outputs", "structured output"),
-        ("Tool Calling", "tool"),
-        ("Evaluation", "evaluation"),
-        ("Embeddings", "embedding"),
-        ("Vector Databases", "vector database"),
-        ("Pytest", "pytest"),
-    ]
-    for skill, marker in checks:
-        if marker in text and skill not in skills:
-            skills.append(skill)
-    return skills
-
-
-def _parse_jobs_from_sample_jds(jd_folder: Path) -> list[dict]:
-    parsed_jobs = []
-    for index, jd_file in enumerate(load_jd_files(str(jd_folder)), start=1):
-        filename = jd_file["filename"]
-        raw_text = jd_file["raw_text"]
-        responsibilities = _section_lines(raw_text, "Responsibilities")
-        requirement_lines = _section_lines(raw_text, "Requirements")
-        preferred_lines = _section_lines(raw_text, "Preferred")
-
-        parsed_jobs.append(
-            {
-                "job_id": generate_job_id(filename, index),
-                "title": _extract_title(raw_text, Path(filename).stem),
-                "company": "Sample Company",
-                "location": None,
-                "employment_type": "Internship",
-                "salary": None,
-                "responsibilities": responsibilities,
-                "required_skills": _extract_skills(requirement_lines),
-                "preferred_skills": _extract_skills(preferred_lines),
-                "education_requirement": None,
-                "experience_requirement": None,
-                "source_url": None,
-                "raw_text": raw_text,
-            }
-        )
-    return parsed_jobs
+    for item in load_jd_files(str(jd_folder)):
+        jobs.append(_record_to_job(item["raw_text"], item["filename"], "sample_jd"))
+    return jobs
 
 
 def _profile_for_case(base_profile: dict, case: dict) -> dict:
     profile = dict(base_profile)
-    target_role = case.get("target_role")
+    target_role = str(case.get("target_role") or "")
     target_roles = list(_as_list(profile.get("target_roles")))
     if target_role and target_role not in target_roles:
         target_roles.insert(0, target_role)
@@ -141,8 +120,8 @@ def _profile_for_case(base_profile: dict, case: dict) -> dict:
     profile["target_role"] = target_role
 
     query = str(case.get("query") or "")
-    skills = list(_as_list(profile.get("skills")))
     query_lower = query.lower()
+    skills = list(_as_list(profile.get("skills")))
     for skill, markers in QUERY_SKILL_MARKERS.items():
         if any(marker in query_lower for marker in markers) and skill not in skills:
             skills.append(skill)
@@ -150,170 +129,312 @@ def _profile_for_case(base_profile: dict, case: dict) -> dict:
     return profile
 
 
-def _validate_match_result(result: dict) -> bool:
+def _validate_match_result(result: dict[str, Any]) -> bool:
     try:
-        if hasattr(MatchResult, "model_validate"):
-            MatchResult.model_validate(result)
-        else:
-            MatchResult.parse_obj(result)
+        MatchResult.model_validate(result)
     except Exception:
         return False
     return True
 
 
-def _run_case(case: dict, profile: dict, jobs: list[dict], top_k: int, vector_store: Path) -> dict:
-    case_id = case.get("case_id", "<unknown>")
-    errors = []
-    relevant_job_ids = set(_as_list(case.get("relevant_job_ids")))
-    case_profile = _profile_for_case(profile, case)
+def _rank_metrics(ranked_ids: list[str], relevant_ids: set[str]) -> dict[str, float]:
+    def hits_at(k: int) -> int:
+        return len(set(ranked_ids[:k]) & relevant_ids)
+
+    recall_5 = hits_at(5) / len(relevant_ids) if relevant_ids else 0.0
+    recall_10 = hits_at(10) / len(relevant_ids) if relevant_ids else 0.0
+    precision_5 = hits_at(5) / max(1, min(5, len(ranked_ids)))
+    hit_5 = float(hits_at(5) > 0)
+    hit_10 = float(hits_at(10) > 0)
+    reciprocal_rank = 0.0
+    for rank, job_id in enumerate(ranked_ids, start=1):
+        if job_id in relevant_ids:
+            reciprocal_rank = 1.0 / rank
+            break
+
+    dcg = sum(
+        1.0 / math.log2(rank + 1)
+        for rank, job_id in enumerate(ranked_ids[:10], start=1)
+        if job_id in relevant_ids
+    )
+    ideal_hits = min(10, len(relevant_ids))
+    ideal_dcg = sum(1.0 / math.log2(rank + 1) for rank in range(1, ideal_hits + 1))
+    ndcg_10 = dcg / ideal_dcg if ideal_dcg else 0.0
+    return {
+        "recall_at_5": recall_5,
+        "recall_at_10": recall_10,
+        "precision_at_5": precision_5,
+        "hit_at_5": hit_5,
+        "hit_at_10": hit_10,
+        "mrr": reciprocal_rank,
+        "ndcg_at_10": ndcg_10,
+        "top_1_accuracy": float(bool(ranked_ids) and ranked_ids[0] in relevant_ids),
+    }
+
+
+def _retrieve_for_baseline(
+    baseline: str,
+    query: str,
+    profile: dict,
+    jobs: list[dict],
+    vector_store: Path,
+    top_k: int,
+) -> list[dict]:
+    if baseline == "keyword":
+        return simple_bm25_retrieve(query, jobs, top_k=top_k)
+    if baseline == "vector":
+        return retrieve_jobs(query, top_k=top_k, persist_dir=str(vector_store))
+    if baseline == "hybrid_union":
+        try:
+            vector_results = retrieve_jobs(query, top_k=top_k, persist_dir=str(vector_store))
+        except Exception:
+            vector_results = []
+        keyword_results = simple_bm25_retrieve(query, jobs, top_k=top_k)
+        merged = []
+        seen = set()
+        for item in [*vector_results, *keyword_results]:
+            job_id = item.get("job_id")
+            if job_id and job_id not in seen:
+                seen.add(job_id)
+                merged.append(item)
+        return merged[:top_k]
+    hybrid = hybrid_retrieve(query, jobs, top_k=top_k, persist_dir=str(vector_store))
+    if baseline == "hybrid_rrf_rerank":
+        return rule_based_rerank(profile, hybrid)[:top_k]
+    return hybrid
+
+
+def _run_baseline(
+    baseline: str,
+    case: dict,
+    profile: dict,
+    jobs: list[dict],
+    vector_store: Path,
+    top_k: int,
+) -> dict[str, Any]:
+    relevant_ids = set(str(item) for item in _as_list(case.get("relevant_job_ids")))
     query = f"{case.get('target_role', '')} {case.get('query', '')}".strip()
-
+    started = time.perf_counter()
+    errors: list[str] = []
+    fallback_used = False
     try:
-        build_chroma_store(jobs, persist_dir=str(vector_store / case_id))
+        results = _retrieve_for_baseline(baseline, query, profile, jobs, vector_store, top_k)
     except Exception as exc:
-        errors.append(f"向量库构建失败：{exc}")
-
-    try:
-        retrieved_jobs = hybrid_retrieve(query, jobs, top_k=top_k, persist_dir=str(vector_store / case_id))
-    except Exception as exc:
-        errors.append(f"混合召回失败：{exc}")
-        retrieved_jobs = jobs[:top_k]
-
-    try:
-        reranked_jobs = rerank_jobs(case_profile, retrieved_jobs)
-    except Exception as exc:
-        errors.append(f"岗位重排失败：{exc}")
-        reranked_jobs = retrieved_jobs
+        errors.append(f"{baseline} 检索失败：{exc}")
+        results = []
 
     recommendations = []
-    for job in reranked_jobs[:top_k]:
+    json_valid_count = 0
+    for job in results[:top_k]:
         try:
-            match = compute_rule_based_match(case_profile, job)
+            match = compute_rule_based_match(profile, job)
             match["retrieve_source"] = job.get("retrieve_source", "")
+            match["vector_rank"] = job.get("vector_rank")
+            match["keyword_rank"] = job.get("keyword_rank")
+            match["hybrid_score"] = job.get("hybrid_score")
             match["rerank_score"] = job.get("rerank_score")
-            match["rerank_reason"] = job.get("rerank_reason", "")
             recommendations.append(match)
+            json_valid_count += int(_validate_match_result(match))
+            backend = (job.get("_retrieval") or {}).get("backend")
+            fallback_used = fallback_used or (baseline == "vector" and backend == "simple")
         except Exception as exc:
-            errors.append(f"岗位 {job.get('job_id', '<未知岗位>')} 规则匹配评分失败：{exc}")
+            errors.append(f"岗位 {job.get('job_id', '<unknown>')} 评分失败：{exc}")
 
-    recommendations.sort(key=lambda item: item.get("match_score", 0), reverse=True)
-    top_results = recommendations[:top_k]
-    top_ids = [item.get("job_id") for item in top_results]
-    hits = len(relevant_job_ids & set(top_ids))
-    recall = hits / len(relevant_job_ids) if relevant_job_ids else 0.0
-    precision_denominator = min(top_k, len(top_results)) or top_k
-    precision = hits / precision_denominator if precision_denominator else 0.0
-    hit = 1.0 if hits > 0 else 0.0
-    valid_count = sum(1 for item in top_results if _validate_match_result(item))
-
+    ranked_ids = [str(item.get("job_id") or "") for item in recommendations]
+    metrics = _rank_metrics(ranked_ids, relevant_ids)
+    metrics.update(
+        {
+            "latency_ms": round((time.perf_counter() - started) * 1000, 2),
+            "json_valid_count": json_valid_count,
+            "json_total_count": len(recommendations),
+            "fallback_used": float(fallback_used),
+            "average_match_score": statistics.fmean(
+                [float(item.get("match_score", 0)) for item in recommendations]
+            )
+            if recommendations
+            else 0.0,
+        }
+    )
     return {
-        "case_id": case_id,
-        "target_role": case.get("target_role", ""),
-        "query": case.get("query", ""),
-        "relevant_job_ids": sorted(relevant_job_ids),
-        "recommendations": top_results,
-        "metrics": {
-            "recall_at_k": recall,
-            "precision_at_k": precision,
-            "hit_at_k": hit,
-            "average_match_score": _average([item.get("match_score", 0) for item in top_results]),
-            "json_valid_count": valid_count,
-            "json_total_count": len(top_results),
-        },
+        "baseline": baseline,
+        "recommendations": recommendations,
+        "metrics": metrics,
         "errors": errors,
     }
 
 
-def _average(values: list[float]) -> float:
+def _run_case(
+    case: dict,
+    base_profile: dict,
+    jobs: list[dict],
+    vector_store: Path,
+    top_k: int,
+) -> dict[str, Any]:
+    profile = _profile_for_case(base_profile, case)
+    baseline_results: dict[str, Any] = {}
+    for baseline in BASELINE_NAMES:
+        try:
+            baseline_results[baseline] = _run_baseline(
+                baseline,
+                case,
+                profile,
+                jobs,
+                vector_store,
+                top_k,
+            )
+        except Exception as exc:
+            baseline_results[baseline] = {
+                "baseline": baseline,
+                "recommendations": [],
+                "metrics": {
+                    **_rank_metrics([], set(_as_list(case.get("relevant_job_ids")))),
+                    "latency_ms": 0.0,
+                    "json_valid_count": 0,
+                    "json_total_count": 0,
+                    "fallback_used": 1.0,
+                    "average_match_score": 0.0,
+                },
+                "errors": [f"case 执行失败：{exc}"],
+            }
+    return {
+        "case_id": str(case.get("case_id") or "<unknown>"),
+        "target_role": str(case.get("target_role") or ""),
+        "query": str(case.get("query") or ""),
+        "relevant_job_ids": [str(item) for item in _as_list(case.get("relevant_job_ids"))],
+        "label_source": str(case.get("label_source") or "unspecified"),
+        "baselines": baseline_results,
+    }
+
+
+def _percentile_95(values: list[float]) -> float:
     if not values:
         return 0.0
-    return sum(float(value) for value in values) / len(values)
+    sorted_values = sorted(values)
+    index = max(0, math.ceil(0.95 * len(sorted_values)) - 1)
+    return float(sorted_values[index])
+
+
+def _aggregate(case_results: list[dict[str, Any]]) -> dict[str, dict[str, float]]:
+    aggregate: dict[str, dict[str, float]] = {}
+    metric_names = (
+        "recall_at_5",
+        "recall_at_10",
+        "precision_at_5",
+        "hit_at_5",
+        "hit_at_10",
+        "mrr",
+        "ndcg_at_10",
+        "top_1_accuracy",
+        "average_match_score",
+        "fallback_used",
+    )
+    for baseline in BASELINE_NAMES:
+        metrics = [case["baselines"][baseline]["metrics"] for case in case_results]
+        latencies = [float(item["latency_ms"]) for item in metrics]
+        json_valid = sum(int(item["json_valid_count"]) for item in metrics)
+        json_total = sum(int(item["json_total_count"]) for item in metrics)
+        errors = sum(bool(case["baselines"][baseline]["errors"]) for case in case_results)
+        values = {
+            name: statistics.fmean(float(item[name]) for item in metrics) if metrics else 0.0
+            for name in metric_names
+        }
+        values.update(
+            {
+                "average_latency_ms": statistics.fmean(latencies) if latencies else 0.0,
+                "p95_latency_ms": _percentile_95(latencies),
+                "json_valid_rate": json_valid / json_total if json_total else 0.0,
+                "tool_success_rate": 1.0 - (errors / len(case_results) if case_results else 0.0),
+                "prompt_tokens": 0.0,
+                "completion_tokens": 0.0,
+                "estimated_cost_usd": 0.0,
+            }
+        )
+        aggregate[baseline] = values
+    return aggregate
 
 
 def _percent(value: float) -> str:
     return f"{value * 100:.2f}%"
 
 
-def _format_recommendation(item: dict, relevant_ids: list[str]) -> str:
-    relevant = "是" if item.get("job_id") in set(relevant_ids) else "否"
-    source_label = {
-        "both": "向量+关键词",
-        "keyword": "关键词",
-        "vector": "向量",
-    }.get(item.get("retrieve_source", ""), "无")
-    return (
-        f"- `{item.get('job_id', '')}` | {item.get('title', '')} | "
-        f"匹配分={item.get('match_score', 0):.2f} | "
-        f"召回来源={source_label} | "
-        f"重排分={item.get('rerank_score', '')} | 命中相关岗位={relevant}"
-    )
-
-
-def _build_report(case_results: list[dict], top_k: int) -> str:
-    total_cases = len(case_results)
-    failures = [case for case in case_results if case["errors"] or case["metrics"]["hit_at_k"] == 0.0]
-    json_valid_total = sum(case["metrics"]["json_valid_count"] for case in case_results)
-    json_total = sum(case["metrics"]["json_total_count"] for case in case_results)
-    successful_cases = sum(1 for case in case_results if not case["errors"])
-
-    recall = _average([case["metrics"]["recall_at_k"] for case in case_results])
-    precision = _average([case["metrics"]["precision_at_k"] for case in case_results])
-    hit = _average([case["metrics"]["hit_at_k"] for case in case_results])
-    average_match_score = _average([case["metrics"]["average_match_score"] for case in case_results])
-    json_valid_rate = (json_valid_total / json_total) if json_total else 0.0
-    tool_success_rate = (successful_cases / total_cases) if total_cases else 0.0
-
+def _build_report(
+    case_results: list[dict[str, Any]],
+    aggregate: dict[str, dict[str, float]],
+    corpus_size: int,
+) -> str:
     lines = [
-        "# JobPilot-Agent 评测报告",
+        "# JobPilot-Agent 离线评测报告",
         "",
-        "## 汇总指标",
+        f"- 评测 case 数：{len(case_results)}",
+        f"- 岗位语料规模：{corpus_size}",
+        "- 评测模式：确定性检索与规则重排，不调用真实 LLM",
         "",
-        f"- 总 case 数: {total_cases}",
-        f"- Recall@{top_k}: {_percent(recall)}",
-        f"- Precision@{top_k}: {_percent(precision)}",
-        f"- Hit@{top_k}: {_percent(hit)}",
-        f"- 平均匹配分: {average_match_score:.2f}",
-        f"- JSON 有效率: {_percent(json_valid_rate)}",
-        f"- 工具成功率: {_percent(tool_success_rate)}",
+        "## 五组基线与融合消融对比",
         "",
-        "说明：评测默认使用确定性的规则匹配作为兜底路径，因此在没有 DeepSeek API 访问权限时也可以运行。",
-        "",
-        "## 失败用例",
-        "",
+        "| 基线 | Recall@5 | Recall@10 | Precision@5 | Hit@5 | MRR | NDCG@10 | Top1 | 平均延迟 | P95 延迟 | 降级率 |",
+        "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
     ]
+    for baseline in BASELINE_NAMES:
+        metric = aggregate[baseline]
+        lines.append(
+            f"| {baseline} | {_percent(metric['recall_at_5'])} | "
+            f"{_percent(metric['recall_at_10'])} | {_percent(metric['precision_at_5'])} | "
+            f"{_percent(metric['hit_at_5'])} | {metric['mrr']:.3f} | "
+            f"{metric['ndcg_at_10']:.3f} | {_percent(metric['top_1_accuracy'])} | "
+            f"{metric['average_latency_ms']:.1f} ms | {metric['p95_latency_ms']:.1f} ms | "
+            f"{_percent(metric['fallback_used'])} |"
+        )
 
+    best = aggregate["hybrid_rrf_rerank"]
+    lines.extend(
+        [
+            "",
+            "## 结构化输出与成本",
+            "",
+            f"- JSON 有效率：{_percent(best['json_valid_rate'])}",
+            f"- 工具成功率：{_percent(best['tool_success_rate'])}",
+            f"- Prompt Tokens：{int(best['prompt_tokens'])}",
+            f"- Completion Tokens：{int(best['completion_tokens'])}",
+            f"- 估算成本：${best['estimated_cost_usd']:.4f}",
+            "- 说明：离线基线不调用 LLM，因此 Token 和成本为 0；线上运行成本由 Trace 单独统计。",
+            "",
+            "## 失败 Case",
+            "",
+        ]
+    )
+    failures = [
+        case
+        for case in case_results
+        if case["baselines"]["hybrid_rrf_rerank"]["metrics"]["hit_at_10"] == 0
+        or case["baselines"]["hybrid_rrf_rerank"]["errors"]
+    ]
     if not failures:
         lines.append("- 无")
-    else:
-        for case in failures:
-            error_text = "；".join(case["errors"]) if case["errors"] else "Top-K 未命中相关岗位。"
-            lines.append(f"- `{case['case_id']}`: {error_text}")
+    for case in failures:
+        errors = "；".join(case["baselines"]["hybrid_rrf_rerank"]["errors"])
+        lines.append(f"- `{case['case_id']}`：{errors or 'Top 10 未命中人工标注相关岗位。'}")
 
-    lines.extend(["", f"## 每个用例的 Top-{top_k} 推荐结果", ""])
+    lines.extend(["", "## 每个 Case 的 Hybrid + Rerank Top 10", ""])
     for case in case_results:
+        result = case["baselines"]["hybrid_rrf_rerank"]
         lines.extend(
             [
                 f"### {case['case_id']} - {case['target_role']}",
                 "",
-                f"- 查询: {case['query']}",
-                f"- 相关 job_id: {', '.join(case['relevant_job_ids'])}",
-                f"- Recall@{top_k}: {_percent(case['metrics']['recall_at_k'])}",
-                f"- Precision@{top_k}: {_percent(case['metrics']['precision_at_k'])}",
-                f"- Hit@{top_k}: {_percent(case['metrics']['hit_at_k'])}",
-                f"- 平均匹配分: {case['metrics']['average_match_score']:.2f}",
-                "",
+                f"- Query：{case['query']}",
+                f"- Relevant：{', '.join(case['relevant_job_ids'])}",
+                f"- Label：{case['label_source']}",
             ]
         )
-        if not case["recommendations"]:
-            lines.append("- 暂无推荐结果。")
-        for recommendation in case["recommendations"]:
-            lines.append(_format_recommendation(recommendation, case["relevant_job_ids"]))
-        if case["errors"]:
-            lines.extend(["", "错误信息："])
-            for error in case["errors"]:
-                lines.append(f"- {error}")
+        for rank, item in enumerate(result["recommendations"][:10], start=1):
+            hit = "命中" if item.get("job_id") in set(case["relevant_job_ids"]) else ""
+            lines.append(
+                f"- {rank}. `{item.get('job_id', '')}` {item.get('title', '')} "
+                f"| match={item.get('match_score', 0):.1f} "
+                f"| hybrid={item.get('hybrid_score') or 0:.6f} "
+                f"| rerank={item.get('rerank_score') or 0:.1f} {hit}"
+            )
         lines.append("")
-
     return "\n".join(lines).rstrip() + "\n"
 
 
@@ -323,52 +444,57 @@ def run_eval(
     jd_folder: Path = DEFAULT_JD_FOLDER,
     report_path: Path = DEFAULT_REPORT_PATH,
     vector_store: Path = DEFAULT_VECTOR_STORE,
-    top_k: int = 5,
-) -> dict:
+    seed_path: Path = DEFAULT_SEED_PATH,
+    top_k: int = 10,
+    *,
+    allow_small_eval: bool = False,
+) -> dict[str, Any]:
     cases = _read_cases(cases_path)
+    if len(cases) < 50 and not allow_small_eval:
+        raise ValueError(f"正式评测至少需要 50 个 case，当前只有 {len(cases)} 个。")
     profile = load_user_profile(str(profile_path))
-    jobs = _parse_jobs_from_sample_jds(jd_folder)
+    jobs = _load_jobs(seed_path, jd_folder)
+    if not jobs:
+        raise ValueError("没有可用于评测的岗位语料。")
 
-    case_results = []
-    for case in cases:
-        try:
-            case_results.append(_run_case(case, profile, jobs, top_k=top_k, vector_store=vector_store))
-        except Exception as exc:
-            case_results.append(
-                {
-                    "case_id": case.get("case_id", "<unknown>"),
-                    "target_role": case.get("target_role", ""),
-                    "query": case.get("query", ""),
-                    "relevant_job_ids": _as_list(case.get("relevant_job_ids")),
-                    "recommendations": [],
-                    "metrics": {
-                        "recall_at_k": 0.0,
-                        "precision_at_k": 0.0,
-                        "hit_at_k": 0.0,
-                        "average_match_score": 0.0,
-                        "json_valid_count": 0,
-                    "json_total_count": 0,
-                },
-                    "errors": [f"case 执行失败：{exc}"],
-                }
-            )
-
-    report = _build_report(case_results, top_k=top_k)
+    build_chroma_store(jobs, persist_dir=str(vector_store))
+    case_results = [
+        _run_case(case, profile, jobs, vector_store, max(10, top_k))
+        for case in cases
+    ]
+    aggregate = _aggregate(case_results)
+    report = _build_report(case_results, aggregate, corpus_size=len(jobs))
     save_markdown(report, str(report_path))
-
+    metrics_path = report_path.with_suffix(".json")
+    metrics_path.write_text(
+        json.dumps(
+            {
+                "case_count": len(cases),
+                "corpus_size": len(jobs),
+                "baselines": aggregate,
+            },
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
     return {
         "cases": case_results,
+        "baselines": aggregate,
         "report_path": str(report_path),
+        "metrics_path": str(metrics_path),
     }
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="评测 JobPilot-Agent 的检索和匹配效果。")
-    parser.add_argument("--cases", default=str(DEFAULT_CASES_PATH), help="eval_cases.json 路径。")
-    parser.add_argument("--profile", default=str(DEFAULT_PROFILE_PATH), help="用户画像 JSON 路径。")
-    parser.add_argument("--jd-folder", default=str(DEFAULT_JD_FOLDER), help="包含 JD .txt 文件的文件夹。")
-    parser.add_argument("--report", default=str(DEFAULT_REPORT_PATH), help="评测报告输出路径。")
-    parser.add_argument("--top-k", type=int, default=5, help="检索指标的 Top-K 截断值。")
+    parser = argparse.ArgumentParser(description="运行 JobPilot-Agent 四基线离线评测。")
+    parser.add_argument("--cases", default=str(DEFAULT_CASES_PATH))
+    parser.add_argument("--profile", default=str(DEFAULT_PROFILE_PATH))
+    parser.add_argument("--jd-folder", default=str(DEFAULT_JD_FOLDER))
+    parser.add_argument("--seed", default=str(DEFAULT_SEED_PATH))
+    parser.add_argument("--report", default=str(DEFAULT_REPORT_PATH))
+    parser.add_argument("--vector-store", default=str(DEFAULT_VECTOR_STORE))
+    parser.add_argument("--top-k", type=int, default=10)
     return parser.parse_args(argv)
 
 
@@ -378,10 +504,12 @@ def main(argv: list[str] | None = None) -> None:
         cases_path=Path(args.cases),
         profile_path=Path(args.profile),
         jd_folder=Path(args.jd_folder),
+        seed_path=Path(args.seed),
         report_path=Path(args.report),
+        vector_store=Path(args.vector_store),
         top_k=args.top_k,
     )
-    print(f"评测完成，报告路径：{result['report_path']}")
+    print(f"评测完成：{result['report_path']}")
 
 
 if __name__ == "__main__":

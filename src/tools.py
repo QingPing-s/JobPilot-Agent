@@ -5,7 +5,6 @@ import re
 from pathlib import Path
 from typing import Any
 
-
 SKILL_ALIASES = {
     "llm": "large language model",
     "rag": "retrieval augmented generation",

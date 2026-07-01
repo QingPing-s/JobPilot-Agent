@@ -113,6 +113,69 @@ def test_compute_requirement_bonus_and_responsibility_scores_follow_new_rubric()
     assert responsibility["score"] > 0
 
 
+def test_requirement_score_matches_chinese_major_and_availability_requirements():
+    profile = {
+        "education": ["研究生学历", "人工智能专业"],
+        "skills": ["Python", "RAG", "LLM"],
+        "projects": [],
+        "internships": [],
+        "target_roles": ["AI Agent Intern"],
+        "preferences": {
+            "degree": "研究生",
+            "major": "人工智能",
+            "days_per_week": 5,
+            "duration_months": 6,
+            "work_mode": "线下",
+            "availability": "每周5天，可持续6个月，接受线下实习",
+        },
+    }
+    education_requirement = "本科及以上，2027/2028 届在校生，计算机、人工智能、软件工程、自动化、数据科学等相关专业优先"
+    availability_requirement = "每周至少投入 4 天，实习周期 3 个月以上"
+    job = {
+        "required_skills": [education_requirement, availability_requirement],
+        "preferred_skills": [],
+        "responsibilities": [],
+        "raw_text": "\n".join([education_requirement, availability_requirement]),
+    }
+
+    result = compute_requirement_score(profile, job)
+
+    assert education_requirement in result["overlap"]
+    assert availability_requirement in result["overlap"]
+    assert education_requirement not in result["missing"]
+    assert availability_requirement not in result["missing"]
+
+
+def test_requirement_score_matches_soft_skills():
+    profile = {
+        "education": ["研究生学历", "人工智能专业"],
+        "skills": ["Python"],
+        "soft_skills": ["学习速度快", "主动查阅资料", "问题拆解能力", "自驱力强", "沟通协作能力", "责任心强", "能独立解决问题"],
+        "projects": [],
+        "internships": [],
+        "target_roles": ["AI Agent Intern"],
+        "preferences": {},
+    }
+    required_items = [
+        "学习能力强，能快速上手新技术",
+        "主动性强，能够自驱推进任务",
+        "具备良好的问题拆解能力",
+        "具备良好的沟通协作能力和责任心",
+        "能主动查阅资料并独立解决问题",
+    ]
+    job = {
+        "required_skills": required_items,
+        "preferred_skills": [],
+        "responsibilities": [],
+    }
+
+    result = compute_requirement_score(profile, job)
+
+    assert result["overlap"] == required_items
+    assert result["missing"] == []
+    assert result["score"] > 50
+
+
 def test_compute_rule_based_match_returns_match_result_shape():
     profile = {
         "name": "Alex",

@@ -5,11 +5,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-
 SENSITIVE_KEYS = {
     "api_key",
     "openai_api_key",
     "authorization",
+    "access_token",
+    "refresh_token",
     "password",
     "secret",
     "token",
@@ -37,7 +38,13 @@ def _safe_payload(payload: Any) -> Any:
         safe = {}
         for key, value in payload.items():
             normalized_key = str(key).lower()
-            if normalized_key in SENSITIVE_KEYS or any(secret in normalized_key for secret in SENSITIVE_KEYS):
+            is_credential = (
+                normalized_key in SENSITIVE_KEYS
+                or normalized_key.endswith("_api_key")
+                or normalized_key.endswith("_password")
+                or normalized_key.endswith("_secret")
+            )
+            if is_credential:
                 safe[key] = "[REDACTED]"
             elif normalized_key in LONG_TEXT_KEYS:
                 safe[key] = _truncate(str(value))

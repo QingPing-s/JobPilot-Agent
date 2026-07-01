@@ -6,19 +6,29 @@ __pycache__/
 .pytest_cache/
 .idea/
 work/
+.ruff_cache/
 
 outputs/
 traces/
 data/vector_store/
 data/jobpilot.db
+data/audit.jsonl
+data/jobpilot_runs.db
+data/jobpilot_runs.db-*
+data/jobpilot_runs.db.*
+data/jobpilot_checkpoints.sqlite
+data/jobpilot_checkpoints.sqlite-*
+data/jobpilot_checkpoints.sqlite.*
 data/jobs_csv/*.jsonl
 data/sample_jds/*.txt
 !data/sample_jds/agent_intern_01.txt
 eval/metrics_report.md
+eval/metrics_report.json
 
 frontend/node_modules/
 frontend/dist/
 frontend/.vite/
+frontend/*.log
 portfolio-blog/node_modules/
 portfolio-blog/dist/
 portfolio-blog/.astro/

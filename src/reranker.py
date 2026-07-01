@@ -211,13 +211,13 @@ def llm_rerank(profile: dict, jobs: list[dict], top_n: int = 5) -> list[dict]:
     return output
 
 
-def rerank_jobs(profile: dict, jobs: list[dict], use_llm: bool = False) -> list[dict]:
+def rerank_jobs(profile: dict, jobs: list[dict], use_llm: bool = False, llm_top_n: int = 5) -> list[dict]:
     """Rerank jobs locally by default, optionally applying LLM reranking to top results."""
     rule_ranked = rule_based_rerank(profile, jobs)
     if not use_llm:
         return rule_ranked
 
-    top_n = min(5, len(rule_ranked))
+    top_n = min(max(int(llm_top_n or 5), 1), 5, len(rule_ranked))
     llm_ranked = llm_rerank(profile, rule_ranked, top_n=top_n)
     llm_job_ids = {job.get("job_id") for job in llm_ranked}
     remainder = [job for job in rule_ranked if job.get("job_id") not in llm_job_ids]
