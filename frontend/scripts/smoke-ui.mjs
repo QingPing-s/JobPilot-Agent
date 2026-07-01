@@ -136,8 +136,8 @@ async function main() {
     }
 
     const statCount = await page.locator(".stat-card").count();
-    if (statCount < 8) {
-      throw new Error(`Expected at least eight stat cards, got ${statCount}.`);
+    if (statCount < requiredStats.length) {
+      throw new Error(`Expected at least ${requiredStats.length} stat cards, got ${statCount}.`);
     }
 
     await page.locator(".score-breakdown").first().waitFor({ timeout: 30_000 });
