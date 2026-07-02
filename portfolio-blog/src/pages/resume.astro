@@ -43,16 +43,16 @@ import { githubUrl, liveDemoUrl, sitePath } from "../lib/site.js";
       </div>
       <article class="timeline-item project-timeline">
         <div>
-          <span>AI Agent Full-stack Project</span>
-          <h3>JobPilot RAG-Agent</h3>
-          <p>LangGraph · FastAPI · React · ChromaDB · DeepSeek API</p>
+          <span>AI Agent Job Matching Platform</span>
+          <h3>JobPilot RAG-Agent｜AI Agent 岗位匹配与简历优化平台</h3>
+          <p>Python · LangGraph · FastAPI · React · ChromaDB · BGE Embedding · DeepSeek API · SQLite · Docker · Azure Container Apps</p>
         </div>
         <ul class="resume-bullets">
-          <li>将岗位匹配拆分为画像解析、JD 解析、混合召回、重排、评分、差距分析和简历建议等可观测节点。</li>
-          <li>结合固定 BGE Embedding、TF-IDF 与 Weighted RRF，支持精确关键词和语义相关性双路召回。</li>
-          <li>设计“任职要求 70 + 加分项 20 + 职责相关性 10”的确定性评分，降低 LLM 成本并增强可解释性。</li>
-          <li>实现异步任务、SSE、取消、超时、规则降级、Trace 和 SQLite checkpoint。</li>
-          <li>使用 50 条评测样本对比五组检索基线，并通过 Docker 与 Azure Container Apps 完成部署。</li>
+          <li>基于 LangGraph StateGraph 将岗位匹配拆分为候选人画像解析、JD 解析、混合召回、重排、确定性评分、差距分析和简历建议等可观测节点，并支持条件路由、重试与规则降级。</li>
+          <li>构建 BGE 向量检索与 TF-IDF 关键词检索双路召回，通过 Weighted RRF 融合排名；实现固定模型版本、ChromaDB 增量索引及向量服务异常时的关键词降级。</li>
+          <li>设计“任职要求 70 分、加分项 20 分、岗位职责相关性 10 分”的确定性评分体系，输出可解释匹配依据，避免对全量岗位逐条调用 LLM。</li>
+          <li>使用 FastAPI 实现异步任务、SSE 实时进度、取消与超时控制，并通过 Trace 和 SQLite checkpoint 支持运行观测及中断恢复。</li>
+          <li>基于 100 条岗位和 50 条人工标注查询对比五组检索基线，最佳 Recall@5/Recall@10 达到 88%/94%；使用 Docker、Azure Container Registry 和 Azure Container Apps 完成云端部署。</li>
         </ul>
       </article>
     </section>
