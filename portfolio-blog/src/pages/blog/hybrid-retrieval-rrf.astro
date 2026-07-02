@@ -4,57 +4,274 @@ import { sitePath } from "../../lib/site.js";
 ---
 
 <BaseLayout
-  title="Vector + Keyword + Weighted RRF | JY Portfolio"
-  description="JobPilot Hybrid Retrieval 的召回、融合、重排和增量索引设计。"
+  title="Hybrid Retrieval 与 Weighted RRF 实测复盘 | JY Portfolio"
+  description="基于 JobPilot 现有 50 条评测用例，复盘 Vector、Keyword、Hybrid Union、Weighted RRF 与规则重排的真实指标和设计取舍。"
 >
   <article class="article-page prose">
     <header class="article-header">
-      <p class="eyebrow">Hybrid Retrieval</p>
-      <h1>为什么 JobPilot 使用 Vector + Keyword + Weighted RRF</h1>
-      <p>语义相近不等于技术要求完全一致。岗位检索必须同时照顾含义和精确关键词。</p>
-      <div class="article-meta"><span>检索设计</span><span>约 7 分钟阅读</span></div>
+      <p class="eyebrow">Hybrid Retrieval / Evaluation</p>
+      <h1>从消融实验看 Hybrid Retrieval：Weighted RRF 为什么没有赢过 Keyword</h1>
+      <p>
+        混合检索不是把 Vector 和 Keyword 连起来就结束了。本文基于 JobPilot
+        已有的离线评测结果，说明两路召回如何融合、RRF 如何计算，以及当前实现暴露了哪些真实问题。
+      </p>
+      <div class="article-meta">
+        <span>50 Eval Cases</span>
+        <span>100 条岗位</span>
+        <span>5 组基线</span>
+        <span>约 10 分钟阅读</span>
+      </div>
     </header>
 
-    <h2>1. 纯向量检索会漏掉什么</h2>
+    <aside class="evidence-note">
+      <strong>数据说明</strong>
+      <p>
+        本文没有重新运行大规模实验。所有数值均来自仓库现有的
+        <a href="https://github.com/QingPing-s/JobPilot-Agent/blob/main/eval/metrics_report.md">离线评测报告</a>；
+        评测全程使用确定性检索与规则重排，不调用 LLM。
+      </p>
+    </aside>
+
+    <h2>1. 为什么岗位检索需要两路召回</h2>
     <p>
-      LangGraph、FastAPI、ChromaDB、MCP 等词对岗位匹配非常关键，但它们在短 JD 中可能被语义相近的描述稀释。向量检索可以找到“Agent 工作流”相关岗位，却不一定优先返回明确要求某个框架的岗位。
+      岗位 JD 同时包含两类信号。一类是 LangGraph、FastAPI、MCP、ChromaDB
+      等必须精确命中的技术词；另一类是“工具调用”“工作流编排”“上下文管理”等含义接近、写法不同的语义描述。
+      单一路径难以同时处理两类信号。
     </p>
 
-    <h2>2. 两路召回承担不同职责</h2>
     <div class="comparison-grid">
       <div>
         <h3>Vector Search</h3>
-        <p>使用固定版本 BGE Embedding 表达标题、职责、任职要求和加分项，负责语义相关性。</p>
+        <p>
+          使用固定版本的 <code>BAAI/bge-small-zh-v1.5</code> 生成向量，由 ChromaDB
+          负责语义召回。模型 revision 与索引版本写入元数据，岗位变更时执行增量同步。
+        </p>
       </div>
       <div>
         <h3>Keyword Search</h3>
-        <p>使用 TF-IDF 提高精确技术词的权重，负责框架名、语言和工具等强信号。</p>
+        <p>
+          使用 scikit-learn 的 TF-IDF 检索精确词。项目函数沿用
+          <code>simple_bm25_retrieve</code> 命名，但当前实现不是严格 BM25。
+        </p>
       </div>
     </div>
 
-    <h2>3. 为什么使用 RRF</h2>
-    <p>
-      两路检索的原始分数不在同一尺度上，直接相加难以解释。Reciprocal Rank Fusion 根据排名位置计算贡献，避免依赖不同检索器的分数校准；Weighted RRF 还允许调整语义和关键词的重要程度。
-    </p>
-
+    <h2>2. 当前实现流程</h2>
     <div class="pipeline article-pipeline">
-      <span>Profile Query</span><i>→</i><span>Vector Top-K</span><strong>+</strong><span>Keyword Top-K</span><i>→</i><span>Weighted RRF</span><i>→</i><span>Rerank</span>
+      <span>Candidate Profile</span><i>→</i><span>Query</span><i>→</i><span>Vector Top-K</span>
+      <strong>+</strong><span>Keyword Top-K</span><i>→</i><span>Weighted RRF</span><i>→</i><span>Rule Rerank</span>
     </div>
 
-    <h2>4. 召回之后仍需要重排</h2>
+    <pre class="flow-code"><code>query = target_role + candidate_skills
+vector_results  = ChromaDB(BGE, query, top_k)
+keyword_results = TF_IDF(query, jobs, top_k)
+candidates      = weighted_rrf(vector_results, keyword_results)
+ranked_jobs     = rule_based_rerank(profile, candidates)</code></pre>
+
     <p>
-      RRF 解决“哪些岗位应该进入候选集”，规则重排进一步比较 required skills、preferred skills、目标职位和缺失技能。两者解决的问题不同，不能互相替代。
+      召回层只回答“哪些岗位应该进入候选集”；规则重排再结合任职要求、加分项和候选人证据调整顺序。
+      两层职责分离，使检索质量和匹配逻辑可以独立评测。
     </p>
 
-    <h2>5. 索引生命周期同样重要</h2>
+    <h2>3. Weighted RRF 如何计算</h2>
     <p>
-      JobPilot 保存 Embedding 模型和 revision，并对岗位文档计算哈希。新增或修改岗位时只更新变化记录，删除岗位时同步清理索引，避免每次运行重新向量化整个岗位库。
+      Vector 相似度与 TF-IDF 分数不在同一尺度，直接加权原始分数需要额外校准。
+      Reciprocal Rank Fusion 只使用排名，因此可以稳定融合不同检索器。
     </p>
 
-    <h2>6. 如何验证改进是否真实</h2>
+    <div class="formula-block">
+      <span>score(d) =</span>
+      <span>I<sub>v</sub>(d) × 1.0 / (60 + r<sub>v</sub>(d))</span>
+      <strong>+</strong>
+      <span>I<sub>k</sub>(d) × 1.25 / (60 + r<sub>k</sub>(d))</span>
+    </div>
+
+    <ul>
+      <li><code>r_v(d)</code>、<code>r_k(d)</code> 是岗位在向量和关键词结果中的排名，均从 1 开始。</li>
+      <li><code>I_v(d)</code>、<code>I_k(d)</code> 表示岗位是否出现在对应召回结果中。</li>
+      <li><code>k=60</code> 用于减小头部排名差异；关键词权重为 1.25，向量权重为 1.0。</li>
+    </ul>
+
     <p>
-      评测脚本同时运行 Keyword、Vector、Hybrid Union、Weighted RRF 和 RRF + Rule Rerank，比较 Recall、Hit、MRR、NDCG 与延迟。只有指标改善，混合检索才不是架构图上的装饰。
+      例如岗位 A 在向量结果排第 2、关键词结果排第 4，其融合分数为
+      <code>1/62 + 1.25/64 = 0.03566</code>。岗位 B 只在向量结果排第 1，分数为
+      <code>1/61 = 0.01639</code>。双路同时命中的岗位因此获得更稳定的优先级。
     </p>
+
+    <h2>4. 评测设置</h2>
+    <div class="fact-grid">
+      <div><strong>100</strong><span>岗位语料</span></div>
+      <div><strong>50</strong><span>人工标注查询</span></div>
+      <div><strong>5</strong><span>检索基线</span></div>
+      <div><strong>0</strong><span>LLM 调用</span></div>
+    </div>
+
+    <p>
+      每条 case 当前只标注 1 个相关岗位，因此 Precision@5 的理论上限约为 20%。
+      这使本轮实验适合比较“是否命中”和“命中位置”，但不足以完整衡量一个查询下多个合理岗位的覆盖情况。
+    </p>
+
+    <h2>5. 真实指标对比</h2>
+    <div class="metric-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Baseline</th>
+            <th>Recall@5</th>
+            <th>Recall@10</th>
+            <th>Precision@5</th>
+            <th>MRR</th>
+            <th>NDCG@10</th>
+            <th>Top1</th>
+            <th>平均延迟</th>
+            <th>降级率</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="best-row">
+            <td>Keyword</td>
+            <td>88.00%</td>
+            <td>94.00%</td>
+            <td>19.80%</td>
+            <td>0.755</td>
+            <td>0.800</td>
+            <td>66.00%</td>
+            <td>144.7 ms</td>
+            <td>0.00%</td>
+          </tr>
+          <tr>
+            <td>Vector</td>
+            <td>68.00%</td>
+            <td>78.00%</td>
+            <td>13.60%</td>
+            <td>0.559</td>
+            <td>0.612</td>
+            <td>46.00%</td>
+            <td>41.2 ms</td>
+            <td class="warning-cell">100.00%</td>
+          </tr>
+          <tr>
+            <td>Hybrid Union</td>
+            <td>68.00%</td>
+            <td>78.00%</td>
+            <td>13.60%</td>
+            <td>0.559</td>
+            <td>0.612</td>
+            <td>46.00%</td>
+            <td>66.5 ms</td>
+            <td>0.00%</td>
+          </tr>
+          <tr>
+            <td>Weighted RRF</td>
+            <td>88.00%</td>
+            <td>94.00%</td>
+            <td>17.60%</td>
+            <td>0.728</td>
+            <td>0.780</td>
+            <td>60.00%</td>
+            <td>69.0 ms</td>
+            <td>0.00%</td>
+          </tr>
+          <tr>
+            <td>RRF + Rule Rerank</td>
+            <td>88.00%</td>
+            <td>94.00%</td>
+            <td>17.60%</td>
+            <td>0.728</td>
+            <td>0.780</td>
+            <td>60.00%</td>
+            <td>67.2 ms</td>
+            <td>0.00%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>6. 四个不能回避的结论</h2>
+    <div class="finding-list">
+      <section>
+        <span>01</span>
+        <div>
+          <h3>Keyword 是当前数据集的最强基线</h3>
+          <p>
+            Keyword 与 Weighted RRF 的 Recall@5、Recall@10 相同，但 Keyword 的
+            Precision@5、MRR、NDCG@10 和 Top1 全部更高。当前证据不支持“混合检索一定优于关键词检索”。
+          </p>
+        </div>
+      </section>
+      <section>
+        <span>02</span>
+        <div>
+          <h3>Vector 指标不能代表真实 BGE 效果</h3>
+          <p>
+            Vector baseline 的降级率为 100%，说明评测时向量后端没有正常提供语义召回。
+            因此这组结果只能验证降级链路，不能用于判断 BGE 模型质量。
+          </p>
+        </div>
+      </section>
+      <section>
+        <span>03</span>
+        <div>
+          <h3>规则重排没有带来可测增益</h3>
+          <p>
+            Weighted RRF 与 RRF + Rule Rerank 的排序指标完全一致。
+            重排模块在本轮标签与候选集上没有改善结果，需要单独检查特征、权重和评测标签。
+          </p>
+        </div>
+      </section>
+      <section>
+        <span>04</span>
+        <div>
+          <h3>稀疏标签限制了 Precision 的解释空间</h3>
+          <p>
+            每个查询只有一个相关岗位标签，无法识别 Top 5 中其他合理岗位。
+            Keyword 的 19.80% 已接近当前标签设计下的上限，但不等于真实业务精度只有 19.80%。
+          </p>
+        </div>
+      </section>
+    </div>
+
+    <h2>7. 为什么仍保留 Weighted RRF</h2>
+    <p>
+      保留 RRF 不是因为它在本轮实验中获胜，而是因为它具备三个工程属性：不要求跨检索器分数校准、
+      向量服务异常时可以自然退化为关键词结果、未来恢复真实语义召回后无需改动融合接口。
+      但线上默认权重和是否启用向量召回，必须由可复现评测决定，而不是由架构偏好决定。
+    </p>
+
+    <div class="tradeoff-grid">
+      <div>
+        <h3>直接分数加权</h3>
+        <p>保留分数差异，但需要校准 Vector 与 TF-IDF 的尺度。</p>
+      </div>
+      <div>
+        <h3>简单 Union</h3>
+        <p>实现最简单，但结果顺序容易受第一路召回支配。</p>
+      </div>
+      <div>
+        <h3>Weighted RRF</h3>
+        <p>跨检索器稳定、可降级，但忽略相邻结果的原始分数差距。</p>
+      </div>
+      <div>
+        <h3>Cross-Encoder</h3>
+        <p>语义排序能力更强，但增加模型依赖、延迟和部署成本。</p>
+      </div>
+    </div>
+
+    <h2>8. 下一轮实验应该解决什么</h2>
+    <ol>
+      <li>先修复向量后端，使同一组 50 条 case 在 BGE 正常工作时重新评测，消除 100% fallback。</li>
+      <li>为每个查询补充多个相关岗位标签，让 Precision@K 和 NDCG 更接近真实推荐场景。</li>
+      <li>将权重调参与最终评测拆分，避免在同一批 case 上选择参数并报告结果。</li>
+      <li>优先复盘 <code>case_006</code>、<code>case_012</code>、<code>case_022</code> 三个 Top 10 未命中案例。</li>
+      <li>为规则重排增加单独消融，确认哪些特征真正改变了排序，而不是只增加模块数量。</li>
+    </ol>
+
+    <div class="source-links">
+      <strong>实现与证据</strong>
+      <a href="https://github.com/QingPing-s/JobPilot-Agent/blob/main/src/retriever.py">检索与 Weighted RRF 实现</a>
+      <a href="https://github.com/QingPing-s/JobPilot-Agent/blob/main/eval/run_eval.py">五组基线评测脚本</a>
+      <a href="https://github.com/QingPing-s/JobPilot-Agent/blob/main/eval/metrics_report.md">现有指标报告</a>
+    </div>
 
     <div class="article-next">
       <span>继续阅读</span>
@@ -62,3 +279,190 @@ import { sitePath } from "../../lib/site.js";
     </div>
   </article>
 </BaseLayout>
+
+<style>
+  .evidence-note {
+    margin: 28px 0 36px;
+    padding: 18px 20px;
+    border-left: 3px solid var(--accent, #0f766e);
+    background: #eef7f5;
+  }
+
+  .evidence-note p {
+    margin: 6px 0 0;
+  }
+
+  .flow-code {
+    overflow-x: auto;
+    margin: 20px 0 26px;
+    padding: 18px 20px;
+    border: 1px solid #d9e2df;
+    background: #15201e;
+    color: #e9f4f1;
+    font-size: 0.88rem;
+    line-height: 1.7;
+  }
+
+  .formula-block {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    margin: 20px 0;
+    padding: 20px;
+    border: 1px solid #b9d5cf;
+    background: #f2f8f6;
+    font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+    font-size: clamp(0.9rem, 2vw, 1.08rem);
+  }
+
+  .fact-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    margin: 20px 0;
+  }
+
+  .fact-grid div {
+    display: grid;
+    gap: 4px;
+    padding: 16px;
+    border: 1px solid #d9e2df;
+    background: #fff;
+  }
+
+  .fact-grid strong {
+    color: #0f766e;
+    font-size: 1.7rem;
+  }
+
+  .metric-table-wrap {
+    overflow-x: auto;
+    margin: 20px 0 32px;
+    border: 1px solid #d9e2df;
+  }
+
+  table {
+    width: 100%;
+    min-width: 880px;
+    border-collapse: collapse;
+    font-size: 0.86rem;
+  }
+
+  th,
+  td {
+    padding: 12px 13px;
+    border-bottom: 1px solid #e2e8e6;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  th:first-child,
+  td:first-child {
+    text-align: left;
+  }
+
+  thead {
+    background: #edf3f1;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  .best-row {
+    background: #f0faf7;
+    font-weight: 700;
+  }
+
+  .warning-cell {
+    color: #a53b20;
+    font-weight: 700;
+  }
+
+  .finding-list {
+    display: grid;
+    gap: 12px;
+    margin: 20px 0 32px;
+  }
+
+  .finding-list section {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 14px;
+    padding: 18px;
+    border: 1px solid #d9e2df;
+    background: #fff;
+  }
+
+  .finding-list section > span {
+    color: #0f766e;
+    font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+    font-weight: 700;
+  }
+
+  .finding-list h3,
+  .finding-list p {
+    margin: 0;
+  }
+
+  .finding-list p {
+    margin-top: 6px;
+  }
+
+  .tradeoff-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin: 20px 0 32px;
+  }
+
+  .tradeoff-grid div {
+    padding: 18px;
+    border: 1px solid #d9e2df;
+    background: #fff;
+  }
+
+  .tradeoff-grid h3,
+  .tradeoff-grid p {
+    margin: 0;
+  }
+
+  .tradeoff-grid p {
+    margin-top: 6px;
+  }
+
+  .source-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 18px;
+    align-items: center;
+    margin: 32px 0;
+    padding: 18px 20px;
+    border: 1px solid #d9e2df;
+    background: #f7f9f8;
+  }
+
+  @media (max-width: 700px) {
+    .fact-grid,
+    .tradeoff-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .article-pipeline {
+      align-items: stretch;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .fact-grid,
+    .tradeoff-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .finding-list section {
+      grid-template-columns: 34px minmax(0, 1fr);
+      padding: 14px;
+    }
+  }
+</style>
