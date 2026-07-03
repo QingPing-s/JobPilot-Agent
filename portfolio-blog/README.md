@@ -1,4 +1,4 @@
-# JY Portfolio Blog
+# AI Agent 工程博客
 
 Personal portfolio and technical blog built with Astro and designed for GitHub Pages.
 
