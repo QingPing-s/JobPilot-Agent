@@ -15,6 +15,11 @@ export function getAuthRole() {
   return window.localStorage.getItem(ROLE_KEY) || "";
 }
 
+export function clearAuth() {
+  setAccessToken("");
+  window.localStorage.removeItem(ROLE_KEY);
+}
+
 async function request(path, options = {}) {
   const token = getAccessToken();
   const headers = new Headers(options.headers || {});
@@ -77,11 +82,25 @@ export const jobPilotApi = {
     window.localStorage.setItem(ROLE_KEY, data.role || "user");
     return data;
   },
+  logout: clearAuth,
   listJobs: () => request("/api/jobs"),
+  extractProfileDocument: (file, targetRole) =>
+    request(
+      `/api/profile/document?filename=${encodeURIComponent(file.name)}&target_role=${encodeURIComponent(targetRole)}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": file.type || "application/octet-stream" },
+        body: file,
+      }
+    ),
   saveJobs: (payload) =>
     request("/api/record-jobs", {
       method: "POST",
       body: JSON.stringify(payload),
+    }),
+  deleteJob: (jobId) =>
+    request(`/api/jobs/${encodeURIComponent(jobId)}`, {
+      method: "DELETE",
     }),
   createRun: (payload, signal) =>
     request("/api/runs", {

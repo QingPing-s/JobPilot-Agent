@@ -6,6 +6,7 @@ from src.security import (
     SlidingWindowRateLimiter,
     authenticate,
     create_access_token,
+    current_user,
 )
 
 
@@ -28,3 +29,12 @@ def test_sliding_window_rate_limiter_rejects_excess_requests():
     with pytest.raises(HTTPException) as exc_info:
         limiter.check("user", limit=1, window_seconds=60)
     assert exc_info.value.status_code == 429
+
+
+def test_public_access_uses_anonymous_user_role(monkeypatch):
+    monkeypatch.setenv("JOBPILOT_AUTH_ENABLED", "true")
+    monkeypatch.setenv("JOBPILOT_PUBLIC_ACCESS", "true")
+
+    user = current_user(None)
+
+    assert user == AuthUser(user_id="anonymous", role="user")

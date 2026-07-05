@@ -1,6 +1,15 @@
 import sqlite3
 
-from src.job_store import list_jobs, list_parsed_jobs, restore_job, soft_delete_job, upsert_job
+from src.job_store import _connect, list_jobs, list_parsed_jobs, restore_job, soft_delete_job, upsert_job
+
+
+def test_connect_configures_sqlite_busy_timeout(tmp_path, monkeypatch):
+    monkeypatch.setenv("JOBPILOT_SQLITE_TIMEOUT_SECONDS", "2")
+
+    with _connect(tmp_path / "jobs.db") as conn:
+        busy_timeout = conn.execute("PRAGMA busy_timeout").fetchone()[0]
+
+    assert busy_timeout == 2000
 
 
 def test_upsert_job_stores_parsed_job_cache(tmp_path):
@@ -37,6 +46,26 @@ def test_upsert_job_stores_parsed_job_cache(tmp_path):
     assert parsed_jobs[0]["job_id"] == saved["job_id"]
     assert parsed_jobs[0]["required_skills"] == ["Python", "RAG"]
     assert parsed_jobs[0]["preferred_skills"] == ["LangGraph"]
+
+
+def test_upsert_job_reuses_title_and_company_for_legacy_compatibility(tmp_path):
+    db_path = tmp_path / "jobpilot.db"
+    first = upsert_job(
+        "Title: Agent Intern\nCompany: Example AI\nRequirements:\n- Python",
+        filename="legacy.txt",
+        db_path=db_path,
+    )
+    second = upsert_job(
+        "Title: Agent Intern\nCompany: Example AI\nRequirements:\n- Python\n- RAG",
+        filename="new.txt",
+        db_path=db_path,
+    )
+
+    jobs = list_jobs(db_path=db_path)
+    assert second["job_id"] == first["job_id"]
+    assert second["already_exists"] is True
+    assert len(jobs) == 1
+    assert list_parsed_jobs(db_path=db_path)[0]["required_skills"] == ["Python", "RAG"]
 
 
 def test_soft_delete_and_restore_job(tmp_path):

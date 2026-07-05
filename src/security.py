@@ -39,6 +39,7 @@ class TokenResponse(BaseModel):
 @dataclass(frozen=True)
 class SecuritySettings:
     auth_enabled: bool
+    public_access: bool
     jwt_secret: str
     jwt_ttl_seconds: int
     user_username: str
@@ -51,6 +52,8 @@ def get_security_settings() -> SecuritySettings:
     enabled = os.getenv("JOBPILOT_AUTH_ENABLED", "false").strip().lower() in {"1", "true", "yes"}
     return SecuritySettings(
         auth_enabled=enabled,
+        public_access=os.getenv("JOBPILOT_PUBLIC_ACCESS", "false").strip().lower()
+        in {"1", "true", "yes"},
         jwt_secret=os.getenv("JOBPILOT_JWT_SECRET", ""),
         jwt_ttl_seconds=max(300, int(os.getenv("JOBPILOT_JWT_TTL_SECONDS", "3600"))),
         user_username=os.getenv("JOBPILOT_USER_USERNAME", ""),
@@ -109,6 +112,8 @@ def current_user(
     if not settings.auth_enabled:
         return AuthUser(user_id="local-admin", role="admin")
     if credentials is None:
+        if settings.public_access:
+            return AuthUser(user_id="anonymous", role="user")
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="请先登录。")
     if not settings.jwt_secret:
         raise HTTPException(

@@ -10,13 +10,50 @@ from typing import Any
 DEFAULT_RECORDS_PATH = Path("data/jobs_csv/job_records.jsonl")
 DEFAULT_JD_DIR = Path("data/sample_jds")
 
+_SECTION_MARKERS = (
+    "responsibilities",
+    "requirements",
+    "required skills",
+    "preferred",
+    "preferred skills",
+    "岗位职责",
+    "工作职责",
+    "职位描述",
+    "工作内容",
+    "岗位要求",
+    "任职要求",
+    "任职资格",
+    "职位要求",
+    "加分项",
+    "加分项目",
+    "优先条件",
+)
+_SALARY_PATTERN = re.compile(r"\d+(?:\.\d+)?\s*[-~—至]\s*\d+(?:\.\d+)?\s*(?:元|k|K)(?:\s*/\s*(?:天|日|月))?")
+_DURATION_PATTERN = re.compile(r"(?:持续|实习(?:期|周期|时长)?[:：]?\s*)?(\d+\s*(?:个)?月(?:及?以上)?)")
+_EDUCATION_PATTERN = re.compile(r"(学历不限|大专|本科(?:及以上)?|硕士(?:及以上)?|研究生(?:及以上)?|博士(?:及以上)?)")
+_CITY_PATTERN = re.compile(
+    r"(北京|上海|深圳|广州|杭州|南京|苏州|成都|武汉|西安|天津|重庆|长沙|合肥|厦门|青岛|郑州|远程)"
+)
+_FOOTER_MARKERS = (
+    "工作地址",
+    "工作地点",
+    "职位发布者",
+    "招聘者",
+    "立即沟通",
+    "去app",
+    "收藏",
+    "举报",
+)
+
 
 def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
 def _strip_marker(line: str) -> str:
-    return line.strip().lstrip("-*•0123456789.、) ").strip()
+    cleaned = line.strip()
+    cleaned = re.sub(r"^[一二三四五六七八九十]+[、.．]\s*", "", cleaned)
+    return cleaned.lstrip("-*•0123456789.、) ").strip()
 
 
 def _first_prefixed_value(lines: list[str], prefixes: tuple[str, ...]) -> str | None:
@@ -30,33 +67,60 @@ def _first_prefixed_value(lines: list[str], prefixes: tuple[str, ...]) -> str | 
 def _section_lines(lines: list[str], section_markers: tuple[str, ...]) -> list[str]:
     collected: list[str] = []
     active = False
-    all_markers = (
-        "responsibilities",
-        "requirements",
-        "required skills",
-        "preferred",
-        "preferred skills",
-        "岗位职责",
-        "工作职责",
-        "职位描述",
-        "岗位要求",
-        "任职要求",
-        "任职资格",
-        "加分项",
-        "优先",
-    )
 
     for raw_line in lines:
         line = raw_line.strip()
         lowered = line.casefold().rstrip(":：")
-        if any(lowered.startswith(marker) for marker in section_markers):
+        matched_marker = next(
+            (marker for marker in sorted(section_markers, key=len, reverse=True) if lowered.startswith(marker)),
+            None,
+        )
+        if matched_marker:
             active = True
+            remainder = re.sub(
+                rf"^{re.escape(matched_marker)}\s*[:：]?\s*",
+                "",
+                line,
+                count=1,
+                flags=re.IGNORECASE,
+            ).strip()
+            if remainder:
+                collected.append(_strip_marker(remainder))
             continue
-        if active and any(lowered.startswith(marker) for marker in all_markers):
+        if active and any(lowered.startswith(marker) for marker in _SECTION_MARKERS):
+            break
+        if active and (
+            any(marker in lowered for marker in _FOOTER_MARKERS)
+            or (("·" in line or "・" in line) and any(role in lowered for role in ("hr", "招聘", "人力")))
+        ):
             break
         if active and line:
             collected.append(_strip_marker(line))
-    return collected
+    return list(dict.fromkeys(item for item in collected if item))
+
+
+def _first_pattern_value(lines: list[str], pattern: re.Pattern[str], limit: int = 12) -> str | None:
+    for line in lines[:limit]:
+        match = pattern.search(line)
+        if match:
+            return match.group(1) if match.lastindex else match.group(0)
+    return None
+
+
+def _clean_title(value: str) -> str:
+    title = _SALARY_PATTERN.sub("", value)
+    title = re.sub(r"\s{2,}", " ", title).strip(" -—·|")
+    return title or value.strip()
+
+
+def _infer_company(lines: list[str]) -> str | None:
+    for line in reversed(lines):
+        if "·" not in line and "・" not in line:
+            continue
+        company = re.split(r"[·・]", line, maxsplit=1)[0].strip()
+        if company and not any(word in company for word in ("先生", "女士", "招聘者", "HR")):
+            return company
+    return None
 
 
 def _slugify(text: str) -> str:
@@ -97,23 +161,50 @@ def extract_job_record(raw_text: str, filename: str | None = None, source: str =
         raise ValueError("岗位文本不能为空。")
 
     lines = [_strip_marker(line) for line in text.splitlines() if _strip_marker(line)]
-    title = _first_prefixed_value(lines, ("title:", "title：", "岗位:", "岗位：", "职位:", "职位："))
+    title = _first_prefixed_value(
+        lines,
+        ("title:", "title：", "岗位名称:", "岗位名称：", "职位名称:", "职位名称：", "岗位:", "岗位：", "职位:", "职位："),
+    )
     if not title:
-        title = lines[0] if lines else Path(filename or "job").stem
+        title = _clean_title(lines[0]) if lines else Path(filename or "job").stem
+    else:
+        title = _clean_title(title)
 
-    company = _first_prefixed_value(lines, ("company:", "company：", "公司:", "公司：")) or "未知公司"
+    company = (
+        _first_prefixed_value(
+            lines,
+            ("company:", "company：", "公司全称:", "公司全称：", "公司名称:", "公司名称：", "公司:", "公司："),
+        )
+        or _infer_company(lines)
+        or "未知公司"
+    )
     location = _first_prefixed_value(lines, ("location:", "location：", "地点:", "地点：", "工作地点:", "工作地点："))
+    location = location or _first_pattern_value(lines, _CITY_PATTERN, limit=8)
     salary = _first_prefixed_value(lines, ("salary:", "salary：", "薪资:", "薪资："))
+    salary = salary or _first_pattern_value(lines, _SALARY_PATTERN, limit=8)
     duration = _first_prefixed_value(lines, ("duration:", "duration：", "周期:", "周期：", "实习周期:", "实习周期："))
-    education = _first_prefixed_value(lines, ("education:", "education：", "学历:", "学历："))
+    duration = duration or _first_pattern_value(lines, _DURATION_PATTERN)
+    education = _first_prefixed_value(
+        lines,
+        ("education:", "education：", "学历要求:", "学历要求：", "学历:", "学历："),
+    )
+    education = education or _first_pattern_value(lines, _EDUCATION_PATTERN)
 
-    responsibilities = _section_lines(lines, ("responsibilities", "岗位职责", "工作职责", "职位描述"))
-    required_skills = _section_lines(lines, ("requirements", "required skills", "岗位要求", "任职要求", "任职资格"))
-    preferred_skills = _section_lines(lines, ("preferred", "preferred skills", "加分项", "优先"))
+    responsibilities = _section_lines(
+        lines,
+        ("responsibilities", "岗位职责", "工作职责", "职位描述", "工作内容"),
+    )
+    required_skills = _section_lines(
+        lines,
+        ("requirements", "required skills", "岗位要求", "任职要求", "任职资格", "职位要求"),
+    )
+    preferred_skills = _section_lines(
+        lines,
+        ("preferred", "preferred skills", "加分项", "加分项目", "优先条件"),
+    )
 
-    job_id = _stable_job_id(title, company, text, filename)
-    return {
-        "job_id": job_id,
+    record = {
+        "job_id": "",
         "title": title,
         "company": company,
         "location": location,
@@ -128,6 +219,9 @@ def extract_job_record(raw_text: str, filename: str | None = None, source: str =
         "source_filename": filename,
         "created_at": _utc_now(),
     }
+    record["organized_text"] = format_job_record_as_jd(record)
+    record["job_id"] = _stable_job_id(title, company, record["organized_text"], filename)
+    return record
 
 
 def format_job_record_as_jd(record: dict[str, Any]) -> str:
@@ -156,9 +250,8 @@ def format_job_record_as_jd(record: dict[str, Any]) -> str:
         if values:
             lines.extend(f"- {item}" for item in values)
         else:
-            lines.append("- 暂无结构化提取结果，请参考 raw_text。")
+            lines.append("- 未从原文中识别到明确内容")
 
-    lines.extend(["", "Raw Text:", str(record.get("raw_text") or "")])
     return "\n".join(lines).rstrip() + "\n"
 
 
