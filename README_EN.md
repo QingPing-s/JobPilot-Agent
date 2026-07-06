@@ -16,7 +16,8 @@ JobPilot provides an interactive React + FastAPI workbench and uses LangGraph to
 
 ## Core Features
 
-- Candidate profile ingestion, normalization, and Pydantic validation
+- Candidate profile ingestion from Markdown, PDF, DOCX, plain-text, JSON, and image resumes
+- Local extraction for native PDFs and Word documents, with RapidOCR fallback for scanned PDFs and images
 - Structured JD parsing and persistent SQLite job library
 - BGE vector retrieval plus TF-IDF keyword retrieval
 - Weighted Reciprocal Rank Fusion
@@ -86,6 +87,8 @@ Conditional routes handle fatal failures, administrator review, low-score deep-a
 - LangGraph
 - DeepSeek API / OpenAI SDK
 - FastAPI
+- RapidOCR + ONNX Runtime
+- PyMuPDF + python-docx + markdown-it-py
 - Pydantic
 - React + Vite
 - ChromaDB

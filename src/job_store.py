@@ -21,7 +21,9 @@ def _utc_now() -> str:
 def _connect(db_path: str | Path = DEFAULT_DB_PATH) -> sqlite3.Connection:
     path = Path(db_path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    conn = sqlite3.connect(path)
+    timeout_seconds = max(1.0, float(os.getenv("JOBPILOT_SQLITE_TIMEOUT_SECONDS", "30")))
+    conn = sqlite3.connect(path, timeout=timeout_seconds)
+    conn.execute(f"PRAGMA busy_timeout = {int(timeout_seconds * 1000)}")
     conn.row_factory = sqlite3.Row
     init_job_store(conn)
     return conn
@@ -144,13 +146,23 @@ def upsert_job(
     db_path: str | Path = DEFAULT_DB_PATH,
 ) -> dict[str, Any]:
     record = extract_job_record(raw_text=raw_text, filename=filename, source=source)
-    parsed_job = _record_to_parsed_job(record)
-    parsed_json = json.dumps(parsed_job, ensure_ascii=False)
-    content_hash = _content_hash(record["raw_text"])
+    content_hash = _content_hash(record["organized_text"])
     now = _utc_now()
 
     with _connect(db_path) as conn:
-        existing = conn.execute("SELECT created_at FROM jobs WHERE job_id = ?", (record["job_id"],)).fetchone()
+        existing = conn.execute(
+            "SELECT job_id, created_at FROM jobs WHERE job_id = ? OR content_hash = ? LIMIT 1",
+            (record["job_id"], content_hash),
+        ).fetchone()
+        if existing is None and record["company"] != "未知公司":
+            existing = conn.execute(
+                "SELECT job_id, created_at FROM jobs WHERE title = ? AND company = ? LIMIT 1",
+                (record["title"], record["company"]),
+            ).fetchone()
+        if existing is not None:
+            record["job_id"] = existing["job_id"]
+        parsed_job = _record_to_parsed_job(record)
+        parsed_json = json.dumps(parsed_job, ensure_ascii=False)
         created_at = existing["created_at"] if existing else now
         conn.execute(
             """

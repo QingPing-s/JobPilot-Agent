@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 import re
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -256,6 +257,7 @@ def _import_chromadb():
     return chromadb
 
 
+@lru_cache(maxsize=1)
 def _embedding_function():
     from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
 

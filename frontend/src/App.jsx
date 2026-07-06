@@ -7,6 +7,8 @@ import {
   FileJson,
   FileText,
   Loader2,
+  LockKeyhole,
+  LogOut,
   Play,
   Upload,
 } from "lucide-react";
@@ -25,7 +27,7 @@ import {
 } from "./utils/jobpilot";
 
 const SAMPLE_PROFILE = {
-  name: "Alex Chen",
+  name: "AAA建材",
   education: ["研究生学历", "人工智能专业"],
   skills: ["Python", "RAG", "LLM", "Prompt Engineering", "API integration", "Pytest"],
   soft_skills: ["学习速度快", "主动查阅资料", "问题拆解能力", "自驱力强", "沟通协作能力", "责任心强", "能独立解决问题"],
@@ -108,14 +110,17 @@ export default function App() {
     status,
   } = useJobPilotRun();
   const [health, setHealth] = useState(null);
-  const [authRole, setAuthRole] = useState(getAccessToken() ? getAuthRole() || "user" : "");
+  const [authRole, setAuthRole] = useState(getAccessToken() ? getAuthRole() || "user" : "user");
+  const [adminDialogOpen, setAdminDialogOpen] = useState(false);
   const [targetRole, setTargetRole] = useState("AI Agent Intern");
   const [profileInput, setProfileInput] = useState(JSON.stringify(SAMPLE_PROFILE, null, 2));
+  const [profileDocumentLoading, setProfileDocumentLoading] = useState(false);
   const [jdInput, setJdInput] = useState("");
   const [uploadedJds, setUploadedJds] = useState([]);
   const [sourceMode, setSourceMode] = useState("library");
   const [jobLibrary, setJobLibrary] = useState([]);
   const [libraryLoading, setLibraryLoading] = useState(false);
+  const [jobMutation, setJobMutation] = useState("");
   const [retrievalTopK, setRetrievalTopK] = useState(20);
   const [useLlmRerank, setUseLlmRerank] = useState(false);
   const [useLlmMatch, setUseLlmMatch] = useState(false);
@@ -136,7 +141,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (health && (!health.auth_enabled || getAccessToken())) refreshJobLibrary();
+    if (health && (!health.auth_enabled || health.public_access || getAccessToken())) refreshJobLibrary();
   }, [health, authRole]);
 
   async function refreshJobLibrary() {
@@ -178,14 +183,62 @@ export default function App() {
       setError("请先粘贴或上传至少一条 JD。");
       return;
     }
+    setJobMutation("save");
     try {
       const response = await jobPilotApi.saveJobs({ ...payload, source: "frontend" });
-      setMessage(`已保存 ${response.saved_count} 条岗位并刷新索引。`);
+      const organizedTexts = asArray(response.jobs)
+        .map((job) => job.organized_text)
+        .filter(Boolean);
+      if (!uploadedJds.length && organizedTexts.length) {
+        setJdInput(organizedTexts.join("\n\n---JOB---\n\n"));
+      }
+      setMessage(`已整理并保存 ${response.saved_count} 条岗位，同时刷新检索索引。`);
       setError("");
       await refreshJobLibrary();
     } catch (requestError) {
       setError(requestError.message || "保存岗位失败。");
+    } finally {
+      setJobMutation("");
     }
+  }
+
+  async function extractProfileDocument(file) {
+    setProfileDocumentLoading(true);
+    try {
+      const response = await jobPilotApi.extractProfileDocument(file, targetRole);
+      setProfileInput(JSON.stringify(response.candidate_profile, null, 2));
+      const warningText = asArray(response.warnings).join(" ");
+      setMessage(
+        `已解析 ${response.filename}（${response.extraction_method}，${response.line_count} 行）并生成候选人画像。${warningText}`
+      );
+      setError("");
+    } catch (requestError) {
+      setError(requestError.message || "简历文档解析失败。");
+      setMessage("");
+    } finally {
+      setProfileDocumentLoading(false);
+    }
+  }
+
+  async function deleteJob(job) {
+    if (!window.confirm(`确定停用“${job.title || "该岗位"}”吗？停用后将不再参与匹配。`)) return;
+    setJobMutation(job.job_id);
+    try {
+      await jobPilotApi.deleteJob(job.job_id);
+      setMessage(`已停用岗位：${job.title || job.job_id}`);
+      setError("");
+      await refreshJobLibrary();
+    } catch (requestError) {
+      setError(requestError.message || "停用岗位失败。");
+    } finally {
+      setJobMutation("");
+    }
+  }
+
+  function exitAdminMode() {
+    jobPilotApi.logout();
+    setAuthRole("user");
+    setMessage("已退出管理员模式。");
   }
 
   async function runAgent() {
@@ -209,16 +262,35 @@ export default function App() {
     });
   }
 
-  if (health?.auth_enabled && !authRole) return <LoginPanel onLogin={setAuthRole} />;
-
   return (
     <main className="app-shell">
+      {adminDialogOpen && (
+        <LoginPanel
+          onClose={() => setAdminDialogOpen(false)}
+          onLogin={(role) => {
+            setAuthRole(role);
+            setAdminDialogOpen(false);
+            setMessage("已进入管理员模式。");
+          }}
+        />
+      )}
       <header className="topbar">
         <div>
           <h1>JobPilot Agent 工作台</h1>
           <p>基于 FastAPI、React、LangGraph 与 Hybrid RAG 的岗位匹配系统。</p>
         </div>
-        <StatusPill health={health} />
+        <div className="topbar-actions">
+          <StatusPill health={health} />
+          {authRole === "admin" ? (
+            <button className="admin-access-button active" onClick={exitAdminMode} type="button">
+              <LogOut size={15} />退出管理员
+            </button>
+          ) : (
+            <button className="admin-access-button" onClick={() => setAdminDialogOpen(true)} type="button">
+              <LockKeyhole size={15} />管理员
+            </button>
+          )}
+        </div>
       </header>
 
       <section className="workspace-grid">
@@ -230,7 +302,9 @@ export default function App() {
 
           <ProfileEditor
             disabled={loading}
+            documentLoading={profileDocumentLoading}
             onChange={setProfileInput}
+            onDocument={extractProfileDocument}
             onMessage={(text, isError = false) => {
               setError(isError ? text : "");
               setMessage(isError ? "" : text);
@@ -244,7 +318,13 @@ export default function App() {
           <CollapsibleSection defaultOpen meta={`${jdCount} 条`} title="岗位来源">
             <JobSourceSelector disabled={loading} onChange={setSourceMode} value={sourceMode} />
             {sourceMode === "library" ? (
-              <JobLibraryPanel jobs={jobLibrary} loading={loading || libraryLoading} onRefresh={refreshJobLibrary} />
+              <JobLibraryPanel
+                isAdmin={authRole === "admin"}
+                jobs={jobLibrary}
+                loading={loading || libraryLoading || Boolean(jobMutation)}
+                onDelete={deleteJob}
+                onRefresh={refreshJobLibrary}
+              />
             ) : (
               <>
                 <div className="input-actions">
@@ -252,8 +332,9 @@ export default function App() {
                     <FileText size={14} />加载示例 JD
                   </button>
                   {(!health?.auth_enabled || authRole === "admin") && (
-                    <button disabled={loading} onClick={saveJobs} type="button">
-                      <Briefcase size={14} />保存当前 JD
+                    <button disabled={loading || Boolean(jobMutation)} onClick={saveJobs} type="button">
+                      {jobMutation === "save" ? <Loader2 className="spin" size={14} /> : <Briefcase size={14} />}
+                      {jobMutation === "save" ? "保存并更新索引中" : "保存当前 JD"}
                     </button>
                   )}
                 </div>

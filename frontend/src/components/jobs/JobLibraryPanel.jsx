@@ -18,7 +18,7 @@ export function JobSourceSelector({ disabled, onChange, value }) {
   );
 }
 
-export function JobLibraryPanel({ jobs, loading, onRefresh }) {
+export function JobLibraryPanel({ isAdmin, jobs, loading, onDelete, onRefresh }) {
   const [query, setQuery] = useState("");
   const activeJobs = asArray(jobs);
   const filteredJobs = useMemo(() => {
@@ -59,9 +59,17 @@ export function JobLibraryPanel({ jobs, loading, onRefresh }) {
                 <span>{job.company || "未知公司"}{job.location ? ` · ${job.location}` : ""}</span>
                 <small>{job.salary || "薪资未标注"}{job.education ? ` · ${job.education}` : ""}</small>
               </div>
-              <button className="library-delete-disabled" disabled title="删除功能已禁用" type="button">
-                <Trash2 size={14} />
-              </button>
+              {isAdmin && (
+                <button
+                  className="library-delete"
+                  disabled={loading}
+                  onClick={() => onDelete(job)}
+                  title="停用岗位"
+                  type="button"
+                >
+                  <Trash2 size={14} />
+                </button>
+              )}
             </div>
           ))
         ) : (

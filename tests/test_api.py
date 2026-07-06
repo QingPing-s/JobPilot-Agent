@@ -4,6 +4,8 @@ from pathlib import Path
 from fastapi.testclient import TestClient
 
 from src import api as api_module
+from src.document_parser import DocumentExtraction
+from src.ocr_service import OCRExtraction, OCRServiceError
 from src.run_manager import RunManager, RunStore
 
 
@@ -16,6 +18,133 @@ def test_health_endpoint(monkeypatch):
     assert response.status_code == 200
     assert response.json()["status"] == "ok"
     assert response.json()["api_available"] is False
+
+
+def test_profile_ocr_endpoint_returns_candidate_profile(monkeypatch):
+    monkeypatch.setattr(
+        api_module,
+        "extract_image_text",
+        lambda image_bytes, filename: OCRExtraction(
+            text="AAA建材\n人工智能专业\nPython RAG",
+            lines=["AAA建材", "人工智能专业", "Python RAG"],
+            scores=[0.98, 0.95, 0.9],
+            average_confidence=0.9433,
+        ),
+    )
+    monkeypatch.setattr(api_module, "_api_available", lambda: False)
+
+    client = TestClient(api_module.app)
+    response = client.post(
+        "/api/profile/ocr?filename=resume.png&target_role=AI%20Agent%20Intern",
+        content=b"image-bytes",
+        headers={"Content-Type": "image/png"},
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["filename"] == "resume.png"
+    assert data["line_count"] == 3
+    assert data["candidate_profile"]["skills"] == ["Python", "RAG"]
+    assert data["profile_extraction_mode"] == "rule_based"
+    assert data["warnings"]
+
+
+def test_profile_ocr_endpoint_rejects_invalid_image(monkeypatch):
+    def fail_ocr(image_bytes, filename):
+        raise OCRServiceError("图片无效。")
+
+    monkeypatch.setattr(api_module, "extract_image_text", fail_ocr)
+    client = TestClient(api_module.app)
+    response = client.post(
+        "/api/profile/ocr?filename=resume.png",
+        content=b"invalid",
+        headers={"Content-Type": "image/png"},
+    )
+
+    assert response.status_code == 422
+    assert response.json()["detail"] == "图片无效。"
+
+
+def test_profile_document_endpoint_returns_candidate_profile(monkeypatch):
+    monkeypatch.setattr(
+        api_module,
+        "extract_document_text",
+        lambda document_bytes, filename: DocumentExtraction(
+            text="AAA建材\n人工智能专业\nPython RAG",
+            extraction_method="docx",
+            line_count=3,
+        ),
+    )
+    monkeypatch.setattr(api_module, "_api_available", lambda: False)
+
+    client = TestClient(api_module.app)
+    response = client.post(
+        "/api/profile/document?filename=resume.docx&target_role=AI%20Agent%20Intern",
+        content=b"document-bytes",
+        headers={"Content-Type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"},
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["filename"] == "resume.docx"
+    assert data["extraction_method"] == "docx"
+    assert data["candidate_profile"]["skills"] == ["Python", "RAG"]
+    assert data["profile_extraction_mode"] == "rule_based"
+
+
+def test_profile_document_endpoint_accepts_structured_json():
+    client = TestClient(api_module.app)
+    response = client.post(
+        "/api/profile/document?filename=resume.json",
+        content=b"""
+        {
+          "name": "AAA",
+          "education": [],
+          "skills": ["Python"],
+          "soft_skills": [],
+          "projects": [],
+          "internships": [],
+          "target_roles": [],
+          "preferences": {}
+        }
+        """,
+        headers={"Content-Type": "application/json"},
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["candidate_profile"]["name"] == "AAA"
+    assert data["extraction_method"] == "json"
+    assert data["warnings"] == []
+
+
+def test_staged_job_database_hydrates_and_persists(tmp_path, monkeypatch):
+    working_path = tmp_path / "working" / "jobpilot.db"
+    persistent_path = tmp_path / "persistent" / "jobpilot.db"
+    persistent_path.parent.mkdir(parents=True)
+    persistent_path.write_bytes(b"original")
+    monkeypatch.setenv("JOBPILOT_JOB_DB_PATH", str(working_path))
+    monkeypatch.setattr(api_module, "DEFAULT_JOB_DB_PATH", working_path)
+    monkeypatch.setattr(api_module, "PERSISTENT_JOB_DB_PATH", persistent_path)
+
+    api_module._hydrate_job_database()
+    assert working_path.read_bytes() == b"original"
+
+    working_path.write_bytes(b"updated")
+    api_module._persist_job_database()
+    assert persistent_path.read_bytes() == b"updated"
+
+
+def test_public_access_allows_job_reads_but_rejects_job_writes(monkeypatch):
+    monkeypatch.setenv("JOBPILOT_AUTH_ENABLED", "true")
+    monkeypatch.setenv("JOBPILOT_PUBLIC_ACCESS", "true")
+
+    client = TestClient(api_module.app)
+
+    assert client.get("/api/jobs").status_code == 200
+    denied = client.post("/api/record-jobs", json={"jd_texts": ["Title: Agent Intern"]})
+    assert denied.status_code == 403
+    assert client.get("/api/health").json()["public_access"] is True
 
 
 def test_run_jobpilot_endpoint_builds_state(tmp_path, monkeypatch):
@@ -186,6 +315,7 @@ def test_record_jobs_endpoint_saves_jsonl_and_jd_files(tmp_path, monkeypatch):
     assert data["jobs"][0]["title"] == "AI Agent Intern"
     assert data["jobs"][0]["has_parsed_job"] is True
     assert data["jobs"][0]["parsed_job"]["required_skills"] == ["Python", "RAG"]
+    assert data["jobs"][0]["organized_text"].startswith("Title: AI Agent Intern")
     assert Path(data["db_path"]).exists()
     assert data["index_refreshed"] is True
     assert records_path.exists()

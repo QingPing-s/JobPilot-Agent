@@ -90,6 +90,33 @@
   font-weight: 800;
 }
 
+.admin-dialog-backdrop {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(24, 33, 31, 0.48);
+}
+
+.admin-dialog {
+  position: relative;
+  box-shadow: 0 24px 64px rgba(24, 33, 31, 0.2);
+}
+
+.login-panel .dialog-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 32px;
+  min-height: 32px;
+  padding: 0;
+  border: 1px solid var(--border);
+  color: var(--text);
+  background: #ffffff;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -142,6 +169,49 @@ textarea:disabled {
   margin: 6px 0 0;
   color: var(--muted);
   font-size: 14px;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-access-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 34px;
+  padding: 0 11px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  background: var(--panel);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.admin-access-button.active {
+  color: var(--teal);
+  border-color: #a8d8cf;
+  background: var(--teal-soft);
+}
+
+.library-delete {
+  display: inline-grid;
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  padding: 0;
+  border: 1px solid #efc3bd;
+  border-radius: 6px;
+  color: var(--red);
+  background: #ffffff;
+}
+
+.library-delete:hover {
+  background: var(--red-soft);
 }
 
 .status-pill {
@@ -292,6 +362,7 @@ textarea:disabled {
 }
 
 .input-actions button,
+.input-actions .upload-action,
 .report-actions button {
   display: inline-flex;
   align-items: center;
@@ -308,10 +379,24 @@ textarea:disabled {
 }
 
 .input-actions button:hover:not(:disabled),
+.input-actions .upload-action:hover:not(.disabled),
 .report-actions button:hover:not(:disabled),
 .icon-button:hover {
   border-color: #a8d8cf;
   background: #f0f7f5;
+}
+
+.input-actions .upload-action {
+  cursor: pointer;
+}
+
+.input-actions .upload-action.disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.input-actions .upload-action input {
+  display: none;
 }
 
 .icon-button {

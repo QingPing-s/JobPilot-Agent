@@ -4,20 +4,23 @@ import asyncio
 import hashlib
 import json
 import os
-from contextlib import asynccontextmanager
+import shutil
+import threading
+from contextlib import asynccontextmanager, contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
 from dotenv import load_dotenv
-from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi import Depends, FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from .audit_logger import log_audit_event
+from .document_parser import DocumentParserError, extract_document_text
 from .graph import resume_jobpilot, run_jobpilot
 from .job_recorder import save_job_records
 from .job_store import (
@@ -29,6 +32,8 @@ from .job_store import (
     upsert_jobs,
 )
 from .main import OUTPUT_DIR, ROOT_DIR, TRACE_DIR, build_final_report_markdown, write_outputs
+from .nodes import profile_node
+from .ocr_service import OCRServiceError, extract_image_text
 from .retriever import (
     BACKEND_FILE,
     EMBEDDING_MODEL_NAME,
@@ -57,12 +62,16 @@ PERSISTENT_DATA_DIR = Path(os.getenv("JOBPILOT_DATA_DIR", ROOT_DIR / "data"))
 RUNS_DIR = OUTPUT_DIR / "api_runs"
 DEFAULT_PROFILE_PATH = ROOT_DIR / "data" / "user_profile.json"
 DEFAULT_JD_FOLDER = PERSISTENT_DATA_DIR / "sample_jds"
-DEFAULT_JOB_DB_PATH = ROOT_DIR / DEFAULT_DB_PATH
+DEFAULT_JOB_DB_PATH = Path(os.getenv("JOBPILOT_JOB_DB_PATH", ROOT_DIR / DEFAULT_DB_PATH))
+PERSISTENT_JOB_DB_PATH = Path(
+    os.getenv("JOBPILOT_PERSISTENT_JOB_DB_PATH", PERSISTENT_DATA_DIR / "jobpilot.db")
+)
 LATEST_TRACE_PATH = TRACE_DIR / "latest_trace.json"
 LATEST_REPORT_PATH = OUTPUT_DIR / "final_report.md"
 JOB_RECORDS_PATH = PERSISTENT_DATA_DIR / "jobs_csv" / "job_records.jsonl"
 # Backward-compatible name used by tests and existing integrations.
 DEFAULT_RECORDS_PATH = JOB_RECORDS_PATH
+_JOB_MUTATION_LOCK = threading.Lock()
 JOB_SEED_PATH = ROOT_DIR / "data" / "job_seed.json"
 FRONTEND_DIST = Path(os.getenv("JOBPILOT_FRONTEND_DIST", ROOT_DIR / "frontend" / "dist"))
 CHECKPOINT_PATH = Path(
@@ -134,6 +143,21 @@ class JobsListResponse(BaseModel):
     db_path: str
 
 
+class OCRProfileResponse(BaseModel):
+    filename: str
+    extracted_text: str
+    candidate_profile: dict[str, Any]
+    line_count: int
+    average_confidence: float
+    profile_extraction_mode: str
+    warnings: list[str] = Field(default_factory=list)
+
+
+class DocumentProfileResponse(OCRProfileResponse):
+    extraction_method: str
+    page_count: int
+
+
 class DeleteJobResponse(BaseModel):
     deleted: bool
     job_id: str
@@ -189,7 +213,44 @@ def _make_run_dir() -> tuple[str, Path]:
 
 
 def _default_vector_store_dir() -> Path:
-    return PERSISTENT_DATA_DIR / "vector_store"
+    return Path(os.getenv("JOBPILOT_VECTOR_STORE_DIR", PERSISTENT_DATA_DIR / "vector_store"))
+
+
+def _uses_staged_job_database() -> bool:
+    return bool(os.getenv("JOBPILOT_JOB_DB_PATH")) and DEFAULT_JOB_DB_PATH != PERSISTENT_JOB_DB_PATH
+
+
+def _hydrate_job_database() -> None:
+    if not _uses_staged_job_database() or not PERSISTENT_JOB_DB_PATH.exists():
+        return
+    DEFAULT_JOB_DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(PERSISTENT_JOB_DB_PATH, DEFAULT_JOB_DB_PATH)
+
+
+def _persist_job_database() -> None:
+    if not _uses_staged_job_database() or not DEFAULT_JOB_DB_PATH.exists():
+        return
+    PERSISTENT_JOB_DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+    temporary_path = PERSISTENT_JOB_DB_PATH.with_name(
+        f".{PERSISTENT_JOB_DB_PATH.name}.{uuid4().hex}.tmp"
+    )
+    try:
+        shutil.copyfile(DEFAULT_JOB_DB_PATH, temporary_path)
+        os.replace(temporary_path, PERSISTENT_JOB_DB_PATH)
+    finally:
+        temporary_path.unlink(missing_ok=True)
+
+
+@contextmanager
+def _job_mutation_guard():
+    timeout_seconds = max(1.0, float(os.getenv("JOBPILOT_JOB_MUTATION_TIMEOUT_SECONDS", "60")))
+    acquired = _JOB_MUTATION_LOCK.acquire(timeout=timeout_seconds)
+    if not acquired:
+        raise HTTPException(status_code=409, detail="岗位库正在更新，请稍后重试。")
+    try:
+        yield
+    finally:
+        _JOB_MUTATION_LOCK.release()
 
 
 def _refresh_job_retrieval_store() -> tuple[bool, str | None]:
@@ -221,6 +282,7 @@ def _vector_store_needs_refresh() -> bool:
 def _initialize_persistent_data() -> None:
     """Seed an empty deployment and create its initial retrieval index."""
     PERSISTENT_DATA_DIR.mkdir(parents=True, exist_ok=True)
+    _hydrate_job_database()
     if list_jobs(db_path=DEFAULT_JOB_DB_PATH):
         if _vector_store_needs_refresh():
             _refresh_job_retrieval_store()
@@ -538,11 +600,124 @@ def health() -> dict[str, Any]:
         "status": "ok",
         "api_available": _api_available(),
         "auth_enabled": security.auth_enabled,
+        "public_access": security.public_access,
         "project_root": str(ROOT_DIR),
         "data_dir": str(PERSISTENT_DATA_DIR),
         "embedding_model": EMBEDDING_MODEL_NAME,
         "index_version": INDEX_VERSION,
     }
+
+
+@app.post("/api/profile/ocr", response_model=OCRProfileResponse)
+async def extract_profile_from_image(
+    request: Request,
+    filename: str = Query(..., min_length=1, max_length=255),
+    target_role: str = Query(default="AI Agent Intern", max_length=120),
+    user: AuthUser = Depends(current_user),
+) -> OCRProfileResponse:
+    enforce_run_rate_limit(request, user)
+    image_bytes = await request.body()
+    try:
+        extraction = await asyncio.to_thread(extract_image_text, image_bytes, filename)
+    except OCRServiceError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except RuntimeError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail="OCR 识别失败，请稍后重试。") from exc
+
+    profile_state = await asyncio.to_thread(
+        profile_node,
+        {
+            "user_profile_text": extraction.text,
+            "target_role": target_role,
+            "api_available": _api_available(),
+            "trace": [],
+        },
+    )
+    candidate_profile = profile_state.get("candidate_profile")
+    if not isinstance(candidate_profile, dict):
+        raise HTTPException(status_code=422, detail="已识别文字，但无法生成有效的候选人画像。")
+
+    profile_status = profile_state.get("node_statuses", {}).get("profile_node", {})
+    fallback_used = bool(profile_status.get("fallback_used"))
+    warnings = []
+    if extraction.average_confidence and extraction.average_confidence < 0.75:
+        warnings.append("OCR 平均置信度较低，请核对识别结果。")
+    if fallback_used:
+        warnings.append("DeepSeek 不可用，候选人画像由本地规则生成，请人工核对。")
+
+    return OCRProfileResponse(
+        filename=filename,
+        extracted_text=extraction.text,
+        candidate_profile=candidate_profile,
+        line_count=len(extraction.lines),
+        average_confidence=extraction.average_confidence,
+        profile_extraction_mode="rule_based" if fallback_used else "llm",
+        warnings=warnings,
+    )
+
+
+@app.post("/api/profile/document", response_model=DocumentProfileResponse)
+async def extract_profile_from_document(
+    request: Request,
+    filename: str = Query(..., min_length=1, max_length=255),
+    target_role: str = Query(default="AI Agent Intern", max_length=120),
+    user: AuthUser = Depends(current_user),
+) -> DocumentProfileResponse:
+    enforce_run_rate_limit(request, user)
+    document_bytes = await request.body()
+    try:
+        extraction = await asyncio.to_thread(extract_document_text, document_bytes, filename)
+    except DocumentParserError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except RuntimeError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail="简历文档解析失败，请稍后重试。") from exc
+
+    candidate_profile: dict[str, Any] | None = None
+    fallback_used = False
+    if extraction.extraction_method == "json":
+        try:
+            raw_profile = json.loads(extraction.text)
+            candidate_profile = CandidateProfile.model_validate(raw_profile).model_dump()
+        except (json.JSONDecodeError, ValueError, TypeError):
+            candidate_profile = None
+
+    if candidate_profile is None:
+        profile_state = await asyncio.to_thread(
+            profile_node,
+            {
+                "user_profile_text": extraction.text,
+                "target_role": target_role,
+                "api_available": _api_available(),
+                "trace": [],
+            },
+        )
+        candidate_profile = profile_state.get("candidate_profile")
+        if not isinstance(candidate_profile, dict):
+            raise HTTPException(status_code=422, detail="已提取文字，但无法生成有效的候选人画像。")
+        profile_status = profile_state.get("node_statuses", {}).get("profile_node", {})
+        fallback_used = bool(profile_status.get("fallback_used"))
+
+    warnings = list(extraction.warnings)
+    if extraction.average_confidence and extraction.average_confidence < 0.75:
+        warnings.append("OCR 平均置信度较低，请核对识别结果。")
+    if fallback_used:
+        warnings.append("DeepSeek 不可用，候选人画像由本地规则生成，请人工核对。")
+
+    return DocumentProfileResponse(
+        filename=filename,
+        extracted_text=extraction.text,
+        candidate_profile=candidate_profile,
+        line_count=extraction.line_count,
+        average_confidence=extraction.average_confidence,
+        profile_extraction_mode="rule_based" if fallback_used else "llm_or_structured",
+        warnings=warnings,
+        extraction_method=extraction.extraction_method,
+        page_count=extraction.page_count,
+    )
 
 
 @app.post("/api/runs", response_model=AsyncRunCreatedResponse, status_code=202)
@@ -739,37 +914,39 @@ def record_jobs_api(
     if not jd_texts:
         raise HTTPException(status_code=400, detail="没有可保存的岗位 JD 文本。")
 
-    try:
-        db_jobs = upsert_jobs(
-            jd_texts=jd_texts,
-            jd_filenames=request.jd_filenames,
-            source=request.source,
-            db_path=DEFAULT_JOB_DB_PATH,
-        )
-        jobs = save_job_records(
-            jd_texts=jd_texts,
-            jd_filenames=request.jd_filenames,
-            source=request.source,
-            records_path=DEFAULT_RECORDS_PATH,
-            jd_dir=DEFAULT_JD_FOLDER,
-        )
-        job_file_by_id = {job.get("job_id"): job for job in jobs}
-        for job in db_jobs:
-            file_job = job_file_by_id.get(job.get("job_id"))
-            if file_job:
-                job["record_path"] = file_job.get("record_path")
-                job["jd_file_path"] = file_job.get("jd_file_path")
-        index_refreshed, index_warning = _refresh_job_retrieval_store()
-    except Exception as exc:
-        log_audit_event(
-            "job.upsert",
-            actor_id=user.user_id,
-            role=user.role,
-            resource_type="job",
-            outcome="failed",
-            metadata={"count": len(jd_texts), "error_type": type(exc).__name__},
-        )
-        raise HTTPException(status_code=500, detail=f"保存岗位失败：{exc}") from exc
+    with _job_mutation_guard():
+        try:
+            db_jobs = upsert_jobs(
+                jd_texts=jd_texts,
+                jd_filenames=request.jd_filenames,
+                source=request.source,
+                db_path=DEFAULT_JOB_DB_PATH,
+            )
+            _persist_job_database()
+            jobs = save_job_records(
+                jd_texts=jd_texts,
+                jd_filenames=request.jd_filenames,
+                source=request.source,
+                records_path=DEFAULT_RECORDS_PATH,
+                jd_dir=DEFAULT_JD_FOLDER,
+            )
+            job_file_by_id = {job.get("job_id"): job for job in jobs}
+            for job in db_jobs:
+                file_job = job_file_by_id.get(job.get("job_id"))
+                if file_job:
+                    job["record_path"] = file_job.get("record_path")
+                    job["jd_file_path"] = file_job.get("jd_file_path")
+            index_refreshed, index_warning = _refresh_job_retrieval_store()
+        except Exception as exc:
+            log_audit_event(
+                "job.upsert",
+                actor_id=user.user_id,
+                role=user.role,
+                resource_type="job",
+                outcome="failed",
+                metadata={"count": len(jd_texts), "error_type": type(exc).__name__},
+            )
+            raise HTTPException(status_code=500, detail=f"保存岗位失败：{exc}") from exc
 
     log_audit_event(
         "job.upsert",
@@ -810,10 +987,12 @@ def delete_job_api(
     job_id: str,
     user: AuthUser = Depends(admin_user),
 ) -> DeleteJobResponse:
-    deleted = soft_delete_job(job_id, db_path=DEFAULT_JOB_DB_PATH)
-    if not deleted:
-        raise HTTPException(status_code=404, detail="岗位不存在或已经停用。")
-    index_refreshed, index_warning = _refresh_job_retrieval_store()
+    with _job_mutation_guard():
+        deleted = soft_delete_job(job_id, db_path=DEFAULT_JOB_DB_PATH)
+        if not deleted:
+            raise HTTPException(status_code=404, detail="岗位不存在或已经停用。")
+        _persist_job_database()
+        index_refreshed, index_warning = _refresh_job_retrieval_store()
     log_audit_event(
         "job.deactivate",
         actor_id=user.user_id,
@@ -835,10 +1014,12 @@ def restore_job_api(
     job_id: str,
     user: AuthUser = Depends(admin_user),
 ) -> RestoreJobResponse:
-    restored = restore_job(job_id, db_path=DEFAULT_JOB_DB_PATH)
-    if not restored:
-        raise HTTPException(status_code=404, detail="岗位不存在或已经启用。")
-    index_refreshed, index_warning = _refresh_job_retrieval_store()
+    with _job_mutation_guard():
+        restored = restore_job(job_id, db_path=DEFAULT_JOB_DB_PATH)
+        if not restored:
+            raise HTTPException(status_code=404, detail="岗位不存在或已经启用。")
+        _persist_job_database()
+        index_refreshed, index_warning = _refresh_job_retrieval_store()
     log_audit_event(
         "job.restore",
         actor_id=user.user_id,
