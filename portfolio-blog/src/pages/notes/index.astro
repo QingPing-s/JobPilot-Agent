@@ -1,0 +1,49 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { sitePath } from "../../lib/site.js";
+
+const posts = [
+  {
+    category: "工程化",
+    title: "如何把 LLM Demo 做成可写进简历的 Agent 项目",
+    description: "JobPilot 从工作流、检索、评测、观测到部署的工程化拆解。",
+    href: sitePath("blog/jobpilot-agent-engineering-notes/"),
+  },
+  {
+    category: "检索",
+    title: "为什么 JobPilot 使用 Vector + Keyword + RRF",
+    description: "双路召回、Weighted RRF、规则重排与离线评测的设计取舍。",
+    href: sitePath("blog/hybrid-retrieval-rrf/"),
+  },
+  {
+    category: "工作流",
+    title: "LangGraph 条件路由、降级与 checkpoint 设计",
+    description: "Agent 流程中的失败恢复、人工审核和状态持久化。",
+    href: sitePath("blog/langgraph-resilience/"),
+  },
+];
+---
+
+<BaseLayout
+  title="技术笔记 | QingPing-s"
+  description="QingPing-s 的 AI Agent、RAG 与多智能体工程技术笔记。"
+>
+  <section class="article-page">
+    <header class="article-header">
+      <p class="eyebrow">Notes</p>
+      <h1>技术笔记</h1>
+      <p>记录 AI Agent、RAG、长期记忆、多智能体协作和工程评测相关实践。</p>
+    </header>
+    <div class="post-list">
+      {
+        posts.map((post) => (
+          <a class="post-card" href={post.href}>
+            <span>{post.category}</span>
+            <h2>{post.title}</h2>
+            <p>{post.description}</p>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+</BaseLayout>

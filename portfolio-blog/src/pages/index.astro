@@ -1,121 +1,91 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { githubUrl, liveDemoUrl, sitePath } from "../lib/site.js";
+import { sitePath } from "../lib/site.js";
 
-const heroImage = sitePath("jobpilot-workbench.png");
-const metrics = [
-  ["94", "后端自动化测试"],
-  ["50", "离线评测样本"],
-  ["5", "检索基线对比"],
-  ["Azure", "云端持续运行"],
+const skills = [
+  "LangGraph",
+  "RAG",
+  "Agent Memory",
+  "Multi-Agent",
+  "FastAPI",
+  "LLM Evaluation",
+  "MARL",
+];
+
+const entries = [
+  {
+    label: "Notes",
+    title: "技术笔记",
+    description: "整理 AI Agent、RAG、长期记忆和工程评测相关实践。",
+    href: sitePath("notes/"),
+  },
+  {
+    label: "Projects",
+    title: "项目",
+    description: "展示可运行的 Agent 系统、检索链路和全栈交付案例。",
+    href: sitePath("projects/"),
+  },
+  {
+    label: "Research",
+    title: "科研",
+    description: "关注多智能体协作、长期记忆和多智能体强化学习。",
+    href: sitePath("research/"),
+  },
+  {
+    label: "About",
+    title: "关于我",
+    description: "查看个人方向、技术兴趣和 GitHub 入口。",
+    href: sitePath("about/"),
+  },
 ];
 ---
 
 <BaseLayout
-  title="AI Agent 工程博客 | 工程作品集"
-  description="人工智能专业研究生的 AI Agent、RAG 与 LLM 应用工程作品集，展示 JobPilot RAG-Agent 的检索、评测、前后端和云部署实践。"
+  title="QingPing-s | AI Agent Developer & Multi-Agent Researcher"
+  description="QingPing-s 的 AI Agent 实习和科研展示主页，聚焦 AI Agent、RAG、长期记忆、多智能体协作与多智能体强化学习。"
 >
-  <section class="hero" style={`--hero-image: url('${heroImage}')`}>
-    <div class="hero-content">
-      <p class="eyebrow">AI Agent / RAG / LLM Application Engineering</p>
-      <h1>把 AI Agent<br />做成可运行的工程系统</h1>
-      <p class="hero-copy">
-        人工智能专业研究生，聚焦 LangGraph 工作流、Hybrid RAG、结构化输出、离线评测与全栈交付。这里记录从需求拆解到 Azure 部署的完整工程实践。
+  <section class="profile-hero">
+    <div class="profile-hero-inner">
+      <p class="eyebrow">AI Agent / RAG / Multi-Agent Systems</p>
+      <h1>QingPing-s</h1>
+      <p class="profile-subtitle">
+        <span>AI Agent Developer</span>
+        <span>&amp; Multi-Agent Researcher</span>
       </p>
-      <div class="hero-actions">
-        <a class="primary-link" href={sitePath("projects/jobpilot-agent/")}>查看项目案例</a>
-        <a class="secondary-link" href={liveDemoUrl} target="_blank" rel="noreferrer">体验在线系统</a>
+      <p class="profile-copy">
+        专注于 AI Agent、RAG、长期记忆、多智能体协作与多智能体强化学习的工程实践和研究。
+      </p>
+      <div class="hero-actions profile-actions">
+        <a class="primary-link" href={sitePath("projects/")}>查看项目</a>
+        <a class="secondary-link profile-secondary" href={sitePath("notes/")}>阅读技术笔记</a>
+        <a class="outline-link" href={sitePath("resume.pdf")} target="_blank" rel="noreferrer">
+          下载简历
+        </a>
+      </div>
+      <div class="chips profile-tags" aria-label="技术标签">
+        {skills.map((skill) => <span>{skill}</span>)}
       </div>
     </div>
   </section>
 
-  <section class="metric-band" aria-label="项目数据">
-    {
-      metrics.map(([value, label]) => (
-        <div>
-          <strong>{value}</strong>
-          <span>{label}</span>
-        </div>
-      ))
-    }
-  </section>
-
-  <section class="section">
+  <section class="section compact home-entry-section">
     <div class="section-heading">
-      <p class="eyebrow">Featured Project</p>
-      <h2>JobPilot RAG-Agent</h2>
+      <p class="eyebrow">Explore</p>
+      <h2>面向实习和科研展示的内容入口</h2>
       <p>
-        面向 AI Agent、RAG 与 LLM 应用实习岗位的智能匹配系统。它不是一次 Prompt 调用，而是一条包含数据、检索、评分、生成、观测和评测的完整链路。
+        首页保留简洁定位，把更具体的项目、笔记和研究方向拆分到独立页面，方便快速浏览。
       </p>
     </div>
-    <article class="feature-card">
-      <img src={heroImage} alt="JobPilot Agent 中文工作台界面" loading="lazy" />
-      <div>
-        <p class="tagline">LangGraph + FastAPI + React + ChromaDB + DeepSeek</p>
-        <h3>从岗位库召回到可解释推荐</h3>
-        <p>
-          使用固定 BGE Embedding 与 TF-IDF 双路召回，通过 Weighted RRF 融合结果，再经过规则重排和 70/20/10 的岗位匹配评分，输出岗位推荐、差距分析与简历建议。
-        </p>
-        <ul class="check-list">
-          <li>条件路由、重试、人工审核和 SQLite checkpoint</li>
-          <li>ChromaDB 增量索引与关键词检索降级</li>
-          <li>异步任务、SSE 进度、取消和超时控制</li>
-          <li>Trace、离线评测、Docker 与 Azure 部署</li>
-        </ul>
-        <div class="inline-actions">
-          <a class="text-link" href={sitePath("projects/jobpilot-agent/")}>阅读完整案例</a>
-          <a class="text-link" href={githubUrl} target="_blank" rel="noreferrer">查看 GitHub</a>
-        </div>
-      </div>
-    </article>
-  </section>
-
-  <section class="full-band">
-    <div class="band-inner">
-      <div class="section-heading">
-        <p class="eyebrow">Engineering Workflow</p>
-        <h2>系统如何完成一次匹配</h2>
-      </div>
-      <ol class="workflow-grid">
-        <li><strong>01</strong><span>候选人画像与 JD 结构化</span></li>
-        <li><strong>02</strong><span>Vector + Keyword 双路召回</span></li>
-        <li><strong>03</strong><span>Weighted RRF 与规则重排</span></li>
-        <li><strong>04</strong><span>任职要求、加分项和职责评分</span></li>
-        <li><strong>05</strong><span>差距分析与简历建议</span></li>
-        <li><strong>06</strong><span>Trace、评测与报告输出</span></li>
-      </ol>
-    </div>
-  </section>
-
-  <section class="section split">
-    <div>
-      <p class="eyebrow">Focus</p>
-      <h2>我关注的工程问题</h2>
-      <p>
-        如何降低纯 LLM 流程的不稳定性，如何证明检索和排序确实有效，以及如何让 Agent 在失败、超时或 API 不可用时仍然给出可解释结果。
-      </p>
-      <div class="chips">
-        <span>Agent Orchestration</span>
-        <span>Hybrid Retrieval</span>
-        <span>Structured Output</span>
-        <span>Evaluation</span>
-        <span>Observability</span>
-        <span>Cloud Deployment</span>
-      </div>
-    </div>
-    <div class="list-panel">
-      <a href={sitePath("blog/jobpilot-agent-engineering-notes/")}>
-        <span>工程化</span>
-        <strong>如何把 LLM Demo 做成可写进简历的 Agent 项目</strong>
-      </a>
-      <a href={sitePath("blog/hybrid-retrieval-rrf/")}>
-        <span>检索</span>
-        <strong>为什么 JobPilot 使用 Vector + Keyword + RRF</strong>
-      </a>
-      <a href={sitePath("blog/langgraph-resilience/")}>
-        <span>工作流</span>
-        <strong>LangGraph 条件路由、降级与 checkpoint 设计</strong>
-      </a>
+    <div class="home-entry-grid">
+      {
+        entries.map((entry) => (
+          <a class="post-card" href={entry.href}>
+            <span>{entry.label}</span>
+            <h2>{entry.title}</h2>
+            <p>{entry.description}</p>
+          </a>
+        ))
+      }
     </div>
   </section>
 </BaseLayout>

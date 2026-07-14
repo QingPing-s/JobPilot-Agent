@@ -1,6 +1,6 @@
 ---
 import "../styles/global.css";
-import { githubUrl, liveDemoUrl, sitePath } from "../lib/site.js";
+import { sitePath } from "../lib/site.js";
 
 const {
   title = "AI Agent 工程博客 | Agent / RAG / LLM",
@@ -10,9 +10,11 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
 const currentPath = Astro.url.pathname;
 const navigation = [
   { href: sitePath(), label: "首页", prefix: sitePath() },
-  { href: sitePath("projects/jobpilot-agent/"), label: "项目", prefix: sitePath("projects/") },
-  { href: sitePath("blog/"), label: "博客", prefix: sitePath("blog/") },
-  { href: sitePath("resume/"), label: "简历", prefix: sitePath("resume/") },
+  { href: sitePath("notes/"), label: "技术笔记", prefix: sitePath("notes/") },
+  { href: sitePath("projects/"), label: "项目", prefix: sitePath("projects/") },
+  { href: sitePath("research/"), label: "科研", prefix: sitePath("research/") },
+  { href: sitePath("about/"), label: "关于我", prefix: sitePath("about/") },
+  { href: sitePath("resume.pdf"), label: "简历", external: true },
 ];
 ---
 
@@ -41,14 +43,35 @@ const navigation = [
         {
           navigation.map((item, index) => {
             const active =
-              index === 0 ? currentPath === item.href : currentPath.startsWith(item.prefix);
+              !item.external &&
+              (index === 0 ? currentPath === item.href : currentPath.startsWith(item.prefix));
             return (
-              <a class:list={{ active }} href={item.href}>
+              <a
+                class:list={{ active }}
+                href={item.href}
+                target={item.external ? "_blank" : undefined}
+                rel={item.external ? "noreferrer" : undefined}
+              >
                 {item.label}
               </a>
             );
           })
         }
+        <a
+          class="github-nav-link"
+          href="https://github.com/QingPing-s"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="GitHub"
+          title="GitHub"
+        >
+          <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20">
+            <path
+              fill="currentColor"
+              d="M12 2C6.48 2 2 6.58 2 12.26c0 4.53 2.87 8.37 6.84 9.73.5.09.68-.22.68-.49 0-.24-.01-1.04-.01-1.89-2.51.47-3.16-.63-3.36-1.21-.11-.3-.6-1.21-1.03-1.46-.35-.19-.85-.66-.01-.67.79-.01 1.35.75 1.54 1.06.9 1.56 2.34 1.12 2.91.85.09-.67.35-1.12.64-1.38-2.22-.26-4.55-1.14-4.55-5.06 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.31.1-2.71 0 0 .84-.28 2.75 1.05A9.28 9.28 0 0 1 12 6.99c.85 0 1.71.12 2.51.34 1.91-1.33 2.75-1.05 2.75-1.05.55 1.4.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.93-2.34 4.8-4.57 5.06.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.8 0 .27.18.59.69.49A10.08 10.08 0 0 0 22 12.26C22 6.58 17.52 2 12 2Z"
+            />
+          </svg>
+        </a>
       </nav>
     </header>
     <main>
@@ -60,8 +83,7 @@ const navigation = [
         <span>AI Agent / RAG / LLM Application Engineering</span>
       </div>
       <nav aria-label="Footer navigation">
-        <a href={githubUrl} target="_blank" rel="noreferrer">GitHub</a>
-        <a href={liveDemoUrl} target="_blank" rel="noreferrer">在线演示</a>
+        <a href="https://github.com/QingPing-s" target="_blank" rel="noreferrer">GitHub</a>
       </nav>
     </footer>
   </body>

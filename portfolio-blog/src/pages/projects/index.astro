@@ -1,0 +1,24 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { sitePath } from "../../lib/site.js";
+---
+
+<BaseLayout
+  title="项目 | QingPing-s"
+  description="QingPing-s 的 AI Agent、RAG 与全栈工程项目展示。"
+>
+  <section class="article-page">
+    <header class="article-header">
+      <p class="eyebrow">Projects</p>
+      <h1>项目</h1>
+      <p>围绕 AI Agent、RAG、评测与部署整理可运行的工程项目。</p>
+    </header>
+    <div class="post-list">
+      <a class="post-card" href={sitePath("projects/jobpilot-agent/")}>
+        <span>AI Agent / RAG</span>
+        <h2>JobPilot RAG-Agent</h2>
+        <p>面向 AI Agent、RAG 与 LLM 应用实习岗位的智能匹配系统。</p>
+      </a>
+    </div>
+  </section>
+</BaseLayout>

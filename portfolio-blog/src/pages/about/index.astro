@@ -1,0 +1,25 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { sitePath } from "../../lib/site.js";
+---
+
+<BaseLayout
+  title="关于我 | QingPing-s"
+  description="QingPing-s 的个人方向、项目与技术兴趣。"
+>
+  <section class="article-page">
+    <header class="article-header">
+      <p class="eyebrow">About</p>
+      <h1>关于我</h1>
+      <p>
+        QingPing-s，关注 AI Agent、RAG、长期记忆、多智能体协作与多智能体强化学习的工程实践和研究。
+      </p>
+      <div class="inline-actions">
+        <a class="primary-link" href={sitePath("projects/")}>查看项目</a>
+        <a class="outline-link" href="https://github.com/QingPing-s" target="_blank" rel="noreferrer">
+          GitHub
+        </a>
+      </div>
+    </header>
+  </section>
+</BaseLayout>

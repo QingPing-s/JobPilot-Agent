@@ -101,6 +101,7 @@ h3 {
 
 .site-nav {
   display: flex;
+  align-items: center;
   gap: 24px;
   font-weight: 800;
   color: var(--muted);
@@ -124,6 +125,27 @@ h3 {
   height: 3px;
   background: var(--teal);
   content: "";
+}
+
+.github-nav-link {
+  width: 34px;
+  min-width: 34px;
+  height: 34px;
+  padding: 0;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--teal-dark);
+}
+
+.site-nav .github-nav-link {
+  display: inline-flex;
+}
+
+.site-nav .github-nav-link::after {
+  display: none;
 }
 
 .hero {
@@ -168,6 +190,78 @@ h3 {
   max-width: 730px;
   color: rgba(255, 255, 255, 0.88);
   font-size: 1.12rem;
+}
+
+.profile-hero {
+  display: flex;
+  min-height: calc(100vh - 68px);
+  align-items: center;
+  overflow: hidden;
+  border-bottom: 1px solid var(--line);
+  background:
+    linear-gradient(90deg, rgba(20, 127, 117, 0.1), rgba(47, 91, 215, 0.06)),
+    var(--bg);
+}
+
+.profile-hero-inner {
+  width: min(1120px, 90vw);
+  margin: 0 auto;
+  padding: 86px 0;
+}
+
+.profile-hero h1 {
+  max-width: 860px;
+  margin-bottom: 10px;
+  color: var(--ink);
+  font-size: clamp(3rem, 8vw, 6.25rem);
+  line-height: 0.98;
+}
+
+.profile-subtitle {
+  margin-bottom: 20px;
+  color: var(--blue);
+  font-size: clamp(1.35rem, 3vw, 2.1rem);
+  font-weight: 850;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.profile-subtitle span {
+  display: inline;
+}
+
+.profile-copy {
+  max-width: 760px;
+  color: var(--muted);
+  font-size: 1.16rem;
+}
+
+.profile-actions {
+  margin-top: 30px;
+}
+
+.profile-secondary {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+.profile-secondary:hover {
+  background: var(--soft-blue);
+}
+
+.secondary-link.profile-secondary {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+.profile-tags {
+  max-width: 760px;
+  margin-top: 34px;
+}
+
+.profile-tags span {
+  border: 1px solid var(--line);
+  background: var(--surface);
 }
 
 .hero-actions,
@@ -369,6 +463,17 @@ h3 {
 .post-list {
   display: grid;
   gap: 12px;
+}
+
+.home-entry-section {
+  padding-top: 68px;
+  padding-bottom: 76px;
+}
+
+.home-entry-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .list-panel a,
@@ -710,13 +815,23 @@ h3 {
 
   .site-nav {
     width: 100%;
-    justify-content: space-between;
-    gap: 10px;
+    justify-content: flex-start;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 1px;
   }
 
   .site-nav a {
+    flex: 0 0 auto;
     padding: 10px 0 11px;
-    font-size: 0.92rem;
+    font-size: 0.88rem;
+  }
+
+  .site-nav .github-nav-link {
+    width: 32px;
+    min-width: 32px;
+    height: 32px;
+    padding: 0;
   }
 
   .hero {
@@ -724,6 +839,29 @@ h3 {
     min-height: 520px;
     padding: 48px 5vw;
     background-position: 58% 16%;
+  }
+
+  .profile-hero {
+    min-height: auto;
+  }
+
+  .profile-hero-inner {
+    width: min(90vw, 340px);
+    margin-left: 5vw;
+    padding: 58px 0 68px;
+  }
+
+  .profile-copy {
+    font-size: 1rem;
+  }
+
+  .profile-subtitle {
+    max-width: 100%;
+    font-size: 1.45rem;
+  }
+
+  .profile-subtitle span {
+    display: block;
   }
 
   .hero-copy {
@@ -751,6 +889,7 @@ h3 {
   .feature-card,
   .split,
   .content-grid,
+  .home-entry-grid,
   .comparison-grid,
   .skill-matrix {
     grid-template-columns: 1fr;
@@ -790,7 +929,57 @@ h3 {
     width: 100%;
   }
 
+  .profile-actions .outline-link {
+    width: 100%;
+  }
+
   .workflow-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg: #0f1716;
+    --surface: #15211f;
+    --surface-strong: #182724;
+    --ink: #edf5f2;
+    --muted: #a7b7b2;
+    --line: #2b403b;
+    --teal: #36b6a8;
+    --teal-dark: #70d8ce;
+    --blue: #8fb0ff;
+    --amber: #f0b36f;
+    --soft: #19322f;
+    --soft-blue: #182846;
+  }
+
+  .site-header {
+    background: rgba(15, 23, 22, 0.94);
+  }
+
+  .profile-hero {
+    background:
+      linear-gradient(90deg, rgba(54, 182, 168, 0.12), rgba(143, 176, 255, 0.08)),
+      var(--bg);
+  }
+
+  .profile-tags span,
+  .outline-link {
+    background: var(--surface);
+  }
+
+  .secondary-link {
+    border-color: rgba(237, 245, 242, 0.55);
+  }
+
+  .profile-secondary {
+    border-color: var(--blue);
+    color: var(--blue);
+  }
+
+  .primary-link {
+    color: #071311;
   }
 }
